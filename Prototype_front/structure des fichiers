@@ -1,0 +1,12 @@
+projet
+|
+|--dalhaize
+|    |
+|    |--src 
+|        |
+|        |-  -   -  - app
+|        |             |
+|        |-index.html  |-app.component.html
+|        |-main.ts     |-app.compoent.scss
+|        |-style.scss  |-app.component.ts
+|        |             |-etc.
