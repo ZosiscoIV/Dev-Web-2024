@@ -1,0 +1,24 @@
+{
+  "name": "dev-web-2024",
+  "version": "1.0.0",
+  "description": "Template de repo pour le projet Dev Web 2024-2025",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZosiscoIV/Dev-Web-2024.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ZosiscoIV/Dev-Web-2024/issues"
+  },
+  "homepage": "https://github.com/ZosiscoIV/Dev-Web-2024#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
