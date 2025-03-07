@@ -7,7 +7,7 @@ function Header() {
     return (
         <header className="Header">
             <div className="BannerImg">
-                <img src={logo} alt="logo" />
+               <img src={logo} alt="logo" onClick={() => navigate("/")} />
             </div>
             <div className="search">
                 <select className="dropdown">
