@@ -1,6 +1,6 @@
 # Use an official base image
 # Replace `python:3.9-slim` with the appropriate base image for your application
-FROM python:3.9-slim
+FROM python:latest
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
