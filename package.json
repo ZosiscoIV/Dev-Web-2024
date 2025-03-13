@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ZosiscoIV/Dev-Web-2024#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "mysql": "^2.18.1"
   }
 }
