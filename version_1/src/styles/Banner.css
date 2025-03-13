@@ -1,0 +1,22 @@
+.BannerImg {
+    background-image: url(https://source.unsplash.com/1600x900/?supermarket);
+}
+.BannerTitle {
+    text-align: center;
+    font-weight: bold;
+}
+
+.BannerButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    background-color: #22c55e;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+.BannerButton:hover {
+    background-color: #16a34a;
+}
