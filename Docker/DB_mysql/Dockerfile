@@ -1,33 +1,17 @@
 # Use an official base image
-# Replace `python:3.9-slim` with the appropriate base image for your application
-FROM python:latest
+FROM mysql:9.2
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Environnement variables
+ENV MYSQL_ROOT_PASSWORD=Hello78!4
+ENV MYSQL_DATABASE=Epicerie
+ENV MYSQL_USER=myuser
+ENV MYSQL_PASSWORD=&fplop75
 
-# Set the working directory in the container
-WORKDIR /app
+# Définir le répertoire de travail
+WORKDIR /docker-entrypoint-initdb.d/
 
-# Install system dependencies (if needed)
-# Replace or extend this section based on your requirements
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy the requirements file into the container
-COPY requirements.txt .
-
-# Install application dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
+# Copy the database file into the container
+COPY ../../schema.sql .
 
 # Expose the port the app runs on
-EXPOSE 8000
-
-# Define the command to run the application
-# Replace this with the command to start your application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+EXPOSE 3306
