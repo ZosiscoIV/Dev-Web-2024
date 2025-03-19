@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import '../styles/Header.css'
+import '../../../dev3/src/styles/Header.css'
 import logo from '../assets/logo.png'
 
 function Header() {
@@ -7,7 +7,7 @@ function Header() {
     return (
         <header className="Header">
             <div className="BannerImg">
-               <img src={logo} alt="logo" onClick={() => navigate("/")} />
+                <img src={logo} alt="logo" />
             </div>
             <div className="search">
                 <select className="dropdown">
