@@ -81,11 +81,11 @@ router.get('/products', (req, res) => {
         c.categorie AS categorie,
         s.dateLivraison AS dateLivraison
     FROM
-        magasin.tbProduits p
+        magasin.tbproduits p
     JOIN
-        magasin.tbStock s ON p.id = s.idProduit
+        magasin.tbstock s ON p.id = s.idProduit
     JOIN
-        magasin.tbCategorie c ON p.idCategorie = c.id
+        magasin.tbcategorie c ON p.idCategorie = c.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -152,7 +152,7 @@ router.get('/products', (req, res) => {
  */
 
 router.get('/categorie', (req, res) => {
-    const query = `SELECT id, categorie FROM magasin.tbCategorie`;
+    const query = `SELECT id, categorie FROM magasin.tbcategorie`;
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
