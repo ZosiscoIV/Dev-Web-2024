@@ -4,7 +4,7 @@ version: '3.8'
 services:
   mysql-container:
     build: .
-    env_file: .env  # Reference the .env file
+    env_file: ../.env  # Reference the .env file
     ports:
       - "3306:3306"
     environment:
