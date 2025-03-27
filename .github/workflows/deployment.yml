@@ -15,6 +15,7 @@ jobs:
       - name: 🔑 Configurer la clé SSH et l’hôte connu
         run: |
           mkdir -p ~/.ssh
+          touch ~/.ssh/id_rsa ~/.ssh/known_hosts
           echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
