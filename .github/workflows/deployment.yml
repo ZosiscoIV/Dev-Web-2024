@@ -25,8 +25,9 @@ jobs:
           ssh -i ~/.ssh/id_rsa -p 64141 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd ~/projet_dev3/Dev-Web-2024
           git pull origin main
+          npm install
           cd frontend && npm install  # Installe les dépendances frontend
-          cd .. && npm install
+          cd .. && pm2 start npm --name app_dev3 -- start
           npm run build
-          pm2 restart app_dev3
+          pm2 start app_dev3
           EOF
