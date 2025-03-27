@@ -25,7 +25,8 @@ jobs:
           ssh -i ~/.ssh/id_rsa -p 64141 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd ~/projet_dev3
           git pull origin main
-          npm install
+          cd frontend && npm install  # Installe les dépendances frontend
+          cd .. && npm install
           npm run build
-          pm2 restart mon-projet  # Si tu utilises PM2 pour gérer ton app
+          pm2 restart app_dev3
           EOF
