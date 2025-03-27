@@ -23,7 +23,7 @@ jobs:
       - name: 🚀 Déployer sur le serveur
         run: |
           ssh -i ~/.ssh/id_rsa -p 64141 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/projet_dev3
+          cd ~/projet_dev3/Dev-Web-2024
           git pull origin main
           cd frontend && npm install  # Installe les dépendances frontend
           cd .. && npm install
