@@ -42,9 +42,9 @@ function Home() {
                     {products.map((product) => (
                         <Produits
                             key={product.id}
-                            title={product.produit}  // Utilisation des données du produit
+                            produit={product.produit}  // Utilisation des données du produit
                             description={`Quantité: ${product.quantite} | Status: ${product.status}`}
-                            price={product.prix}
+                            prix={product.prix}
                             image={`../assets/${product.produit.toLowerCase()}.jpg`} // Si tu as des images dynamiques
                         />
                     ))}
