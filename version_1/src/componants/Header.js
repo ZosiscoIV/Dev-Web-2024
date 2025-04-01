@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import "../../../dev3/src/styles/Header.css";
+import "../styles/Header.css";
 import logo from "../assets/logo.png";
 
 function Header() {
@@ -29,8 +29,8 @@ function Header() {
                     <option value="">Toutes catégories</option>
                     <option value="fruits">Fruits</option>
                     <option value="legumes">Légumes</option>
-                    <option value="viande">Viande</option>
-                    <option value="boissons">Boissons</option>
+                    <option value="Cereal">Cereal</option>
+                    <option value="Epicerie sucree">Epicerie sucree</option>
                 </select>
 
                 <input
