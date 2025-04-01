@@ -3,7 +3,6 @@ import Produits from './produits';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Panier from "./CartPage";
-import Products from "./Test";
 import SearchResults from "./SearchResults";
 
 function App() {
@@ -17,7 +16,6 @@ function App() {
                 <Route exact path="/panier" element={<Panier />} />
                 <Route path="/search" element={<SearchResults />} />
             </Routes>
-                <Products />
             </main>
         </Router>
     </div>
