@@ -6,10 +6,10 @@ import "../styles/Home.css";
 function Home() {
     const [products, setProducts] = useState([]);
     const carouselRef = useRef(null);
+    const API_URL = "http://54.36.181.253:6942";
 
     useEffect(() => {
-        // Récupération des produits depuis l'API (ou utiliser un tableau statique pour du prototypage)
-        axios.get("http://localhost:6942/api/products")
+        axios.get(`${API_URL}/api/products`)
             .then(response => {
                 setProducts(response.data);
             })
@@ -17,6 +17,7 @@ function Home() {
                 console.error("Erreur lors de la récupération des produits :", error);
             });
     }, []);
+
 
     const scrollLeft = () => {
         if (carouselRef.current) {
