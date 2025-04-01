@@ -1,14 +1,14 @@
 import pate from "../assets/pâte.jpg";
 import "../styles/Produits.css"
 
-    const Produits = ({title, description, price, image}) => {
+    const Produits = ({produit, categorie, prix, image}) => {
         return (
             <div>
                 <a className="produits" href="#">
-                    <img src={image} className="produitImg" alt={title}/>
-                    <h2>{title}</h2>
-                    <p>{description}</p>
-                    <p><strong>Prix : {price}€</strong></p>
+                    <img src={image} className="produitImg" alt={produit}/>
+                    <h2>{produit}</h2>
+                    <p>{categorie}</p>
+                    <p><strong>Prix : {prix}€</strong></p>
                 </a>
             </div>
         );
