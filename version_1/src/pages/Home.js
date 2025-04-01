@@ -6,7 +6,7 @@ import "../styles/Home.css";
 function Home() {
     const [products, setProducts] = useState([]);
     const carouselRef = useRef(null);
-    const API_URL = "http://54.36.181.253:6942";
+    const API_URL = "http://localhost:6942";
 
     useEffect(() => {
         axios.get(`${API_URL}/api/products`)
