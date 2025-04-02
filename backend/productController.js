@@ -1,15 +1,40 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-require('dotenv').config();
+const mysql = require('mysql2');
+require('dotenv').config({ path: '../.env' });
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
 });
+
+const db2 = mysql.createPool({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    charset: process.env.DB_CHARSET
+  });
+  
+  // Crée une version Promise du pool
+const promisePool = db2.promise();
+  
+console.log(process.env.DB_CHARSET);
+
+// Vérification de la connexion
+db.connect(err => {
+    if (err) {
+        console.error("❌ Erreur de connexion à la base de données :", err);
+        process.exit(1); // Arrête l'application si la connexion échoue
+    }
+    console.log("✅ Connexion réussie à la base de données !");
+});
+
 
 // route pour la liste de produits
 
@@ -68,11 +93,11 @@ router.get('/products', (req, res) => {
         c.categorie AS categorie,
         s.dateLivraison AS dateLivraison
     FROM
-        tbProduits p
+        magasin.tbproduits p
     JOIN
-        tbStock s ON p.id = s.idProduit
+        magasin.tbstock s ON p.id = s.idProduit
     JOIN
-        tbCategorie c ON p.idCategorie = c.id
+        magasin.tbcategorie c ON p.idCategorie = c.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -139,7 +164,7 @@ router.get('/products', (req, res) => {
  */
 
 router.get('/categorie', (req, res) => {
-    const query = `SELECT id, categorie FROM tbCategorie`;
+    const query = `SELECT id, categorie FROM magasin.tbcategorie`;
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
@@ -188,9 +213,6 @@ router.get('/categorie', (req, res) => {
  *               categorie:
  *                 type: string
  *                 example: "Fruit"
- *               status:
- *                 type: string
- *                 example: "En stock"
  *               dateLivraison:
  *                  type: date
  *                  example: "2025-03-24T23:00:00.000Z"
@@ -205,7 +227,75 @@ router.get('/categorie', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.post('/products', (req, res) => {
+router.post('/products',async (req, res) => {
+    try {
+        console.log("Requête reçue pour créer un produit...",req.body);
+        const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
+        
+        const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbproduits WHERE  nom = ?", [nom]);
+        if(verifProd.length > 0) {
+            return res.status(400).send('Le produit existe déjà');
+        }
+        const dateLivraisonFinal = (dateLivraison === "" ? null : dateLivraison)
+
+        const dateFinVenteFinal = (dateFinVente === "" ? null : dateFinVente)
+        await promisePool.query(`
+            INSERT INTO magasin.tbunite (unite)
+            SELECT * FROM (SELECT ?) AS tmp(unite)
+            WHERE NOT EXISTS (
+                SELECT id FROM magasin.tbunite WHERE unite = ?
+            ) LIMIT 1;`, [unite,unite]);
+        const [verifUnite] = await promisePool.query("SELECT id FROM magasin.tbunite WHERE  unite = ?", [unite]);
+        const idUnite = verifUnite[0].id;
+
+        await promisePool.query(`
+            INSERT INTO magasin.tbcategorie (categorie)
+            SELECT * FROM (SELECT ?) AS tmp(categorie)
+            WHERE NOT EXISTS (
+                SELECT id FROM magasin.tbcategorie WHERE categorie = ?
+            ) LIMIT 1;
+        `, [categorie, categorie]);
+        const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbcategorie WHERE categorie = ?", [categorie]);
+        const idCategorie = verifCategorie[0].id;
+        
+        await promisePool.query(`
+            INSERT INTO magasin.tbtaxe (taxe)
+            SELECT * FROM (SELECT ?) AS tmp(taxe)
+            WHERE NOT EXISTS (
+                SELECT id FROM magasin.tbtaxe WHERE taxe = ?
+            ) LIMIT 1;
+        `, [taxe, taxe]);
+        const [verifTaxe] = await promisePool.query("SELECT id FROM magasin.tbtaxe WHERE taxe = ?", [taxe]);
+        const idTaxe = verifTaxe[0].id;
+        
+        await promisePool.query(`
+            INSERT INTO magasin.tbproduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+            SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie
+            FROM (SELECT ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+            WHERE NOT EXISTS (
+                SELECT id FROM magasin.tbproduits WHERE nom = ?
+            ) LIMIT 1;
+        `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, nom]);
+        const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbproduits WHERE nom = ?", [nom]);
+        const idProduit = verifProduit[0].id;
+
+        await promisePool.query(`
+            INSERT INTO magasin.tbstock (idProduit, quantite, dateLivraison)
+            SELECT idProduit, quantite, ? FROM (SELECT ?, ?, ?) AS tmp(idProduit, quantite, dateLivraison)
+            WHERE NOT EXISTS (
+                SELECT idProduit FROM magasin.tbstock WHERE idProduit = ?
+            );
+        `, [dateLivraisonFinal, idProduit, quantite, dateLivraison, idProduit]);
+        
+        res.status(201).send('Produit créé avec succès')
+        
+    } catch (error) {
+        // Si erreur dans la requête SQL
+        console.error('Erreur lors de la récupération des catégories:', error);
+        console.error('Erreur lors de l\'insertion du produit:', error); // Affiche l'erreur exacte
+
+        return res.status(500).send('Erreur de base de données');
+    }
 });
 
 // Route pour modifier un produit

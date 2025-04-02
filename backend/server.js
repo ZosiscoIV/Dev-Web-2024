@@ -15,7 +15,7 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
-console.log("Swagger UI is running at http://localhost:6942/api-docs");
+console.log(`Swagger UI is running at http://localhost:${PORT}/api-docs`);
 
 app.use('/api', productController);
 
