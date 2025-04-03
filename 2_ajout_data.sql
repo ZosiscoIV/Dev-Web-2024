@@ -1,20 +1,20 @@
-INSERT INTO tbUnite (unite)
+INSERT INTO magasin.tbUnite (unite)
 VALUES
     ('kg'),
     ('l'),
     ('pc');
-INSERT INTO tbTaxe (taxe)
+INSERT INTO magasin.tbTaxe (taxe)
 VALUES
     (21),
     (6);
-INSERT INTO tbCategorie (categorie)
+INSERT INTO magasin.tbCategorie (categorie)
 VALUES
     ('Fruits'),
     ('Légumes'),
     ('Céréales'),
     ('Crémerie'),
     ('Epicerie sucrée');
-INSERT INTO tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
 VALUES
     ('Banane', 3.00, '2024-03-06', NULL, 1, 1, 1),
     ('Fraise',5.99 , '2024-03-06', NULL, 3, 1, 1),
@@ -24,7 +24,7 @@ VALUES
     ('Beurre', 3.25, '2024-03-06', NULL, 3, 1, 4),
     ('Sucre', 1.69, '2024-03-06', NULL, 3, 1, 5);
 
-INSERT INTO tbStock (idProduit, quantite, dateLivraison)
+INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison)
 VALUES
     (1, 10, NULL),
     (2, 100, NULL),

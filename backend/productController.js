@@ -1,15 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
-require('dotenv').config();
+const mysql = require('mysql2');
+require('dotenv').config({ path: '../.env' });
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
 });
+
+console.log(process.env.DB_CHARSET);
+
+// Vérification de la connexion
+db.connect(err => {
+    if (err) {
+        console.error("❌ Erreur de connexion à la base de données :", err);
+        process.exit(1); // Arrête l'application si la connexion échoue
+    }
+    console.log("✅ Connexion réussie à la base de données !");
+});
+
 
 // route pour la liste de produits
 
@@ -68,11 +81,11 @@ router.get('/products', (req, res) => {
         c.categorie AS categorie,
         s.dateLivraison AS dateLivraison
     FROM
-        tbProduits p
+        magasin.tbproduits p
     JOIN
-        tbStock s ON p.id = s.idProduit
+        magasin.tbstock s ON p.id = s.idProduit
     JOIN
-        tbCategorie c ON p.idCategorie = c.id
+        magasin.tbcategorie c ON p.idCategorie = c.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -139,7 +152,7 @@ router.get('/products', (req, res) => {
  */
 
 router.get('/categorie', (req, res) => {
-    const query = `SELECT id, categorie FROM tbCategorie`;
+    const query = `SELECT id, categorie FROM magasin.tbcategorie`;
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
