@@ -7,9 +7,14 @@ export const getProducts = async (query = '') => {
   try {
     const response = await axios.get(API_URL + query);
     console.log('Réponse de l\'API des produits:', response.data);  // Ajoute cette ligne
-    return response.data;
+    return response.data || [];
   } catch (error) {
+    if (error.response?.status === 404) {
+      console.warn('Aucun produit trouvé.');
+      return [];
+    }
     console.error('Erreur lors de la récupération des produits:', error);
+    throw error
   }
 };
 
