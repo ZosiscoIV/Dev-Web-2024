@@ -38,4 +38,7 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+CI_CD
 next-env.d.ts
+node_modules/
+
