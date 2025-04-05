@@ -1,15 +1,45 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
-    charset: process.env.DB_CHARSET
+    charset: "utf8mb4",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 10000, // ping toutes les 10s
 });
+
+// Tester la connexion une fois au démarrage
+async function testConnection() {
+    try {
+        const connection = await db.getConnection();
+        console.log("✅ Connecté à MySQL !");
+        connection.release();
+    } catch (err) {
+        console.error("❌ Erreur de connexion MySQL:", err.message);
+    }
+}
+
+testConnection();
+
+// (optionnel) Ping périodique pour garder le pool actif
+setInterval(async () => {
+    try {
+        const [rows] = await db.query('SELECT 1');
+        // console.log("🔄 Ping MySQL");
+    } catch (err) {
+        console.error("❌ Erreur lors du ping MySQL:", err.message);
+    }
+}, 60 * 1000); // toutes les 60 secondes
+
+module.exports = { db, router };
 
 // route pour la liste de produits
 
