@@ -83,7 +83,7 @@ CREATE TABLE `tbcommandes` (
   PRIMARY KEY (`idCommande`),
   UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
-  CONSTRAINT `tbcommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbproduits` (`id`),
+  CONSTRAINT `tbcommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
   CONSTRAINT `tbcommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -112,7 +112,7 @@ CREATE TABLE `tbfavoris` (
   PRIMARY KEY (`idFavori`),
   UNIQUE KEY `fk_favoris` (`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
-  CONSTRAINT `tbfavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbproduits` (`id`),
+  CONSTRAINT `tbfavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
   CONSTRAINT `tbfavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -127,13 +127,13 @@ LOCK TABLES `tbfavoris` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbproduits`
+-- Table structure for table `tbProduits`
 --
 
-DROP TABLE IF EXISTS `tbproduits`;
+DROP TABLE IF EXISTS `tbProduits`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbproduits` (
+CREATE TABLE `tbProduits` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `prix` float NOT NULL,
@@ -146,46 +146,46 @@ CREATE TABLE `tbproduits` (
   KEY `idUnite` (`idUnite`),
   KEY `idTaxe` (`idTaxe`),
   KEY `idCategorie` (`idCategorie`),
-  CONSTRAINT `tbproduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
-  CONSTRAINT `tbproduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
-  CONSTRAINT `tbproduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
+  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
+  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
+  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbproduits`
+-- Dumping data for table `tbProduits`
 --
 
-LOCK TABLES `tbproduits` WRITE;
-/*!40000 ALTER TABLE `tbproduits` DISABLE KEYS */;
-INSERT INTO `tbproduits` VALUES (1,'Banane',3,'2024-03-06',NULL,1,1,1),(2,'Fraise',5.99,'2024-03-06',NULL,3,1,1),(3,'Pâte',3.49,'2024-12-06',NULL,3,1,3),(4,'Brocoli',2.69,'2024-12-06',NULL,3,1,2),(5,'Farine',1.05,'2024-12-06',NULL,3,1,3),(6,'Beurre',3.25,'2024-03-06',NULL,3,1,4),(7,'Sucre',1.69,'2024-03-06',NULL,3,1,5);
-/*!40000 ALTER TABLE `tbproduits` ENABLE KEYS */;
+LOCK TABLES `tbProduits` WRITE;
+/*!40000 ALTER TABLE `tbProduits` DISABLE KEYS */;
+INSERT INTO `tbProduits` VALUES (1,'Banane',3,'2024-03-06',NULL,1,1,1),(2,'Fraise',5.99,'2024-03-06',NULL,3,1,1),(3,'Pâte',3.49,'2024-12-06',NULL,3,1,3),(4,'Brocoli',2.69,'2024-12-06',NULL,3,1,2),(5,'Farine',1.05,'2024-12-06',NULL,3,1,3),(6,'Beurre',3.25,'2024-03-06',NULL,3,1,4),(7,'Sucre',1.69,'2024-03-06',NULL,3,1,5);
+/*!40000 ALTER TABLE `tbProduits` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbstock`
+-- Table structure for table `tbStock`
 --
 
-DROP TABLE IF EXISTS `tbstock`;
+DROP TABLE IF EXISTS `tbStock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbstock` (
+CREATE TABLE `tbStock` (
   `idProduit` int NOT NULL,
   `quantite` int NOT NULL,
   `dateLivraison` date DEFAULT NULL,
   PRIMARY KEY (`idProduit`),
-  CONSTRAINT `tbstock_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbproduits` (`id`)
+  CONSTRAINT `tbStock_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbstock`
+-- Dumping data for table `tbStock`
 --
 
-LOCK TABLES `tbstock` WRITE;
-/*!40000 ALTER TABLE `tbstock` DISABLE KEYS */;
-INSERT INTO `tbstock` VALUES (1,10,NULL),(2,100,NULL),(3,40,NULL),(4,4,NULL),(5,0,'2025-03-25'),(6,25,NULL),(7,6,NULL);
-/*!40000 ALTER TABLE `tbstock` ENABLE KEYS */;
+LOCK TABLES `tbStock` WRITE;
+/*!40000 ALTER TABLE `tbStock` DISABLE KEYS */;
+INSERT INTO `tbStock` VALUES (1,10,NULL),(2,100,NULL),(3,40,NULL),(4,4,NULL),(5,0,'2025-03-25'),(6,25,NULL),(7,6,NULL);
+/*!40000 ALTER TABLE `tbStock` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

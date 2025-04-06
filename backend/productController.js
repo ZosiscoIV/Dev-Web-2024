@@ -93,11 +93,11 @@ router.get('/products', (req, res) => {
         c.categorie AS categorie,
         s.dateLivraison AS dateLivraison
     FROM
-        magasin.tbproduits p
+        magasin.tbProduits p
     JOIN
-        magasin.tbstock s ON p.id = s.idProduit
+        magasin.tbStock s ON p.id = s.idProduit
     JOIN
-        magasin.tbcategorie c ON p.idCategorie = c.id
+        magasin.tbCategorie c ON p.idCategorie = c.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -164,7 +164,7 @@ router.get('/products', (req, res) => {
  */
 
 router.get('/categorie', (req, res) => {
-    const query = `SELECT id, categorie FROM magasin.tbcategorie`;
+    const query = `SELECT id, categorie FROM magasin.tbCategorie`;
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
@@ -232,7 +232,7 @@ router.post('/products',async (req, res) => {
         console.log("Requête reçue pour créer un produit...",req.body);
         const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
         
-        const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbproduits WHERE  nom = ?", [nom]);
+        const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE  nom = ?", [nom]);
         if(verifProd.length > 0) {
             return res.status(400).send('Le produit existe déjà');
         }
@@ -249,13 +249,13 @@ router.post('/products',async (req, res) => {
         const idUnite = verifUnite[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.tbcategorie (categorie)
+            INSERT INTO magasin.tbCategorie (categorie)
             SELECT * FROM (SELECT ?) AS tmp(categorie)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbcategorie WHERE categorie = ?
+                SELECT id FROM magasin.tbCategorie WHERE categorie = ?
             ) LIMIT 1;
         `, [categorie, categorie]);
-        const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbcategorie WHERE categorie = ?", [categorie]);
+        const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbCategorie WHERE categorie = ?", [categorie]);
         const idCategorie = verifCategorie[0].id;
         
         await promisePool.query(`
@@ -269,21 +269,21 @@ router.post('/products',async (req, res) => {
         const idTaxe = verifTaxe[0].id;
         
         await promisePool.query(`
-            INSERT INTO magasin.tbproduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+            INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
             SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie
             FROM (SELECT ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbproduits WHERE nom = ?
+                SELECT id FROM magasin.tbProduits WHERE nom = ?
             ) LIMIT 1;
         `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, nom]);
-        const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbproduits WHERE nom = ?", [nom]);
+        const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE nom = ?", [nom]);
         const idProduit = verifProduit[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.tbstock (idProduit, quantite, dateLivraison)
+            INSERT INTO magasin.S (idProduit, quantite, dateLivraison)
             SELECT idProduit, quantite, ? FROM (SELECT ?, ?, ?) AS tmp(idProduit, quantite, dateLivraison)
             WHERE NOT EXISTS (
-                SELECT idProduit FROM magasin.tbstock WHERE idProduit = ?
+                SELECT idProduit FROM magasin.S WHERE idProduit = ?
             );
         `, [dateLivraisonFinal, idProduit, quantite, dateLivraison, idProduit]);
         
