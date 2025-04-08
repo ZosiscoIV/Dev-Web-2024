@@ -574,3 +574,73 @@ router.get('/cart', (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /api/addToCart:
+ *   post:
+ *     summary: Ajouter un article au panier
+ *     description: Ajoute un produit dans le panier en insérant une ligne dans la table tbCommandes.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idProduit
+ *               - idClient
+ *               - quantite
+ *             properties:
+ *               idProduit:
+ *                 type: integer
+ *                 example: 2
+ *               idClient:
+ *                 type: integer
+ *                 example: 1
+ *               quantite:
+ *                 type: integer
+ *                 example: 3
+ *     responses:
+ *       201:
+ *         description: Produit ajouté au panier avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Produit ajouté au panier avec succès
+ *                 idCommande:
+ *                   type: integer
+ *                   example: 12
+ *       400:
+ *         description: Données manquantes ou invalides.
+ *       500:
+ *         description: Erreur serveur.
+ */
+
+
+router.post('/addToCart', (req, res) => {
+    const { idProduit, idClient, quantite } = req.body;
+
+    if (!idProduit || !idClient || !quantite) {
+        return res.status(400).send("Données manquantes");
+    }
+
+    const dateCommande = new Date();
+
+    const query = `
+        INSERT INTO magasin.tbCommandes (idProduit, idClient, quantite, dateCommande)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(query, [idProduit, idClient, quantite, dateCommande], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de l'ajout au panier:", err);
+            return res.status(500).send("Erreur de base de données");
+        }
+
+        res.status(201).json({ message: "Produit ajouté au panier avec succès", idCommande: results.insertId });
+    });
+});
