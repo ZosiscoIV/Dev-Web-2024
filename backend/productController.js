@@ -506,3 +506,71 @@ router.get('/alerts/stockFaible', (req, res) => {
 
 });
 module.exports = router;
+
+
+
+// route pour Cart
+
+/**
+ * @swagger
+ * /api/cart:
+ *   get:
+ *     summary: Obtenir la liste des articles du panier
+ *     description: Retourne les informations des produits du panier (id, name, price, quantity, stock).
+ *     responses:
+ *       200:
+ *         description: Liste des articles récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "Pomme"
+ *                   price:
+ *                     type: number
+ *                     example: 3.2
+ *                   quantity:
+ *                     type: number
+ *                     example: 4
+ *                   stock:
+ *                     type: number
+ *                     example: 6
+ * 
+ * 
+ * 
+ * 
+ * 
+ *       404:
+ *         description: Aucun articles trouvés dans le panier.
+ *       500:
+ *         description: Erreur serveur.
+ */
+
+router.get('/cart', (req, res) => {
+    const query = `SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite FROM magasin.tbCommandes as C JOIN magasin.tbProduits as P ON P.id = C.idProduit JOIN magasin.tbStock as S ON P.id = S.idProduit`;
+    db.query(query, (err, results) => {
+        if (err) {
+            // Si erreur dans la requête SQL
+            console.error('Erreur lors de la récupération des articles:', err);
+
+            return res.status(500).send('Erreur de base de données');
+        }
+        if (results.length === 0) {
+            // Si aucune ressource trouvée, on renvoie un 404
+            return res.status(404).send('Aucun articles trouvés dans le panier.');
+        }
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+        // On renvoie les résultats si tout va bien
+        res.json(results);
+    });
+});
+
+
