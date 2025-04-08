@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import Produits from "../componants/produits"; // Importation du composant Produits
+import Produits from "../componants/Produits"; // Importation du composant Produits
 import "../styles/Home.css";
 
 function Home() {
