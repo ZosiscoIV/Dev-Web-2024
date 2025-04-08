@@ -1,5 +1,5 @@
 import Header from './Header';
-import Produits from './produits';
+import Produits from './Produits';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
 import Panier from "./CartPage";
