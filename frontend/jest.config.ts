@@ -1,0 +1,31 @@
+// jest.config.ts
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/app/$1', 
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+
+  },
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+  },  
+  testMatch: ['**/?(*.)+(test).[jt]s?(x)'], // pour matcher les .test.tsx
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
+  coverageProvider: "v8",
+  
+};
+
+export default config;

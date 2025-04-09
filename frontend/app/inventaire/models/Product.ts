@@ -1,4 +1,6 @@
 import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
 
 export class Product {
     constructor(
@@ -17,7 +19,7 @@ export class Product {
     }
     getFormatDate(): string {
         if (this.dateLivraison == null) return ""
-        return format(new Date(this.dateLivraison), 'dd/MM/yyyy')
+        return format(new Date(this.dateLivraison), 'dd/MM/yyyy', { locale: fr })
 
     }
 
