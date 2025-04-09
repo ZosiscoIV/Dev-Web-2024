@@ -86,7 +86,7 @@ module.exports = { db, router };
  *         description: Erreur avec la base de données.
  */
 
-router.get('/products', (req, res) => {
+router.get('/products', async (req, res) => {
     const { categorie, enStock} = req.query
     let query = `
     SELECT
@@ -122,20 +122,21 @@ router.get('/products', (req, res) => {
     }
     query += ` ORDER BY p.nom`;
 
-    db.query(query, (err, results) => {
-        if (err) {
-            // Si erreur dans la requête SQL
-            return res.status(500).send('Erreur de base de données');
-        }
+    try {
+        const [results] = await db.query(query);
+
         if (results.length === 0) {
             // Si aucune ressource trouvée, on renvoie un 404
             return res.status(404).send('Aucun produit trouvé');
         }
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
         // On renvoie les résultats si tout va bien
         res.json(results);
-    });
+    } catch (err) {
+        console.error('Erreur lors de la récupération des produits:', err);
+        return res.status(500).send('Erreur de base de données');
+    }
 });
 
 // route pour Categorie
@@ -168,26 +169,25 @@ router.get('/products', (req, res) => {
  *         description: Erreur serveur.
  */
 
-router.get('/categorie', (req, res) => {
+router.get('/categorie', async (req, res) => {
     const query = `SELECT id, categorie FROM tbCategorie`;
-    db.query(query, (err, results) => {
-        if (err) {
-            // Si erreur dans la requête SQL
-            console.error('Erreur lors de la récupération des catégories:', err);
 
-            return res.status(500).send('Erreur de base de données');
-        }
+    try {
+        const [results] = await db.query(query);
+
         if (results.length === 0) {
             // Si aucune ressource trouvée, on renvoie un 404
             return res.status(404).send('Aucune catégorie trouvée');
         }
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
         // On renvoie les résultats si tout va bien
         res.json(results);
-    });
+    } catch (err) {
+        console.error('Erreur lors de la récupération des catégories:', err);
+        return res.status(500).send('Erreur de base de données');
+    }
 });
-
 // Route pour ajouter un nouveau produit
 
 /**
@@ -235,7 +235,7 @@ router.get('/categorie', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.post('/products', (req, res) => {
+router.post('/products', async (req, res) => {
 });
 
 // Route pour modifier un produit
@@ -294,7 +294,7 @@ router.post('/products', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.put('/products/:id', (req, res) => {
+router.put('/products/:id', async(req, res) => {
 });
 
 // Route pour supprimer un produit
@@ -320,7 +320,7 @@ router.put('/products/:id', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.delete('/products/:id', (req, res) => {
+router.delete('/products/:id', async (req, res) => {
 });
 
 // Route pour modifier le statut du produit
@@ -356,7 +356,7 @@ router.delete('/products/:id', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.put('/products/:id/status', (req, res) => {
+router.put('/products/:id/status', async(req, res) => {
 });
 
 // Route pour mettre une date de livraison au produit
@@ -394,7 +394,7 @@ router.put('/products/:id/status', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.put('/products/:id/dateLivraison', (req, res) => {
+router.put('/products/:id/dateLivraison', async(req, res) => {
 });
 
 // Route pour alerte si le produit est faible en stock
@@ -442,7 +442,7 @@ router.put('/products/:id/dateLivraison', (req, res) => {
  *         description: Erreur avec la base de données.
 
  */
-router.get('/alerts/stockFaible', (req, res) => {
+router.get('/alerts/stockFaible', async(req, res) => {
 
 });
 module.exports = router;
