@@ -93,11 +93,11 @@ router.get('/products', (req, res) => {
         c.categorie AS categorie,
         s.dateLivraison AS dateLivraison
     FROM
-        magasin.tbproduits p
+        magasin.tbProduits p
     JOIN
-        magasin.tbstock s ON p.id = s.idProduit
+        magasin.tbStock s ON p.id = s.idProduit
     JOIN
-        magasin.tbcategorie c ON p.idCategorie = c.id
+        magasin.tbCategorie c ON p.idCategorie = c.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -164,7 +164,7 @@ router.get('/products', (req, res) => {
  */
 
 router.get('/categorie', (req, res) => {
-    const query = `SELECT id, categorie FROM magasin.tbcategorie`;
+    const query = `SELECT id, categorie FROM magasin.tbCategorie`;
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
@@ -232,7 +232,7 @@ router.post('/products',async (req, res) => {
         console.log("Requête reçue pour créer un produit...",req.body);
         const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
         
-        const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbproduits WHERE  nom = ?", [nom]);
+        const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE  nom = ?", [nom]);
         if(verifProd.length > 0) {
             return res.status(400).send('Le produit existe déjà');
         }
@@ -249,13 +249,13 @@ router.post('/products',async (req, res) => {
         const idUnite = verifUnite[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.tbcategorie (categorie)
+            INSERT INTO magasin.tbCategorie (categorie)
             SELECT * FROM (SELECT ?) AS tmp(categorie)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbcategorie WHERE categorie = ?
+                SELECT id FROM magasin.tbCategorie WHERE categorie = ?
             ) LIMIT 1;
         `, [categorie, categorie]);
-        const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbcategorie WHERE categorie = ?", [categorie]);
+        const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbCategorie WHERE categorie = ?", [categorie]);
         const idCategorie = verifCategorie[0].id;
         
         await promisePool.query(`
@@ -269,21 +269,21 @@ router.post('/products',async (req, res) => {
         const idTaxe = verifTaxe[0].id;
         
         await promisePool.query(`
-            INSERT INTO magasin.tbproduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+            INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
             SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie
             FROM (SELECT ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbproduits WHERE nom = ?
+                SELECT id FROM magasin.tbProduits WHERE nom = ?
             ) LIMIT 1;
         `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, nom]);
-        const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbproduits WHERE nom = ?", [nom]);
+        const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE nom = ?", [nom]);
         const idProduit = verifProduit[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.tbstock (idProduit, quantite, dateLivraison)
+            INSERT INTO magasin.S (idProduit, quantite, dateLivraison)
             SELECT idProduit, quantite, ? FROM (SELECT ?, ?, ?) AS tmp(idProduit, quantite, dateLivraison)
             WHERE NOT EXISTS (
-                SELECT idProduit FROM magasin.tbstock WHERE idProduit = ?
+                SELECT idProduit FROM magasin.S WHERE idProduit = ?
             );
         `, [dateLivraisonFinal, idProduit, quantite, dateLivraison, idProduit]);
         
@@ -506,3 +506,141 @@ router.get('/alerts/stockFaible', (req, res) => {
 
 });
 module.exports = router;
+
+
+
+// route pour Cart
+
+/**
+ * @swagger
+ * /api/cart:
+ *   get:
+ *     summary: Obtenir la liste des articles du panier
+ *     description: Retourne les informations des produits du panier (id, name, price, quantity, stock).
+ *     responses:
+ *       200:
+ *         description: Liste des articles récupérés avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: "Pomme"
+ *                   price:
+ *                     type: number
+ *                     example: 3.2
+ *                   quantity:
+ *                     type: number
+ *                     example: 4
+ *                   stock:
+ *                     type: number
+ *                     example: 6
+ * 
+ * 
+ * 
+ * 
+ * 
+ *       404:
+ *         description: Aucun articles trouvés dans le panier.
+ *       500:
+ *         description: Erreur serveur.
+ */
+
+router.get('/cart', (req, res) => {
+    const query = `SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite FROM magasin.tbCommandes as C JOIN magasin.tbProduits as P ON P.id = C.idProduit JOIN magasin.tbStock as S ON P.id = S.idProduit`;
+    db.query(query, (err, results) => {
+        if (err) {
+            // Si erreur dans la requête SQL
+            console.error('Erreur lors de la récupération des articles:', err);
+
+            return res.status(500).send('Erreur de base de données');
+        }
+        if (results.length === 0) {
+            // Si aucune ressource trouvée, on renvoie un 404
+            return res.status(404).send('Aucun articles trouvés dans le panier.');
+        }
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+        // On renvoie les résultats si tout va bien
+        res.json(results);
+    });
+});
+
+
+/**
+ * @swagger
+ * /api/addToCart:
+ *   post:
+ *     summary: Ajouter un article au panier
+ *     description: Ajoute un produit dans le panier en insérant une ligne dans la table tbCommandes.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idProduit
+ *               - idClient
+ *               - quantite
+ *             properties:
+ *               idProduit:
+ *                 type: integer
+ *                 example: 2
+ *               idClient:
+ *                 type: integer
+ *                 example: 1
+ *               quantite:
+ *                 type: integer
+ *                 example: 3
+ *     responses:
+ *       201:
+ *         description: Produit ajouté au panier avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Produit ajouté au panier avec succès
+ *                 idCommande:
+ *                   type: integer
+ *                   example: 12
+ *       400:
+ *         description: Données manquantes ou invalides.
+ *       500:
+ *         description: Erreur serveur.
+ */
+
+
+router.post('/addToCart', (req, res) => {
+    const { idProduit, idClient, quantite } = req.body;
+
+    if (!idProduit || !idClient || !quantite) {
+        return res.status(400).send("Données manquantes");
+    }
+
+    const dateCommande = new Date();
+
+    const query = `
+        INSERT INTO magasin.tbCommandes (idProduit, idClient, quantite, dateCommande)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(query, [idProduit, idClient, quantite, dateCommande], (err, results) => {
+        if (err) {
+            console.error("Erreur lors de l'ajout au panier:", err);
+            return res.status(500).send("Erreur de base de données");
+        }
+
+        res.status(201).json({ message: "Produit ajouté au panier avec succès", idCommande: results.insertId });
+    });
+});
