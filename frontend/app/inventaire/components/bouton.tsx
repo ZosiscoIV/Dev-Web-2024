@@ -1,3 +1,4 @@
+import React from 'react';
 import { useProductForm } from '../hooks/useProductForm';
 import Formulaire from './AddProduct';
 import { Product } from '../models/Product';
