@@ -4,6 +4,9 @@
   "description": "Template de repo pour le projet Dev Web 2024-2025",
   "main": "index.js",
   "scripts": {
+    "start": "cd frontend && npm run start", 
+    "pm2:start": "pm2 start npm --name app_dev3 -- start",
+    "build": "cd frontend && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,6 +27,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mysql": "^2.18.1",
+    "pm2": "^6.0.5",
     "mysql2": "^3.13.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
