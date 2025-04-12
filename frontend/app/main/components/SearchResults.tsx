@@ -1,15 +1,23 @@
-import { useLocation } from "react-router-dom";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-const useQuery = () => {
-    return new URLSearchParams(useLocation().search);
-};
+interface Produit {
+    id: number;
+    produit: string;
+    categorie: string;
+    prix: number;
+    image: string;
+}
 
 const SearchResults = () => {
-    const query = useQuery().get("q") || "";
-    const category = useQuery().get("category") || ""; // Récupère la catégorie depuis l'URL
-    const [products, setProducts] = useState([]);
-    const [filteredProducts, setFilteredProducts] = useState([]);
+    const searchParams = useSearchParams();
+    const query = searchParams.get("q") || "";
+    const category = searchParams.get("category") || "";
+
+    const [products, setProducts] = useState<Produit[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<Produit[]>([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -29,11 +37,11 @@ const SearchResults = () => {
 
     useEffect(() => {
         let filtered = products.filter((p) =>
-            p.produit && p.produit.toLowerCase().includes(query.toLowerCase()) // Vérifie la recherche
+            p.produit && p.produit.toLowerCase().includes(query.toLowerCase())
         );
 
         if (category !== "") {
-            filtered = filtered.filter((p) => p.categorie === category); // Vérifie la catégorie
+            filtered = filtered.filter((p) => p.categorie === category);
         }
 
         setFilteredProducts(filtered);
@@ -41,7 +49,7 @@ const SearchResults = () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-xl font-bold">Résultats pour "{query}"</h1>
+            <h1 className="text-xl font-bold">Résultats pour &quot;{query}&quot;</h1>
 
             <ul className="mt-4">
                 {filteredProducts.length > 0 ? (
