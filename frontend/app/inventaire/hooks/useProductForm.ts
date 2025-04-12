@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { getProducts, getCategorie} from '../services/productService'
-import { useProducts } from './useProducts'
-import { useCategorie } from './useCategorie';
 import { Product } from '../models/Product';
 import { Categorie } from '../models/Categorie';
 

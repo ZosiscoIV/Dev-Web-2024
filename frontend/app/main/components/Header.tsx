@@ -1,25 +1,33 @@
-import { useNavigate } from "react-router-dom";
+// app/main/components/Header.tsx
+
+"use client";
+
 import { useState } from "react";
-import "../styles/Header.css";
+import { useRouter } from "next/navigation"; // Correct hook import from next/navigation
+import Image from "next/image";
+import "../css/Header.css";
 import logo from "../assets/logo.png";
 
 function Header() {
-    const navigate = useNavigate();
+    const router = useRouter(); // Now using the correct useRouter from next/navigation
     const [query, setQuery] = useState("");
     const [category, setCategory] = useState("");
 
     const handleSearch = () => {
-        navigate(`/search?q=${query}&category=${category}`);
+        router.push(`/search?q=${query}&category=${category}`); // Use router.push() to navigate
     };
 
     return (
         <header className="Header">
-            {/* Logo */}
             <div className="BannerImg">
-                <img src={logo} alt="logo" onClick={() => navigate("/")} className="cursor-pointer"/>
+                <Image
+                    src={logo}
+                    alt="logo"
+                    onClick={() => router.push("/")}
+                    className="cursor-pointer"
+                />
             </div>
 
-            {/* Barre de recherche */}
             <div className="search">
                 <select
                     className="dropdown"
@@ -42,14 +50,21 @@ function Header() {
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
 
-                <button className="boutonRecherche" onClick={handleSearch}>🔍</button>
+                <button className="boutonRecherche" onClick={handleSearch}>
+                    🔍
+                </button>
             </div>
 
-            {/* Boutons de navigation */}
             <div className="bouton">
-                <button className="boutonAide" onClick={() => navigate("/aide")}>Aide</button>
-                <button className="boutonLogin" onClick={() => navigate("/login")}>Login</button>
-                <button className="boutonPanier" onClick={() => navigate("/panier")}>🛒</button>
+                <button className="boutonAide" onClick={() => router.push("/aide")}>
+                    Aide
+                </button>
+                <button className="boutonLogin" onClick={() => router.push("/listeprod")}>
+                    Login
+                </button>
+                <button className="boutonPanier" onClick={() => router.push("/panier")}>
+                    🛒
+                </button>
             </div>
         </header>
     );
