@@ -11,7 +11,9 @@ const config: Config = {
 
   },
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    //'^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { configFile: "./test/babel.config.js" }],
+
   },  
   testMatch: ['**/?(*.)+(test).[jt]s?(x)'], // pour matcher les .test.tsx
   collectCoverage: true,
