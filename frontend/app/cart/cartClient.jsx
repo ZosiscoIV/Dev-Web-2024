@@ -6,7 +6,7 @@ const initialCart = [
   { id: 2, name: "Poire", price: 3, quantity: 2, stock: 5 },
   { id: 3, name: "Pâtes", price: 3.99, quantity: 4, stock: 6 },
   { id: 4, name: "Orange", price: 2.7, quantity: 3, stock: 15 },
-  { id: 5, name: "Stylo", price: 3.3, quantity: 1, stock: 12 },
+  { id: 5, name: "Stylo", price: 3.3, quantity: 1, stock: 12 }
 ];
 
 export default function Cart() {
@@ -81,7 +81,7 @@ export default function Cart() {
               value={item.quantity}
               min="0"
               max={item.stock}
-              onBlur={(e) => handleAdjust(item.id, parseInt(e.target.value))}
+              onBlur={(e) => handleAdjust(item.id, 0)}
               onChange={(e) =>
                 handleQuantityChange(item.id, parseInt(e.target.value) || 0)
               }
