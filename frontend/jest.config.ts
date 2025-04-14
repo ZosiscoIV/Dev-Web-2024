@@ -12,7 +12,7 @@ const config: Config = {
   },
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
-    //'^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     //"^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { configFile: "./test/babel.config.js" }],
 
   },  
