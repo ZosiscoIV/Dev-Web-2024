@@ -1,0 +1,33 @@
+name: Deploy Next.js to VPS
+
+on:
+  push:
+    branches:
+      - main  # Déclencher le déploiement à chaque push sur la branche main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Récupérer le code du dépôt
+        uses: actions/checkout@v3
+
+      - name: 🔑 Configurer la clé SSH et l’hôte connu
+        run: |
+          mkdir -p ~/.ssh
+          touch ~/.ssh/id_rsa ~/.ssh/known_hosts
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H -p 64141 "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: 🚀 Déployer sur le serveur
+        run: |
+          ssh -i ~/.ssh/id_rsa -p 64141 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/projet_dev3/Dev-Web-2024
+          git pull origin main
+          npm install
+          cd frontend && npm install  # Installe les dépendances frontend
+          cd .. && pm2 start npm --name app_dev3 -- start
+          npm run build
+          pm2 start app_dev3
+          EOF

@@ -1,0 +1,100 @@
+h1 {
+    text-decoration: dotted;
+    font-size:x-large;
+    margin: 10px;
+}
+/* filtre*/
+#filtre{
+    clear: both;
+    float: right;
+    margin: 10px;
+}
+#categorie{
+    border: 2px solid;
+    border-radius: 2px;
+    margin-right: 7px;
+
+}
+
+div#corps {
+    clear: both;
+}
+/* tableau*/
+table {
+    border-collapse: collapse;
+    width: 80%; 
+    border: 3px solid black; 
+    margin: auto;
+}
+th {
+    text-decoration: dotted;
+}
+
+th, td {
+    border: 1px solid black; 
+    text-align: center;
+}
+
+/* Bouton nouveau Produit */
+button {
+    float: right;
+    padding: 10px 15px;
+    background-color: #4d5ede; /* Vert */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049; /* Changement de couleur au survol */
+}
+
+/*Formulaire*/
+
+.popup-inner {
+    background-color: white;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    width: 30%;
+    box-sizing: border-box;
+   
+}
+
+.popup-inner label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.popup-inner input {
+    width: 50%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+.popup-inner input[type="submit"] {
+    background-color: #4d5ede;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.popup-inner input[type="submit"]:hover {
+    background-color: #45a049;
+}
