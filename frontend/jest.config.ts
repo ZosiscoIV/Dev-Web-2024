@@ -1,6 +1,12 @@
 // jest.config.ts
 import type { Config } from 'jest';
 
+module.exports = {
+  testEnvironment: 'jsdom',
+  testPathIgnorePatterns: ["/node_modules/", ".*\\.test\\.skip\\.jsx?$"],
+};
+
+
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
