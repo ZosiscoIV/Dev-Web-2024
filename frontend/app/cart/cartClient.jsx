@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link"; // for client-side navigation in Next.js
+import Link from "next/link";
 import { useState } from "react";
 import React from "react";
 
@@ -18,6 +18,10 @@ export default function Cart() {
     setCart((prevCart) =>
       prevCart.map((item) => {
         if (item.id === id) {
+          if (value > item.stock) {
+            alert("La quantité saisie dépasse le stock disponible !");
+            value = item.stock;
+          }
           const newQuantity = Math.max(0, Math.min(item.stock, value));
           return { ...item, quantity: newQuantity };
         }
@@ -62,23 +66,15 @@ export default function Cart() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      {/* NAVIGATION BAR */}
       <nav className="flex justify-between items-center mb-6 px-4 py-3 bg-gray-100 rounded-lg shadow">
         <h2 className="text-xl font-bold text-gray-800">Ma Boutique</h2>
         <div className="flex space-x-4">
-          <Link href="/" className="text-blue-600 hover:underline">
-            Accueil
-          </Link>
-          <Link href="/listeprod" className="text-blue-600 hover:underline">
-            Gestion Stock
-          </Link>
-          <Link href="/aide" className="text-blue-600 hover:underline">
-            Aide
-          </Link>
+          <Link href="/" className="text-blue-600 hover:underline">Accueil</Link>
+          <Link href="/listeprod" className="text-blue-600 hover:underline">Gestion Stock</Link>
+          <Link href="/aide" className="text-blue-600 hover:underline">Aide</Link>
         </div>
       </nav>
 
-      {/* CART UI */}
       <h1 className="text-2xl font-bold mb-6">Mon Panier</h1>
       {cart.map((item) => (
         <div

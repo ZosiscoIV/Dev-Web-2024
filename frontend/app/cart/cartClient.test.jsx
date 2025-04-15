@@ -1,32 +1,29 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import Cart from "./cartClient";
 import React from 'react';
 
 describe("Cart component", () => {
   test("renders all items with correct quantities and total", () => {
     render(<Cart />);
-
-    // Check some items
     expect(screen.queryByText("Pomme")).not.toBeNull();
-    expect(screen.queryByDisplayValue("1")).not.toBeNull();
-    expect(screen.queryByText(/Total :/).textContent).toBe("Total : 38.56€");
+    expect(screen.getAllByDisplayValue("1")[0]).not.toBeNull();
+    expect(screen.queryByText(/Total :/).textContent).toBe("Total : 35.86€");
   });
 
   test("increases quantity when + button is clicked", () => {
     render(<Cart />);
     const addButtons = screen.getAllByText("+");
-    const quantityInput = screen.getByDisplayValue("1");
+    const quantityInput = screen.getAllByDisplayValue("1")[0];
 
     fireEvent.click(addButtons[0]);
 
-    // Now quantity should be 2
     expect(quantityInput.value).toBe("2");
   });
 
   test("decreases quantity when - button is clicked", () => {
     render(<Cart />);
     const subtractButtons = screen.getAllByText("-");
-    const poireInput = screen.getByDisplayValue("2");
+    const poireInput = screen.getAllByDisplayValue("2")[0];
 
     fireEvent.click(subtractButtons[1]);
 
@@ -40,9 +37,7 @@ describe("Cart component", () => {
     const subtractButton = screen.getAllByText("-")[0];
     fireEvent.click(subtractButton);
 
-    // Pomme should be removed
-    expect(screen.queryByDisplayValue("1")).toBeNull();
-
+    expect(screen.queryByText("Pomme")).toBeNull();
     window.confirm.mockRestore();
   });
 
@@ -51,7 +46,6 @@ describe("Cart component", () => {
 
     render(<Cart />);
     const subtractButton = screen.getAllByText("-")[0];
-
     fireEvent.click(subtractButton);
 
     expect(screen.queryByText("Pomme")).not.toBeNull();
@@ -61,17 +55,17 @@ describe("Cart component", () => {
 
 test("directly changes quantity using input field", () => {
   render(<Cart />);
-  const input = screen.getByDisplayValue("1"); // Pomme
+  const input = screen.getAllByDisplayValue("1")[0]; // Pomme
 
   fireEvent.change(input, { target: { value: "5" } });
 
   expect(input.value).toBe("5");
-  expect(screen.queryByText(/Total :/).textContent).toBe("Total : 50.06€");
+  expect(screen.queryByText(/Total :/).textContent).toBe("Total : 45.86€");
 });
 
 test("prevents quantity from exceeding stock", () => {
   render(<Cart />);
-  const input = screen.getByDisplayValue("1"); // Pomme
+  const input = screen.getAllByDisplayValue("1")[0]; // Pomme
   const addButton = screen.getAllByText("+")[0];
 
   for (let i = 0; i < 15; i++) {
@@ -82,24 +76,26 @@ test("prevents quantity from exceeding stock", () => {
 });
 
 test("shows alert when exceeding stock manually", () => {
-    window.alert = jest.fn();
+    window.alert = jest.fn(); // mock alert
+  
     render(<Cart />);
   
-    const inputs = screen.getAllByDisplayValue("1");
-    const input = inputs[0]; // targeting the input for "Pomme"
+    const input = screen.getAllByDisplayValue("1")[0]; // input for "Pomme"
   
     fireEvent.change(input, { target: { value: "100" } });
+    fireEvent.blur(input); // <--- trigger onBlur logic
   
     expect(window.alert).toHaveBeenCalledWith(
       expect.stringContaining("stock")
     );
+  
+    window.alert.mockRestore();
   });
   
 
 test("updates total dynamically when quantities change", () => {
   render(<Cart />);
-  const inputs = screen.getAllByDisplayValue("1");
-  const input = inputs[0]; // Pomme
+  const input = screen.getAllByDisplayValue("1")[0]; // Pomme
   const addButton = screen.getAllByText("+")[0];
 
   fireEvent.click(addButton); // now 2
@@ -108,14 +104,11 @@ test("updates total dynamically when quantities change", () => {
   expect(input.value).toBe("3");
   expect(screen.queryByText(/Total :/).textContent).toBe("Total : 40.86€");
 });
-  
-
 
 test("renders correctly when cart becomes empty", () => {
   jest.spyOn(window, "confirm").mockReturnValue(true);
   render(<Cart />);
 
-  // Remove every item
   const removeAll = () => {
     let subtractButtons = screen.queryAllByText("-");
     while (subtractButtons.length > 0) {
