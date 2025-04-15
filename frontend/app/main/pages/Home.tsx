@@ -3,10 +3,23 @@ import axios from "axios";
 import Produits from "../components/Produits"; // Importation du composant Produits
 import "../css/Home.css";
 
+
+interface Product {
+    produit: string;
+    categorie: string[];
+    description: string;
+    prix: number;
+    image: string;
+    quantite: number;
+    status: string;
+    onImageError: () => void;
+}
+
+
 function Home() {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [imageError, setImageError] = useState(false);
-    const carouselRef = useRef(null);
+    const carouselRef = useRef<HTMLDivElement>(null);
     const API_URL = "http://localhost:6942";
 
     useEffect(() => {
@@ -51,12 +64,15 @@ function Home() {
 
                         return (
                             <Produits
-                                key={product.id}
+                                key={product.produit}
+                                categorie={product.categorie}
                                 produit={product.produit}  // Utilisation des données du produit
                                 description={`Quantité: ${product.quantite} | Status: ${product.status}`}
                                 prix={product.prix}
                                 image={imageSrc}
                                 onImageError={handleImageError}
+                                quantite={product.quantite}     // Ajoute cette ligne pour passer 'quantite'
+                                status={product.status}
                             />
                         );
                     })}
