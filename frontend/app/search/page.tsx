@@ -1,16 +1,10 @@
-// app/main/pages/SearchPage.tsx
-"use client";
+import { Suspense } from 'react';
+import SearchPageContent from '../main/components/SearchResults';
 
-import Header from "@/app/main/components/Header";
-import SearchResults from "@/app/main/components/SearchResults";  // Importation du composant SearchResults
-
-const SearchPage = () => {
+export default function SearchPage() {
     return (
-        <div>
-            <Header />
-            <SearchResults /> {/* Simplement ajouter SearchResults ici */}
-        </div>
+        <Suspense fallback={<div>Chargement des résultats...</div>}>
+            <SearchPageContent />
+        </Suspense>
     );
-};
-
-export default SearchPage;
+}

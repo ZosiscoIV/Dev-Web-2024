@@ -3,7 +3,7 @@
 "use client";
 
 import Header from './Header';
-import Home from "@/app/main/pages/Home";
+import Home from "../pages/Home";
 
 function App() {
     return (

@@ -1,13 +1,12 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
     experimental: {
         forceSwcTransforms: true,
     },
-}
+    output: 'export', // 👈 Ajoute cette ligne
+};
 
-export default nextConfig;
+module.exports = nextConfig;
+
