@@ -23,7 +23,7 @@ const ProduitsSearch = ({ produit, categorie, prix, image, quantite, onImageErro
                 <p>Prix : {prix} €</p>
                 <p>Quantité : {quantite} €</p>
                 <p>Status : {status}</p> {/* Affichage du statut */}
-                <Image src={image} alt={produit} onError={onImageError} />
+                <Image src={`/assets/${image}`} className="produitImg" alt={produit} width={200} height={200}/>
             </a>
         </div>
     );

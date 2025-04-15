@@ -23,6 +23,8 @@ function Header() {
                     src="/assets/logo.png"
                     alt="logo"
                     className="cursor-pointer"
+                    width={200}
+                    height={100}
                 />
             </div>
 

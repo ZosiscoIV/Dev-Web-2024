@@ -2,6 +2,9 @@
 
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import ProduitsSearch from '../main/components/ProduitsSearch';
+import "./page.css";
+import Header from "@/app/main/components/Header";
 
 interface Produit {
     id: number;
@@ -11,7 +14,7 @@ interface Produit {
     image: string;
 }
 
-const SearchResults = () => {
+export default function SearchPage() {
     const searchParams = useSearchParams();
     const query = searchParams.get("q") || "";
     const category = searchParams.get("category") || "";
@@ -40,7 +43,7 @@ const SearchResults = () => {
             p.produit && p.produit.toLowerCase().includes(query.toLowerCase())
         );
 
-        if (category !== "") {
+        if (category && category !== "") {
             filtered = filtered.filter((p) => p.categorie === category);
         }
 
@@ -48,22 +51,27 @@ const SearchResults = () => {
     }, [query, category, products]);
 
     return (
-        <div className="p-4">
-            <h1 className="text-xl font-bold">Résultats pour &quot;{query}&quot;</h1>
+        <div>
+            <Header />
+                <div className="search-results-container">
+                    <h1>Résultats pour &quot;{query}&quot;</h1>
 
-            <ul className="mt-4">
-                {filteredProducts.length > 0 ? (
-                    filteredProducts.map((p) => (
-                        <li key={p.id} className="border p-2 rounded-md my-2">
-                            {p.produit} ({p.categorie}) - {p.prix}€
-                        </li>
-                    ))
-                ) : (
+                        {filteredProducts.length > 0 ? (
+                            <div className="products-grid">
+                            {filteredProducts.map((p) => (
+                                <ProduitsSearch
+                            key={p.id}
+                            produit={p.produit}
+                            categorie={p.categorie}
+                            prix={p.prix}
+                            image={`../assets/${p.produit.toLowerCase()}.jpg`}
+                                />
+                        ))}
+                    </div>
+                    ) : (
                     <p>Aucun produit trouvé.</p>
                 )}
-            </ul>
+            </div>
         </div>
     );
-};
-
-export default SearchResults;
+}

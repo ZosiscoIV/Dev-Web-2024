@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useProducts } from '../inventaire/hooks/useProducts';
 import { useCategorie } from '../inventaire/hooks/useCategorie';
 
+import Header from "../main/components/Header";
 import Filtre from '../inventaire/components/Filters';
 import ProductTable from '../inventaire/components/ProductTable';
 import Button from '../inventaire/components/bouton';
@@ -27,12 +28,15 @@ const Page = () => {
 
   return (
       <div>
+          <Header />
+      <div>
         <h1>Inventaire</h1>
         <Button setProducts={setProducts} setCategories={setCategories}/>
         <Filtre categorie={categorie} stock={stock} categories={categories} onCategorieChange={handleCategorieChange} onStockChange={handleStockChange}/>
         <div id="corps">
           {errorMessage ?(<p style={{fontSize:"25px", textAlign:"center", fontWeight:"bold", padding:"20px"}}>{errorMessage}</p>): <ProductTable products={products} />}
         </div>
+      </div>
       </div>
   );
 };

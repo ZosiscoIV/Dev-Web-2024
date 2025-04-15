@@ -23,9 +23,9 @@ DROP TABLE IF EXISTS `tbcategorie`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbcategorie` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `categorie` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+                               `id` int NOT NULL AUTO_INCREMENT,
+                               `categorie` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -47,14 +47,14 @@ DROP TABLE IF EXISTS `tbclients`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbclients` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `prenom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `adresseMail` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `adresseMail` (`adresseMail`),
-  UNIQUE KEY `tel` (`tel`)
+                             `id` int NOT NULL AUTO_INCREMENT,
+                             `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                             `prenom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                             `adresseMail` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                             `tel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                             PRIMARY KEY (`id`),
+                             UNIQUE KEY `adresseMail` (`adresseMail`),
+                             UNIQUE KEY `tel` (`tel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -75,16 +75,16 @@ DROP TABLE IF EXISTS `tbcommandes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbcommandes` (
-  `idCommande` int NOT NULL AUTO_INCREMENT,
-  `idProduit` int NOT NULL,
-  `idClient` int NOT NULL,
-  `quantite` int NOT NULL,
-  `dateCommande` date NOT NULL,
-  PRIMARY KEY (`idCommande`),
-  UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
-  KEY `idClient` (`idClient`),
-  CONSTRAINT `tbcommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
-  CONSTRAINT `tbcommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
+                               `idCommande` int NOT NULL AUTO_INCREMENT,
+                               `idProduit` int NOT NULL,
+                               `idClient` int NOT NULL,
+                               `quantite` int NOT NULL,
+                               `dateCommande` date NOT NULL,
+                               PRIMARY KEY (`idCommande`),
+                               UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
+                               KEY `idClient` (`idClient`),
+                               CONSTRAINT `tbcommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+                               CONSTRAINT `tbcommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -105,15 +105,15 @@ DROP TABLE IF EXISTS `tbfavoris`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbfavoris` (
-  `idFavori` int NOT NULL AUTO_INCREMENT,
-  `idProduit` int NOT NULL,
-  `idClient` int NOT NULL,
-  `dateFavoris` date NOT NULL,
-  PRIMARY KEY (`idFavori`),
-  UNIQUE KEY `fk_favoris` (`idProduit`,`idClient`),
-  KEY `idClient` (`idClient`),
-  CONSTRAINT `tbfavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
-  CONSTRAINT `tbfavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
+                             `idFavori` int NOT NULL AUTO_INCREMENT,
+                             `idProduit` int NOT NULL,
+                             `idClient` int NOT NULL,
+                             `dateFavoris` date NOT NULL,
+                             PRIMARY KEY (`idFavori`),
+                             UNIQUE KEY `fk_favoris` (`idProduit`,`idClient`),
+                             KEY `idClient` (`idClient`),
+                             CONSTRAINT `tbfavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+                             CONSTRAINT `tbfavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -134,21 +134,21 @@ DROP TABLE IF EXISTS `tbProduits`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbProduits` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `prix` float NOT NULL,
-  `dateDebutVente` date NOT NULL,
-  `dateFinVente` date DEFAULT NULL,
-  `idUnite` int NOT NULL,
-  `idTaxe` int NOT NULL,
-  `idCategorie` int NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idUnite` (`idUnite`),
-  KEY `idTaxe` (`idTaxe`),
-  KEY `idCategorie` (`idCategorie`),
-  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
-  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
-  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
+                              `id` int NOT NULL AUTO_INCREMENT,
+                              `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+                              `prix` float NOT NULL,
+                              `dateDebutVente` date NOT NULL,
+                              `dateFinVente` date DEFAULT NULL,
+                              `idUnite` int NOT NULL,
+                              `idTaxe` int NOT NULL,
+                              `idCategorie` int NOT NULL,
+                              PRIMARY KEY (`id`),
+                              KEY `idUnite` (`idUnite`),
+                              KEY `idTaxe` (`idTaxe`),
+                              KEY `idCategorie` (`idCategorie`),
+                              CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
+                              CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
+                              CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -170,11 +170,11 @@ DROP TABLE IF EXISTS `tbStock`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbStock` (
-  `idProduit` int NOT NULL,
-  `quantite` int NOT NULL,
-  `dateLivraison` date DEFAULT NULL,
-  PRIMARY KEY (`idProduit`),
-  CONSTRAINT `tbStock_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`)
+                           `idProduit` int NOT NULL,
+                           `quantite` int NOT NULL,
+                           `dateLivraison` date DEFAULT NULL,
+                           PRIMARY KEY (`idProduit`),
+                           CONSTRAINT `tbStock_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -196,9 +196,9 @@ DROP TABLE IF EXISTS `tbtaxe`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbtaxe` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `taxe` float NOT NULL,
-  PRIMARY KEY (`id`)
+                          `id` int NOT NULL AUTO_INCREMENT,
+                          `taxe` float NOT NULL,
+                          PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -220,9 +220,9 @@ DROP TABLE IF EXISTS `tbunite`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `tbunite` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `unite` char(6) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+                           `id` int NOT NULL AUTO_INCREMENT,
+                           `unite` char(6) COLLATE utf8mb4_unicode_ci NOT NULL,
+                           PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

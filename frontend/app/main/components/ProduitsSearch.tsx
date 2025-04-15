@@ -14,7 +14,7 @@ const ProduitsSearch = ({produit, categorie, prix, image} : ProduitsSearchProps)
     return (
         <div>
             <a className="produits" href="#">
-                <Image src={image} className="produitImg" alt={produit}/>
+                <Image src={`/assets/${image}`} className="produitImg" alt={produit} width={200} height={200}/>
                 <h2>{produit}</h2>
                 <p>{categorie}</p>
                 <p><strong>Prix : {prix}€</strong></p>

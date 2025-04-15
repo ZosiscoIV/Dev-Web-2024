@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '.env' });
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -20,7 +20,8 @@ const db2 = mysql.createPool({
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
   });
-  
+
+console.log('Mot de passe DB lu :', process.env.MYSQL_PASSWORD);
   // Crée une version Promise du pool
 const promisePool = db2.promise();
   
