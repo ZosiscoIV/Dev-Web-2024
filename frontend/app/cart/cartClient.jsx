@@ -84,7 +84,7 @@ export default function Cart() {
           <div className="flex-1">
             <p className="text-lg font-semibold">{item.name}</p>
             <p className="text-sm text-gray-500">
-              {item.stock} en stock – {item.price}€ l&apos;unité
+              {item.stock} en stock – {item.price}€ l'unité
             </p>
           </div>
 
