@@ -59,8 +59,8 @@ function Header() {
                 <button className="boutonAide" onClick={() => router.push("/aide")}>
                     Aide
                 </button>
-                <button className="boutonLogin" onClick={() => router.push("/listeprod")}>
-                    Login
+                <button className="boutonLogin" onClick={() => router.push("/register")}>
+                    Register
                 </button>
                 <button className="boutonPanier" onClick={() => router.push("/panier")}>
                     🛒
