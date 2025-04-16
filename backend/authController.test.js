@@ -120,4 +120,164 @@ describe('POST /auth/register', () => {
         expect(res.status).toBe(400);
         expect(res.body).toEqual({ error: 'Numéro de téléphone déjà utilisé' });
     });
+    it('should reject invalid email format', async () => {
+        const invalidEmailUser = {
+            email: 'invalid-email',
+            password: 'Password1',
+            nom: 'Doe',
+            prenom: 'John',
+            tel: '0123456789'
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(invalidEmailUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Email invalide' });
+        expect(mockQuery).not.toHaveBeenCalled();
+    });
+
+    it('should reject password without uppercase letter', async () => {
+        const invalidPasswordUser = {
+            email: 'test@example.com',
+            password: 'password1', // lowercase
+            nom: 'Doe',
+            prenom: 'John',
+            tel: '0123456789'
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(invalidPasswordUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: 'Le mot de passe doit faire ≥ 8 caractères, inclure une majuscule et un chiffre'
+        });
+        expect(mockQuery).not.toHaveBeenCalled();
+    });
+
+    it('should reject password without number', async () => {
+        const invalidPasswordUser = {
+            email: 'test@example.com',
+            password: 'Password', // no number
+            nom: 'Doe',
+            prenom: 'John',
+            tel: '0123456789'
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(invalidPasswordUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({
+            error: 'Le mot de passe doit faire ≥ 8 caractères, inclure une majuscule et un chiffre'
+        });
+        expect(mockQuery).not.toHaveBeenCalled();
+    });
+
+    it('should reject if any required field is missing', async () => {
+        const missingFieldUser = {
+            email: 'test@example.com',
+            password: 'Password1',
+            prenom: 'John',
+            tel: '0123456789'
+            // nom is missing
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(missingFieldUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Format de données invalide' });
+        expect(mockQuery).not.toHaveBeenCalled();
+    });
+
+    it('should reject non-string fields', async () => {
+        const nonStringUser = {
+            email: 'test@example.com',
+            password: 'Password1',
+            nom: 12345, // number instead of string
+            prenom: 'John',
+            tel: '0123456789'
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(nonStringUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Format de données invalide' });
+        expect(mockQuery).not.toHaveBeenCalled();
+    });
+
+    it('should handle database errors during registration', async () => {
+        // Simulate database failure during email check
+        mockQuery.mockRejectedValueOnce(new Error('Database connection failed'));
+
+        const newUser = {
+            email: 'test@example.com',
+            password: 'Password1',
+            nom: 'Doe',
+            prenom: 'John',
+            tel: '0123456789'
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(newUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Erreur de creation de compte' });
+    });
+
+    it('should handle bcrypt hashing errors', async () => {
+        const bcrypt = require('bcrypt');
+        bcrypt.hash.mockImplementationOnce(() =>
+            Promise.reject(new Error('Hashing failed'))
+        );
+
+        // Setup valid user data
+        const validUser = {
+            email: 'test@example.com',
+            password: 'Password1',
+            nom: 'Doe',
+            prenom: 'John',
+            tel: '0123456789'
+        };
+
+        // Mock database checks to pass
+        mockQuery
+            .mockResolvedValueOnce([[], []])
+            .mockResolvedValueOnce([[], []]);
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(validUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Erreur de creation de compte' });
+    });
+
+    it('should reject telephone with non-numeric characters', async () => {
+        const invalidTelUser = {
+            email: 'test@example.com',
+            password: 'Password1',
+            nom: 'Doe',
+            prenom: 'John',
+            tel: '0123abc678' // contains letters
+        };
+
+        const res = await request(app)
+            .post('/auth/register')
+            .send(invalidTelUser);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toEqual({ error: 'Le téléphone doit avoir 10 chiffres' });
+        expect(mockQuery).not.toHaveBeenCalled();
+    });
+
 });
