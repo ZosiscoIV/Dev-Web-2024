@@ -42,46 +42,60 @@ const isPasswordValid = (pw) => pw.length >= 8 && /[A-Z]/.test(pw) && /\d/.test(
 router.post('/register', async (req, res) => {
     try {
         const { email, password, nom, prenom, tel } = req.body;
-        const [existingEmail] = await promisePool.query(
-            'SELECT id FROM Epicerie.tbclients WHERE adresseMail = ?',
-            [email]
-        );
-        if (existingEmail.length > 0) {
-            return res.status(400).json({ error: 'Email déjà utilisé' });
-        }
 
-        const [existingTel] = await promisePool.query(
-            'SELECT id FROM Epicerie.tbclients WHERE tel = ?',
-            [tel]
-        );
-        if (existingTel.length > 0) {
-            return res.status(400).json({ error: 'Numéro de téléphone déjà utilisé' });
-        }
-        // Validation des types
-        if (typeof email !== 'string' ||
+        // 1) Basic type-checks
+        if (
+            typeof email !== 'string' ||
             typeof password !== 'string' ||
             typeof nom !== 'string' ||
             typeof prenom !== 'string' ||
-            typeof tel !== 'string') {
+            typeof tel !== 'string'
+        ) {
             return res.status(400).json({ error: 'Format de données invalide' });
         }
-        // Inside the /register route
+
+        // 2) Field‐specific validation
+        if (!isValidEmail(email)) {
+            return res.status(400).json({ error: 'Email invalide' });
+        }
+        if (!isPasswordValid(password)) {
+            return res.status(400).json({
+                error: 'Le mot de passe doit faire ≥ 8 caractères, inclure une majuscule et un chiffre'
+            });
+        }
         if (!/^\d{10}$/.test(tel)) {
             return res.status(400).json({ error: 'Le téléphone doit avoir 10 chiffres' });
         }
 
-        const hash = await bcrypt.hash(password, 10);
+        // 3) Uniqueness checks
+        const [emailRows] = await promisePool.query(
+            'SELECT id FROM Epicerie.tbclients WHERE adresseMail = ?',
+            [email]
+        );
+        if (emailRows.length > 0) {
+            return res.status(400).json({ error: 'Email déjà utilisé' });
+        }
 
+        const [telRows] = await promisePool.query(
+            'SELECT id FROM Epicerie.tbclients WHERE tel = ?',
+            [tel]
+        );
+        if (telRows.length > 0) {
+            return res.status(400).json({ error: 'Numéro de téléphone déjà utilisé' });
+        }
+
+        // 4) Hash & insert
+        const hash = await bcrypt.hash(password, 10);
         await promisePool.query(
             `INSERT INTO Epicerie.tbclients 
-      (nom, prenom, password, adresseMail, tel) 
-      VALUES (?, ?, ?, ?, ?)`,
+       (nom, prenom, password, adresseMail, tel) 
+       VALUES (?, ?, ?, ?, ?)`,
             [nom, prenom, hash, email, tel]
         );
 
-        res.status(201).json({ message: 'Compte créé avec succès' });
-    } catch (error) {
-        console.error('Registration error:', error); // Log the error details
+        return res.status(201).json({ message: 'Compte créé avec succès' });
+    } catch (err) {
+        console.error('Registration error:', err);
         return res.status(400).json({ error: 'Erreur de creation de compte' });
     }
 });
