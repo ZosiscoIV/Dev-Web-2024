@@ -14,3 +14,5 @@ COPY --from=builder /app/out /usr/share/nginx/html
 
 # Optionnel : ajoute ta config nginx perso
 COPY nginx.conf /etc/nginx/nginx.conf
+
+COPY default.conf /etc/nginx/conf.d/default.conf

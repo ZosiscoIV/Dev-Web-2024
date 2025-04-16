@@ -1,10 +1,15 @@
 import { Suspense } from 'react';
-import SearchPageContent from '../main/components/SearchResults';
+import SearchResults from '../main/components/SearchResults';
+import Header from "@/app/main/components/Header";
+
 
 export default function SearchPage() {
     return (
-        <Suspense fallback={<div>Chargement des résultats...</div>}>
-            <SearchPageContent />
-        </Suspense>
+        <div>
+            <Header />
+                <Suspense fallback={<div>Chargement des résultats...</div>}>
+                    <SearchResults />
+                </Suspense>
+        </div>
     );
 }

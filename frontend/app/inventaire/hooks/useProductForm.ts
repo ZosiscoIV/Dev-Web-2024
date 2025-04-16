@@ -50,7 +50,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
 
         // Envoie la requête POST au backend
         try {
-            const response = await fetch('http://localhost:6942/api/products', {
+            const response = await fetch('https://54.36.181.253:6942/api/products', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
