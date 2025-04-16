@@ -1,12 +1,14 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
+import React from "react";
 
 const initialCart = [
   { id: 1, name: "Pomme", price: 2.5, quantity: 1, stock: 10 },
   { id: 2, name: "Poire", price: 3, quantity: 2, stock: 5 },
   { id: 3, name: "Pâtes", price: 3.99, quantity: 4, stock: 6 },
   { id: 4, name: "Orange", price: 2.7, quantity: 3, stock: 15 },
-  { id: 5, name: "Stylo", price: 3.3, quantity: 1, stock: 12 }
+  { id: 5, name: "Stylo", price: 3.3, quantity: 1, stock: 12 },
 ];
 
 export default function Cart() {
@@ -16,6 +18,10 @@ export default function Cart() {
     setCart((prevCart) =>
       prevCart.map((item) => {
         if (item.id === id) {
+          if (value > item.stock) {
+            alert("La quantité saisie dépasse le stock disponible !");
+            value = item.stock;
+          }
           const newQuantity = Math.max(0, Math.min(item.stock, value));
           return { ...item, quantity: newQuantity };
         }
@@ -41,6 +47,11 @@ export default function Cart() {
         setCart((prevCart) => prevCart.filter((item) => item.id !== id));
         return;
       } else {
+        setCart((prevCart) =>
+          prevCart.map((item) =>
+            item.id === id ? { ...item, quantity: 1 } : item
+          )
+        );
         return;
       }
     }
@@ -55,6 +66,15 @@ export default function Cart() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
+      <nav className="flex justify-between items-center mb-6 px-4 py-3 bg-gray-100 rounded-lg shadow">
+        <h2 className="text-xl font-bold text-gray-800">Ma Boutique</h2>
+        <div className="flex space-x-4">
+          <Link href="/" className="text-blue-600 hover:underline">Accueil</Link>
+          <Link href="/listeprod" className="text-blue-600 hover:underline">Gestion Stock</Link>
+          <Link href="/aide" className="text-blue-600 hover:underline">Aide</Link>
+        </div>
+      </nav>
+
       <h1 className="text-2xl font-bold mb-6">Mon Panier</h1>
       {cart.map((item) => (
         <div
