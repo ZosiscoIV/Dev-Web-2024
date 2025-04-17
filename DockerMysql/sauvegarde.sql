@@ -40,13 +40,13 @@ INSERT INTO `tbcategorie` VALUES (1,'Fruits'),(2,'Légumes'),(3,'Céréales'),(4
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbclients`
+-- Table structure for table `tbClients`
 --
 
-DROP TABLE IF EXISTS `tbclients`;
+DROP TABLE IF EXISTS `tbClients`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbclients` (
+CREATE TABLE `tbClients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `prenom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -59,22 +59,22 @@ CREATE TABLE `tbclients` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbclients`
+-- Dumping data for table `tbClients`
 --
 
-LOCK TABLES `tbclients` WRITE;
-/*!40000 ALTER TABLE `tbclients` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tbclients` ENABLE KEYS */;
+LOCK TABLES `tbClients` WRITE;
+/*!40000 ALTER TABLE `tbClients` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tbClients` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbcommandes`
+-- Table structure for table `tbCommandes`
 --
 
-DROP TABLE IF EXISTS `tbcommandes`;
+DROP TABLE IF EXISTS `tbCommandes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbcommandes` (
+CREATE TABLE `tbCommandes` (
   `idCommande` int NOT NULL AUTO_INCREMENT,
   `idProduit` int NOT NULL,
   `idClient` int NOT NULL,
@@ -83,28 +83,28 @@ CREATE TABLE `tbcommandes` (
   PRIMARY KEY (`idCommande`),
   UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
-  CONSTRAINT `tbcommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
-  CONSTRAINT `tbcommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
+  CONSTRAINT `tbCommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+  CONSTRAINT `tbCommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbClients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbcommandes`
+-- Dumping data for table `tbCommandes`
 --
 
-LOCK TABLES `tbcommandes` WRITE;
-/*!40000 ALTER TABLE `tbcommandes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tbcommandes` ENABLE KEYS */;
+LOCK TABLES `tbCommandes` WRITE;
+/*!40000 ALTER TABLE `tbCommandes` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tbCommandes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbfavoris`
+-- Table structure for table `tbFavoris`
 --
 
-DROP TABLE IF EXISTS `tbfavoris`;
+DROP TABLE IF EXISTS `tbFavoris`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbfavoris` (
+CREATE TABLE `tbFavoris` (
   `idFavori` int NOT NULL AUTO_INCREMENT,
   `idProduit` int NOT NULL,
   `idClient` int NOT NULL,
@@ -112,18 +112,18 @@ CREATE TABLE `tbfavoris` (
   PRIMARY KEY (`idFavori`),
   UNIQUE KEY `fk_favoris` (`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
-  CONSTRAINT `tbfavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
-  CONSTRAINT `tbfavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
+  CONSTRAINT `tbFavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+  CONSTRAINT `tbFavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbClients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbfavoris`
+-- Dumping data for table `tbFavoris`
 --
 
-LOCK TABLES `tbfavoris` WRITE;
-/*!40000 ALTER TABLE `tbfavoris` DISABLE KEYS */;
-/*!40000 ALTER TABLE `tbfavoris` ENABLE KEYS */;
+LOCK TABLES `tbFavoris` WRITE;
+/*!40000 ALTER TABLE `tbFavoris` DISABLE KEYS */;
+/*!40000 ALTER TABLE `tbFavoris` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -146,8 +146,8 @@ CREATE TABLE `tbProduits` (
   KEY `idUnite` (`idUnite`),
   KEY `idTaxe` (`idTaxe`),
   KEY `idCategorie` (`idCategorie`),
-  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
-  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
+  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbUnite` (`id`),
+  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbTaxe` (`id`),
   CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -189,13 +189,13 @@ INSERT INTO `tbStock` VALUES (1,10,NULL),(2,100,NULL),(3,40,NULL),(4,4,NULL),(5,
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbtaxe`
+-- Table structure for table `tbTaxe`
 --
 
-DROP TABLE IF EXISTS `tbtaxe`;
+DROP TABLE IF EXISTS `tbTaxe`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbtaxe` (
+CREATE TABLE `tbTaxe` (
   `id` int NOT NULL AUTO_INCREMENT,
   `taxe` float NOT NULL,
   PRIMARY KEY (`id`)
@@ -203,23 +203,23 @@ CREATE TABLE `tbtaxe` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbtaxe`
+-- Dumping data for table `tbTaxe`
 --
 
-LOCK TABLES `tbtaxe` WRITE;
-/*!40000 ALTER TABLE `tbtaxe` DISABLE KEYS */;
-INSERT INTO `tbtaxe` VALUES (1,21),(2,6);
-/*!40000 ALTER TABLE `tbtaxe` ENABLE KEYS */;
+LOCK TABLES `tbTaxe` WRITE;
+/*!40000 ALTER TABLE `tbTaxe` DISABLE KEYS */;
+INSERT INTO `tbTaxe` VALUES (1,21),(2,6);
+/*!40000 ALTER TABLE `tbTaxe` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `tbunite`
+-- Table structure for table `tbUnite`
 --
 
-DROP TABLE IF EXISTS `tbunite`;
+DROP TABLE IF EXISTS `tbUnite`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbunite` (
+CREATE TABLE `tbUnite` (
   `id` int NOT NULL AUTO_INCREMENT,
   `unite` char(6) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -227,13 +227,13 @@ CREATE TABLE `tbunite` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbunite`
+-- Dumping data for table `tbUnite`
 --
 
-LOCK TABLES `tbunite` WRITE;
-/*!40000 ALTER TABLE `tbunite` DISABLE KEYS */;
-INSERT INTO `tbunite` VALUES (1,'kg'),(2,'l'),(3,'pc');
-/*!40000 ALTER TABLE `tbunite` ENABLE KEYS */;
+LOCK TABLES `tbUnite` WRITE;
+/*!40000 ALTER TABLE `tbUnite` DISABLE KEYS */;
+INSERT INTO `tbUnite` VALUES (1,'kg'),(2,'l'),(3,'pc');
+/*!40000 ALTER TABLE `tbUnite` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

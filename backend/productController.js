@@ -240,12 +240,12 @@ router.post('/products',async (req, res) => {
 
         const dateFinVenteFinal = (dateFinVente === "" ? null : dateFinVente)
         await promisePool.query(`
-            INSERT INTO magasin.tbunite (unite)
+            INSERT INTO magasin.tbUnite (unite)
             SELECT * FROM (SELECT ?) AS tmp(unite)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbunite WHERE unite = ?
+                SELECT id FROM magasin.tbUnite WHERE unite = ?
             ) LIMIT 1;`, [unite,unite]);
-        const [verifUnite] = await promisePool.query("SELECT id FROM magasin.tbunite WHERE  unite = ?", [unite]);
+        const [verifUnite] = await promisePool.query("SELECT id FROM magasin.tbUnite WHERE  unite = ?", [unite]);
         const idUnite = verifUnite[0].id;
 
         await promisePool.query(`
@@ -259,13 +259,13 @@ router.post('/products',async (req, res) => {
         const idCategorie = verifCategorie[0].id;
         
         await promisePool.query(`
-            INSERT INTO magasin.tbtaxe (taxe)
+            INSERT INTO magasin.tbTaxe (taxe)
             SELECT * FROM (SELECT ?) AS tmp(taxe)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbtaxe WHERE taxe = ?
+                SELECT id FROM magasin.tbTaxe WHERE taxe = ?
             ) LIMIT 1;
         `, [taxe, taxe]);
-        const [verifTaxe] = await promisePool.query("SELECT id FROM magasin.tbtaxe WHERE taxe = ?", [taxe]);
+        const [verifTaxe] = await promisePool.query("SELECT id FROM magasin.tbTaxe WHERE taxe = ?", [taxe]);
         const idTaxe = verifTaxe[0].id;
         
         await promisePool.query(`
@@ -280,10 +280,10 @@ router.post('/products',async (req, res) => {
         const idProduit = verifProduit[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.S (idProduit, quantite, dateLivraison)
+            INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison)
             SELECT idProduit, quantite, ? FROM (SELECT ?, ?, ?) AS tmp(idProduit, quantite, dateLivraison)
             WHERE NOT EXISTS (
-                SELECT idProduit FROM magasin.S WHERE idProduit = ?
+                SELECT idProduit FROM magasin.tbStock WHERE idProduit = ?
             );
         `, [dateLivraisonFinal, idProduit, quantite, dateLivraison, idProduit]);
         
