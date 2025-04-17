@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test_c": "tsc --project tsconfig.jest.json && jest",
     "test_s": "jest --silent",
     "test": "jest",
     "cypress:open": "cypress open",
