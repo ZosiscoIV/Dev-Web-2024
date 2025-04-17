@@ -3,7 +3,7 @@
 describe('template spec', () => {
 
   it('Ajout d\'un produit avec succès', () => {
-    cy.visit('http://localhost:6969/inventaire')
+    cy.visit('http://localhost:3000/listeprod')
     cy.contains('Ajouter un nouveau produit').click()
     cy.get('[name="nom"]').type('Carottes')
     cy.get('[name="quantite"]').type('10')
