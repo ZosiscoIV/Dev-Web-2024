@@ -7,7 +7,7 @@
     "start": "cd frontend && npm run start", 
     "pm2:start": "pm2 start npm --name app_dev3 -- start",
     "build": "cd frontend && npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
