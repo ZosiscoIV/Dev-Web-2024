@@ -3,8 +3,8 @@ import { Product } from '../models/Product'
 import {Categorie } from '../models/Categorie'
 
 
-const API_URL = 'http://localhost:6942/api/products';
-const API_URL_CAT = 'http://localhost:6942/api/categorie';
+const API_URL = 'https://54.36.181.253:6942/api/products';
+const API_URL_CAT = 'https://54.36.181.253:6942/api/categorie';
 
 
 export const getProducts = async (query: string = ''):Promise<Product[]> => {
