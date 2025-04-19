@@ -56,8 +56,8 @@ function Header() {
             </div>
 
             <div className="bouton">
-                <button className="boutonAide" onClick={() => router.push("/aide")}>
-                    Aide
+                <button className="boutonFavoris" onClick={() => router.push("/favoris")}>
+                    ❤️
                 </button>
                 <button className="boutonLogin" onClick={() => router.push("/listeprod")}>
                     Login
