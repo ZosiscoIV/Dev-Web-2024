@@ -645,50 +645,137 @@ router.post('/addToCart', (req, res) => {
     });
 });
 
-// GET - récupérer les favoris pour un utilisateur donné
-router.get('/favoris/:userId', async (req, res) => {
-    const userId = req.params.userId;
-    try {
-        const [rows] = await promisePool.query(
-            `SELECT p.*
-             FROM favoris f
-             JOIN produits p ON f.productId = p.id
-             WHERE f.userId = ?`,
-            [userId]
-        );
-        res.json(rows);
-    } catch (err) {
-        console.error("Erreur GET favoris:", err);
-        res.status(500).json({ error: "Erreur serveur" });
-    }
+
+// route pour allergène pour un produit donné
+/**
+ * @swagger
+ * /api/produit/{idProduit}/allergenes:
+ *   get:
+ *     summary: Obtenir la liste des allergènes liés à un produit
+ *     description: Retourne tous les allergènes associés à un produit donné.
+ *     parameters:
+ *       - in: path
+ *         name: idProduit
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du produit
+ *     responses:
+ *       200:
+ *         description: Liste des allergènes récupérée avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 2
+ *                   nom:
+ *                     type: string
+ *                     example: "Lait"
+ *       404:
+ *         description: Aucun allergène trouvé pour ce produit.
+ *       500:
+ *         description: Erreur serveur.
+ */
+router.get('/produit/:idProduit/allergenes', (req, res) => {
+    const { idProduit } = req.params;
+
+    const query = `
+    SELECT a.id, a.nom
+    FROM magasin.tbProduitAllergene pa
+    JOIN magasin.tbAllergene a ON pa.idAllergene = a.id
+    WHERE pa.idProduit = ?
+  `;
+
+    db.query(query, [idProduit], (err, results) => {
+        if (err) {
+            console.error('Erreur lors de la récupération des allergènes du produit :', err);
+            return res.status(500).send('Erreur de base de données');
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send('Aucun allergène trouvé pour ce produit');
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.json(results);
+    });
 });
 
-// POST - ajouter un produit aux favoris
-router.post('/favoris', async (req, res) => {
-    const { userId, productId } = req.body;
-    try {
-        await promisePool.query(
-            "INSERT INTO favoris (userId, productId) VALUES (?, ?)",
-            [userId, productId]
-        );
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Erreur POST favoris:", err);
-        res.status(500).json({ error: "Erreur serveur" });
-    }
+
+// route pour valeurs nutritionnels pour un produit donné
+/**
+ * @swagger
+ * /api/produit/{idProduit}/nutrition:
+ *   get:
+ *     summary: Obtenir les valeurs nutritionnelles d'un produit
+ *     description: Retourne les informations nutritionnelles pour un produit donné.
+ *     parameters:
+ *       - in: path
+ *         name: idProduit
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du produit
+ *     responses:
+ *       200:
+ *         description: Données nutritionnelles récupérées.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 calories:
+ *                   type: number
+ *                   example: 89.0
+ *                 proteines:
+ *                   type: number
+ *                   example: 1.1
+ *                 glucides:
+ *                   type: number
+ *                   example: 22.8
+ *                 lipides:
+ *                   type: number
+ *                   example: 0.3
+ *                 fibres:
+ *                   type: number
+ *                   example: 2.6
+ *                 sel:
+ *                   type: number
+ *                   example: 0.01
+ *       404:
+ *         description: Aucune donnée nutritionnelle trouvée.
+ *       500:
+ *         description: Erreur serveur.
+ */
+router.get('/produit/:idProduit/nutrition', (req, res) => {
+    const { idProduit } = req.params;
+
+    const query = `
+    SELECT calories, proteines, glucides, lipides, fibres, sel
+    FROM magasin.tbNutrition
+    WHERE idProduit = ?
+  `;
+
+    db.query(query, [idProduit], (err, results) => {
+        if (err) {
+            console.error('Erreur lors de la récupération des données nutritionnelles :', err);
+            return res.status(500).send('Erreur de base de données');
+        }
+
+        if (results.length === 0) {
+            return res.status(404).send('Aucune donnée nutritionnelle trouvée pour ce produit');
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.json(results[0]);
+    });
 });
 
-// DELETE - retirer un produit des favoris
-router.delete('/favoris/:userId/:productId', async (req, res) => {
-    const { userId, productId } = req.params;
-    try {
-        await promisePool.query(
-            "DELETE FROM favoris WHERE userId = ? AND productId = ?",
-            [userId, productId]
-        );
-        res.json({ success: true });
-    } catch (err) {
-        console.error("Erreur DELETE favoris:", err);
-        res.status(500).json({ error: "Erreur serveur" });
-    }
-});
+
+
+module.exports = router;

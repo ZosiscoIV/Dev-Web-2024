@@ -33,3 +33,61 @@ VALUES
     (5, 0, '2025-03-25'),
     (6, 25, NULL),
     (7, 6, NULL);
+
+-- Insertion des allergènes courants
+INSERT INTO magasin.tbAllergene (nom)
+VALUES
+    ('Gluten'),
+    ('Lactose'),
+    ('Fruits à coque'),
+    ('Arachide'),
+    ('Soja'),
+    ('Œuf'),
+    ('Poisson'),
+    ('Crustacés');
+
+-- Relation produits-allergènes
+INSERT INTO magasin.tbProduitAllergene (idProduit, idAllergene)
+VALUES
+    (3, 1),     -- Pâte - Gluten
+    (5, 1),     -- Farine - Gluten
+    (6, 2);     -- Beurre - Lactose
+
+-- Insertion des valeurs nutritionnelles
+INSERT INTO magasin.tbNutrition (idProduit, calories, proteines, glucides, lipides, fibres, sel)
+VALUES
+    (1, 89.00, 1.10, 22.80, 0.30, 2.60, 0.00),     -- Banane
+    (2, 32.00, 0.70, 7.70, 0.30, 2.00, 0.00),      -- Fraise
+    (3, 350.00, 12.50, 70.90, 1.50, 3.20, 0.01),    -- Pâte
+    (4, 34.00, 2.80, 7.00, 0.40, 2.60, 0.03),      -- Brocoli
+    (5, 364.00, 10.00, 76.30, 1.00, 2.70, 0.01),   -- Farine
+    (6, 717.00, 0.90, 0.10, 81.00, 0.00, 0.04),    -- Beurre
+    (7, 400.00, 0.00, 99.80, 0.00, 0.00, 0.00);    -- Sucre
+
+-- Insertion des ingrédients de base
+INSERT INTO magasin.tbIngredient (nom)
+VALUES
+    ('Banane'),
+    ('Fraise'),
+    ('Blé dur'),
+    ('Eau'),
+    ('Brocoli'),
+    ('Farine de blé'),
+    ('Crème'),
+    ('Sel'),
+    ('Ferments lactiques'),
+    ('Sucre de canne');
+
+-- Association produits-ingrédients
+INSERT INTO magasin.tbProduitIngredient (idProduit, idIngredient, ordre)
+VALUES
+    (1, 1, 1),               -- Banane
+    (2, 2, 1),               -- Fraise
+    (3, 3, 1),               -- Pâte - Blé dur
+    (3, 4, 2),               -- Pâte - Eau
+    (4, 5, 1),               -- Brocoli
+    (5, 6, 1),               -- Farine - Farine de blé
+    (6, 7, 1),               -- Beurre - Crème
+    (6, 8, 2),               -- Beurre - Sel
+    (6, 9, 3),               -- Beurre - Ferments lactiques
+    (7, 10, 1);              -- Sucre - Sucre de canne
