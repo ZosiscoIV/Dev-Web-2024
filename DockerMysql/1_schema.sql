@@ -5,21 +5,21 @@ USE magasin;
 CREATE TABLE tbUnite (
                          id INT PRIMARY KEY AUTO_INCREMENT,
                          unite CHAR(6) NOT NULL
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des taxes
 
 CREATE TABLE tbTaxe (
                         id INT PRIMARY KEY AUTO_INCREMENT,
                         taxe FLOAT NOT NULL
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table ded categories
 
 CREATE TABLE tbCategorie (
                              id INT PRIMARY KEY AUTO_INCREMENT,
                              categorie CHAR(255) NOT NULL
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des produits
 
@@ -36,7 +36,7 @@ CREATE TABLE tbProduits (
                             FOREIGN KEY (idUnite) REFERENCES tbUnite(id),
                             FOREIGN KEY (idTaxe) REFERENCES tbTaxe(id),
                             FOREIGN KEY (idCategorie) REFERENCES tbCategorie(id)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table du stock
 CREATE TABLE tbStock (
@@ -44,7 +44,7 @@ CREATE TABLE tbStock (
                          quantite INT NOT NULL,
                          dateLivraison DATE NULL,
                          FOREIGN KEY (idProduit) REFERENCES tbProduits(id)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des clients
 CREATE TABLE tbClients (
@@ -53,7 +53,7 @@ CREATE TABLE tbClients (
                            prenom VARCHAR(255) NOT NULL,
                            adresseMail VARCHAR(255) UNIQUE NOT NULL,
                            tel VARCHAR(255) UNIQUE NOT NULL
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des commandes
 CREATE TABLE tbCommandes (
@@ -65,7 +65,7 @@ CREATE TABLE tbCommandes (
                              FOREIGN KEY (idProduit) REFERENCES tbProduits(id),
                              FOREIGN KEY (idClient) REFERENCES tbClients(id),
                              CONSTRAINT fk_commande UNIQUE(idProduit, idClient)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des favoris
 CREATE TABLE tbFavoris (
@@ -76,22 +76,22 @@ CREATE TABLE tbFavoris (
                            FOREIGN KEY (idProduit) REFERENCES tbProduits(id),
                            FOREIGN KEY (idClient) REFERENCES tbClients(id),
                            CONSTRAINT fk_favoris UNIQUE(idProduit, idClient)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des allergènes (liste simple)
 CREATE TABLE tbAllergene (
                              id INT PRIMARY KEY AUTO_INCREMENT,
                              nom VARCHAR(100) NOT NULL
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
--- Relation produits-allergènes
+-- Relation produitsAllergènes
 CREATE TABLE tbProduitAllergene (
                                     idProduit INT NOT NULL,
                                     idAllergene INT NOT NULL,
                                     PRIMARY KEY (idProduit, idAllergene),
                                     FOREIGN KEY (idProduit) REFERENCES tbProduits(id),
                                     FOREIGN KEY (idAllergene) REFERENCES tbAllergene(id)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table des valeurs nutritionnelles directement liées aux produits
 CREATE TABLE tbNutrition (
@@ -103,13 +103,13 @@ CREATE TABLE tbNutrition (
                              fibres DECIMAL(5,2) NULL,
                              sel DECIMAL(5,2) NULL,
                              FOREIGN KEY (idProduit) REFERENCES tbProduits(id)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Table simplifiée des ingrédients
 CREATE TABLE tbIngredient (
                               id INT PRIMARY KEY AUTO_INCREMENT,
                               nom VARCHAR(100) NOT NULL
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;
 
 -- Liste des ingrédients par produit
 CREATE TABLE tbProduitIngredient (
@@ -119,4 +119,4 @@ CREATE TABLE tbProduitIngredient (
                                      PRIMARY KEY (idProduit, idIngredient),
                                      FOREIGN KEY (idProduit) REFERENCES tbProduits(id),
                                      FOREIGN KEY (idIngredient) REFERENCES tbIngredient(id)
-) ENGINE=InnoDB; DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB;

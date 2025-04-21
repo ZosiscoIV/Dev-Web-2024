@@ -46,7 +46,7 @@ VALUES
     ('Poisson'),
     ('Crustacés');
 
--- Relation produits-allergènes
+-- Relation produitsAllergènes
 INSERT INTO magasin.tbProduitAllergene (idProduit, idAllergene)
 VALUES
     (3, 1),     -- Pâte - Gluten
@@ -78,7 +78,7 @@ VALUES
     ('Ferments lactiques'),
     ('Sucre de canne');
 
--- Association produits-ingrédients
+-- Association produitsIngrédients
 INSERT INTO magasin.tbProduitIngredient (idProduit, idIngredient, ordre)
 VALUES
     (1, 1, 1),               -- Banane

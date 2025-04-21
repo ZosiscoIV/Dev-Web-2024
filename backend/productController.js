@@ -645,14 +645,12 @@ router.post('/addToCart', (req, res) => {
     });
 });
 
-
-// route pour allergène pour un produit donné
 /**
  * @swagger
- * /api/produit/{idProduit}/allergenes:
+ * /api/produit/{idProduit}/composition:
  *   get:
- *     summary: Obtenir la liste des allergènes liés à un produit
- *     description: Retourne tous les allergènes associés à un produit donné.
+ *     summary: Obtenir la composition complète d’un produit
+ *     description: Retourne les allergènes, ingrédients et informations nutritionnelles d’un produit donné.
  *     parameters:
  *       - in: path
  *         name: idProduit
@@ -662,118 +660,92 @@ router.post('/addToCart', (req, res) => {
  *         description: ID du produit
  *     responses:
  *       200:
- *         description: Liste des allergènes récupérée avec succès.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 2
- *                   nom:
- *                     type: string
- *                     example: "Lait"
- *       404:
- *         description: Aucun allergène trouvé pour ce produit.
- *       500:
- *         description: Erreur serveur.
- */
-router.get('/produit/:idProduit/allergenes', (req, res) => {
-    const { idProduit } = req.params;
-
-    const query = `
-    SELECT a.id, a.nom
-    FROM magasin.tbProduitAllergene pa
-    JOIN magasin.tbAllergene a ON pa.idAllergene = a.id
-    WHERE pa.idProduit = ?
-  `;
-
-    db.query(query, [idProduit], (err, results) => {
-        if (err) {
-            console.error('Erreur lors de la récupération des allergènes du produit :', err);
-            return res.status(500).send('Erreur de base de données');
-        }
-
-        if (results.length === 0) {
-            return res.status(404).send('Aucun allergène trouvé pour ce produit');
-        }
-
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.json(results);
-    });
-});
-
-
-// route pour valeurs nutritionnels pour un produit donné
-/**
- * @swagger
- * /api/produit/{idProduit}/nutrition:
- *   get:
- *     summary: Obtenir les valeurs nutritionnelles d'un produit
- *     description: Retourne les informations nutritionnelles pour un produit donné.
- *     parameters:
- *       - in: path
- *         name: idProduit
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID du produit
- *     responses:
- *       200:
- *         description: Données nutritionnelles récupérées.
+ *         description: Composition récupérée avec succès.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 calories:
- *                   type: number
- *                   example: 89.0
- *                 proteines:
- *                   type: number
- *                   example: 1.1
- *                 glucides:
- *                   type: number
- *                   example: 22.8
- *                 lipides:
- *                   type: number
- *                   example: 0.3
- *                 fibres:
- *                   type: number
- *                   example: 2.6
- *                 sel:
- *                   type: number
- *                   example: 0.01
+ *                 allergenes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nom:
+ *                         type: string
+ *                 ingredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nom:
+ *                         type: string
+ *                       ordre:
+ *                         type: integer
+ *                 nutrition:
+ *                   type: object
+ *                   properties:
+ *                     calories:
+ *                       type: number
+ *                     proteines:
+ *                       type: number
+ *                     glucides:
+ *                       type: number
+ *                     lipides:
+ *                       type: number
+ *                     fibres:
+ *                       type: number
+ *                     sel:
+ *                       type: number
  *       404:
- *         description: Aucune donnée nutritionnelle trouvée.
+ *         description: Aucune composition trouvée pour ce produit.
  *       500:
  *         description: Erreur serveur.
  */
-router.get('/produit/:idProduit/nutrition', (req, res) => {
+
+router.get('/produit/:idProduit/composition', async (req, res) => {
     const { idProduit } = req.params;
 
-    const query = `
-    SELECT calories, proteines, glucides, lipides, fibres, sel
-    FROM magasin.tbNutrition
-    WHERE idProduit = ?
-  `;
+    try {
+        const allergenesQuery = `
+            SELECT a.id, a.nom
+            FROM magasin.tbProduitAllergene pa
+            JOIN magasin.tbAllergene a ON pa.idAllergene = a.id
+            WHERE pa.idProduit = ?
+        `;
+        const [allergenes] = await db.promise().query(allergenesQuery, [idProduit]);
 
-    db.query(query, [idProduit], (err, results) => {
-        if (err) {
-            console.error('Erreur lors de la récupération des données nutritionnelles :', err);
-            return res.status(500).send('Erreur de base de données');
-        }
+        const ingredientsQuery = `
+            SELECT i.id, i.nom, pi.ordre
+            FROM magasin.tbProduitIngredient pi
+            JOIN magasin.tbIngredient i ON pi.idIngredient = i.id
+            WHERE pi.idProduit = ?
+            ORDER BY pi.ordre ASC
+        `;
+        const [ingredients] = await db.promise().query(ingredientsQuery, [idProduit]);
 
-        if (results.length === 0) {
-            return res.status(404).send('Aucune donnée nutritionnelle trouvée pour ce produit');
+        const nutritionQuery = `
+            SELECT calories, proteines, glucides, lipides, fibres, sel
+            FROM magasin.tbNutrition
+            WHERE idProduit = ?
+        `;
+        const [nutritionRows] = await db.promise().query(nutritionQuery, [idProduit]);
+        const nutrition = nutritionRows[0] || null;
+
+        if (!allergenes.length && !ingredients.length && !nutrition) {
+            return res.status(404).send('Aucune composition trouvée pour ce produit');
         }
 
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-        res.json(results[0]);
-    });
+        res.json({ allergenes, ingredients, nutrition });
+    } catch (err) {
+        console.error('Erreur lors de la récupération de la composition du produit :', err);
+        res.status(500).send('Erreur de base de données');
+    }
 });
 
 

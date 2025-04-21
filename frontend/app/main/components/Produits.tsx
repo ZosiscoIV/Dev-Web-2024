@@ -11,6 +11,12 @@ interface InfosNutritionnelles {
     lipides?: number;
     fibres?: number;
     sel?: number;
+    composition?: string;
+}
+
+interface Ingredient {
+    nom: string;
+    ordre: number;
 }
 
 interface Produit {
@@ -25,6 +31,7 @@ interface Produit {
     infoNutritionnelles?: InfosNutritionnelles;
     allergenes?: string[];
     composition?: string;
+    ingredients?: string[];
 }
 
 interface ProduitsSearchProps {
@@ -50,23 +57,45 @@ const ProduitsSearch = ({
     const [showNutritionalInfo, setShowNutritionalInfo] = useState(false);
     const [infosNutritionnelles, setInfosNutritionnelles] = useState<InfosNutritionnelles | null>(null);
     const [allergenes, setAllergenes] = useState<string[]>([]);
+    const [ingredients, setIngredients] = useState<string[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Fonction pour récupérer les données nutritionnelles et allergènes
+    // Fonction pour récupérer les données nutritionnelles, allergènes et ingrédients
     const fetchProductDetails = async () => {
         try {
-            console.log("idProduit: ", id);
-            const nutritionRes = await fetch(`http://localhost:6942/api/produit/${id}/nutrition`);
-            const nutritionData = await nutritionRes.json();
-            setInfosNutritionnelles(nutritionData);
+            setIsLoading(true); // Indicateur de chargement
 
-            const allergenesRes = await fetch(`http://localhost:6942/api/produit/${id}/allergenes`);
-            const allergenesData = await allergenesRes.json();
-            setAllergenes(allergenesData.map((a: { nom: string }) => a.nom));
+            // Récupérer les informations nutritionnelles et composition
+            const res = await fetch(`http://localhost:6942/api/produit/${id}/composition`);
+            if (!res.ok) {
+                throw new Error(`Erreur HTTP : ${res.status}`);
+            }
+
+            const data = await res.json();
+
+            // Infos nutritionnelles
+            setInfosNutritionnelles(data.nutrition || null);
+
+            // Allergènes
+            if (Array.isArray(data.allergenes)) {
+                setAllergenes(data.allergenes.map((a: { nom: string }) => a.nom));
+            } else {
+                setAllergenes([]);
+            }
+
+            // Ingrédients (ordonnés)
+            if (Array.isArray(data.ingredients)) {
+                const sorted = data.ingredients.sort((a: Ingredient, b: Ingredient) => a.ordre - b.ordre);
+                setIngredients(sorted.map((i: Ingredient) => i.nom));
+            } else {
+                setIngredients([]);
+            }
         } catch (error) {
-            console.error("Erreur lors de la récupération des détails du produit :", error);
+            console.error("Erreur lors de la récupération de la composition :", error);
+        } finally {
+            setIsLoading(false); // Masquer le loader après la fin du chargement
         }
     };
-
 
     const handleProductClick = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -111,50 +140,56 @@ const ProduitsSearch = ({
                         <button className="close-popup" onClick={closePopup}>×</button>
                         <h2>Informations Nutritionnelles - {produit}</h2>
 
-                        {infosNutritionnelles ? (
-                            <div className="nutritional-content">
-                                <div className="nutritional-item">
-                                    <span>Calories:</span>
-                                    <strong>{infosNutritionnelles.calories} kcal</strong>
-                                </div>
-                                <div className="nutritional-item">
-                                    <span>Protéines:</span>
-                                    <strong>{infosNutritionnelles.proteines} g</strong>
-                                </div>
-                                <div className="nutritional-item">
-                                    <span>Glucides:</span>
-                                    <strong>{infosNutritionnelles.glucides} g</strong>
-                                </div>
-                                <div className="nutritional-item">
-                                    <span>Lipides:</span>
-                                    <strong>{infosNutritionnelles.lipides} g</strong>
-                                </div>
-                                {infosNutritionnelles.fibres !== undefined && (
-                                    <div className="nutritional-item">
-                                        <span>Fibres:</span>
-                                        <strong>{infosNutritionnelles.fibres} g</strong>
-                                    </div>
-                                )}
-                                {infosNutritionnelles.sel !== undefined && (
-                                    <div className="nutritional-item">
-                                        <span>Sel:</span>
-                                        <strong>{infosNutritionnelles.sel} g</strong>
-                                    </div>
-                                )}
+                        {isLoading ? (
+                            <div className="loader">
+                                <p>Chargement...</p>
                             </div>
                         ) : (
-                            <p>Informations nutritionnelles non disponibles pour ce produit.</p>
-                        )}
+                            <>
+                                {infosNutritionnelles ? (
+                                    <div className="nutritional-content">
+                                        <div className="nutritional-item"><span>Calories:</span><strong>{infosNutritionnelles.calories} kcal</strong></div>
+                                        <div className="nutritional-item"><span>Protéines:</span><strong>{infosNutritionnelles.proteines} g</strong></div>
+                                        <div className="nutritional-item"><span>Glucides:</span><strong>{infosNutritionnelles.glucides} g</strong></div>
+                                        <div className="nutritional-item"><span>Lipides:</span><strong>{infosNutritionnelles.lipides} g</strong></div>
+                                        {infosNutritionnelles.fibres !== undefined && (
+                                            <div className="nutritional-item"><span>Fibres:</span><strong>{infosNutritionnelles.fibres} g</strong></div>
+                                        )}
+                                        {infosNutritionnelles.sel !== undefined && (
+                                            <div className="nutritional-item"><span>Sel:</span><strong>{infosNutritionnelles.sel} g</strong></div>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p>Informations nutritionnelles non disponibles pour ce produit.</p>
+                                )}
 
-                        <h3>Allergènes</h3>
-                        {allergenes.length > 0 ? (
-                            <ul>
-                                {allergenes.map((allergene, index) => (
-                                    <li key={index}>{allergene}</li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p>Aucun allergène trouvé pour ce produit.</p>
+                                <h3>Allergènes</h3>
+                                {allergenes.length > 0 ? (
+                                    <ul>
+                                        {allergenes.map((allergene, index) => (
+                                            <li key={index}>{allergene}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Aucun allergène trouvé pour ce produit.</p>
+                                )}
+
+                                <h3>Ingrédients</h3>
+                                {ingredients.length > 0 ? (
+                                    <ul>
+                                        {ingredients.map((ingredient, index) => (
+                                            <li key={index}>{ingredient}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Aucun ingrédient trouvé pour ce produit.</p>
+                                )}
+
+                                <div className="popup-buttons">
+                                    <button className="btn-favoris" >❤️</button>
+                                    <button className="btn-panier" >🛒</button>
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>
