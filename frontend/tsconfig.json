@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["@testing-library/jest-dom", "node", "jest"],
     "target": "ES2017",
     "lib": [
       "dom",
@@ -29,7 +30,8 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "next-env.d.ts",
