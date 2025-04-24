@@ -16,13 +16,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 USE magasin;
 --
--- Table structure for table `tbcategorie`
+-- Table structure for table `tbCategorie`
 --
 
-DROP TABLE IF EXISTS `tbcategorie`;
+DROP TABLE IF EXISTS `tbCategorie`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `tbcategorie` (
+CREATE TABLE `tbCategorie` (
   `id` int NOT NULL AUTO_INCREMENT,
   `categorie` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
@@ -30,13 +30,13 @@ CREATE TABLE `tbcategorie` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `tbcategorie`
+-- Dumping data for table `tbCategorie`
 --
 
-LOCK TABLES `tbcategorie` WRITE;
-/*!40000 ALTER TABLE `tbcategorie` DISABLE KEYS */;
-INSERT INTO `tbcategorie` VALUES (1,'Fruits'),(2,'Légumes'),(3,'Céréales'),(4,'Crêmerie'),(5,'Epicerie sucrée');
-/*!40000 ALTER TABLE `tbcategorie` ENABLE KEYS */;
+LOCK TABLES `tbCategorie` WRITE;
+/*!40000 ALTER TABLE `tbCategorie` DISABLE KEYS */;
+INSERT INTO `tbCategorie` VALUES (1,'Fruits'),(2,'Légumes'),(3,'Céréales'),(4,'Crêmerie'),(5,'Epicerie sucrée');
+/*!40000 ALTER TABLE `tbCategorie` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -148,7 +148,7 @@ CREATE TABLE `tbProduits` (
   KEY `idCategorie` (`idCategorie`),
   CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbUnite` (`id`),
   CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbTaxe` (`id`),
-  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
+  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbCategorie` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
