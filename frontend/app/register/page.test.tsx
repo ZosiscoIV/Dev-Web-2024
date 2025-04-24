@@ -18,6 +18,16 @@ describe("updateFormData", () => {
             ...base,
             email: "foo@bar.com",
         });
+        const next1 = updateFormData(base, "password", "foo@bar.com");
+        expect(next1).toEqual({
+            ...base,
+            password: "foo@bar.com",
+        });
+    const next2 = updateFormData(base, "confirmPassword", "foo@bar.com");
+        expect(next2).toEqual({
+            ...base,
+            confirmPassword: "foo@bar.com",
+        });
     });
 });
 
