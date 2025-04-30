@@ -3,6 +3,9 @@ const router = express.Router();
 const mysql = require('mysql2');
 require('dotenv').config();
 
+const { validationResult } = require('express-validator');
+const validateProduct = require('./productValidator');
+
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -91,13 +94,21 @@ router.get('/products', (req, res) => {
         s.quantite AS quantite,
         IF(s.quantite > 0, 'En stock', 'Hors stock') AS status,
         c.categorie AS categorie,
-        s.dateLivraison AS dateLivraison
+        s.dateLivraison AS dateLivraison,
+        p.dateDebutVente AS dateDebutVente,
+        p.dateFinVente as dateFinVente,
+        u.unite,
+        t.taxe
     FROM
         magasin.tbProduits p
     JOIN
         magasin.tbStock s ON p.id = s.idProduit
     JOIN
         magasin.tbCategorie c ON p.idCategorie = c.id
+    JOIN
+        magasin.tbUnite u on p.idUnite = u.id
+    JOIN
+        magasin.tbTaxe t on p.idTaxe = t.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -227,9 +238,14 @@ router.get('/categorie', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.post('/products',async (req, res) => {
+router.post('/products', validateProduct, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     try {
         console.log("Requête reçue pour créer un produit...",req.body);
+
         const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
         
         const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE  nom = ?", [nom]);
@@ -237,7 +253,6 @@ router.post('/products',async (req, res) => {
             return res.status(400).send('Le produit existe déjà');
         }
         const dateLivraisonFinal = (dateLivraison === "" ? null : dateLivraison)
-
         const dateFinVenteFinal = (dateFinVente === "" ? null : dateFinVente)
         await promisePool.query(`
             INSERT INTO magasin.tbUnite (unite)
@@ -354,7 +369,88 @@ router.post('/products',async (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.put('/products/:id', (req, res) => {
+router.put('/products/:id', validateProduct, async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+        console.log("Requête reçue pour mettre à jour un produit...",req.body);
+
+        const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
+        const id = req.params.id;
+
+        const [row] = await promisePool.query( `
+            SELECT
+                p.id AS id,
+                p.nom AS produit,
+                p.prix AS prix,
+                s.quantite AS quantite,
+                IF(s.quantite > 0, 'En stock', 'Hors stock') AS status,
+                c.categorie AS categorie,
+                s.dateLivraison AS dateLivraison,
+                p.dateDebutVente AS dateDebutVente,
+                p.dateFinVente as dateFinVente,
+                u.unite,
+                t.taxe
+            FROM
+                magasin.tbProduits p
+            JOIN
+                magasin.tbStock s ON p.id = s.idProduit
+            JOIN
+                magasin.tbCategorie c ON p.idCategorie = c.id
+            JOIN
+                magasin.tbUnite u on p.idUnite = u.id
+            JOIN
+                magasin.tbTaxe t on p.idTaxe = t.id
+            WHERE p.id = ?
+        `, [id]);
+        
+        if (row.length === 0) {
+            return res.status(404).json({ error: 'Produit non trouvé' });
+        }
+        const produit = row[0];
+
+        async function findOrInsert(table, column, value) {
+            const [row] = await promisePool.query(`SELECT id FROM magasin.${table} WHERE ${column} = ?`, [value]);
+            
+            if (row.length > 0) return row[0].id;
+
+            const [insert] = await promisePool.query(`INSERT INTO magasin.${table} (${column}) VALUES (?)`, [value]);
+                
+            return insert.insertId;
+        }
+
+        const dateLivraisonSQL = dateLivraison === '' ? null : dateLivraison;
+
+        if (produit.quantite !== quantite || produit.dateLivraison !== dateLivraison){
+            await promisePool.query(`
+                UPDATE magasin.tbStock
+                SET quantite = ?, dateLivraison = ?
+                WHERE idProduit = ?`,
+            [quantite,dateLivraisonSQL,id]);
+        }
+        const idUnite = await findOrInsert('tbUnite','unite', unite );
+        const idTaxe = await findOrInsert('tbTaxe', 'taxe', taxe);
+        const idCategorie = await findOrInsert('tbCategorie', 'categorie', categorie);
+
+        const dateDebutSQL = dateDebutVente === '' ? null : dateDebutVente;
+        const dateFinSQL = dateFinVente === '' ? null : dateFinVente;
+        await promisePool.query(`
+            UPDATE magasin.tbProduits 
+            SET prix = ?, dateDebutVente = ?, dateFinVente = ?, idUnite = ?, idTaxe = ?, idCategorie = ?
+            WHERE id = ?
+        `, [prix, dateDebutSQL, dateFinSQL, idUnite, idTaxe, idCategorie, id]);
+
+        res.status(200).json({ message: 'Produit mis à jour avec succès' });
+
+    } catch (error) {
+        // Si erreur dans la requête SQL
+        console.error('Erreur lors de la récupération des catégories:', error);
+        console.error('Erreur lors de l\'insertion du produit:', error); // Affiche l'erreur exacte
+
+        return res.status(500).send('Erreur de base de données');
+    }  
 });
 
 // Route pour supprimer un produit

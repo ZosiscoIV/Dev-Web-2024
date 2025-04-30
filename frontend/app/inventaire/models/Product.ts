@@ -9,10 +9,13 @@ export class Product {
         public quantite: number,
         public prix: number,
         public status: string,
-        public dateLivraison: string | null 
+        public dateLivraison: string | null,
+        public unite: string,
+        public dateDebutVente: string,
+        public dateFinVente: string | null,
+        public categorie: string,
+        public taxe: number,
     ) {}
-// mettre exception type
-// test 0, >0, <0, infinity, - Infinity, "0", "mdm", [1], null
     getStatus(): string {
         try {
             if (typeof this.quantite !== 'number' || this.quantite === Infinity || this.quantite === -Infinity || this.quantite < 0){

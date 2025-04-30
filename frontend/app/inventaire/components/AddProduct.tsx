@@ -2,19 +2,22 @@ import { useProductForm } from '../hooks/useProductForm';
 import { Categorie } from '../models/Categorie';
 import { Product } from '../models/Product';
 
+
 type FormProps = {
     setProducts: React.Dispatch<React.SetStateAction<Product[]>>; // Déclare la prop setProducts
     setCategories: React.Dispatch<React.SetStateAction<Categorie[]>>;
+    produitExistant?: Product;
+    onClose: () => void;
 };
 
-const Formulaire: React.FC<FormProps> = ({setProducts, setCategories}) => {
-    const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories);
+const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose}) => {
+    const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
     
     return (
         <div className="popup-inner">
             <form onSubmit={handleSubmit}>
                 <label>Nom :
-                    <input type="text" name="nom" value={nom} onChange={handleChange} required />
+                    <input type="text" name="nom" value={nom} onChange={handleChange} required disabled={produitExistant?true:false}/>
                 </label>
                 <label>Quantité :
                     <input type="number" name="quantite" value={quantite === 0 ? "" : quantite} onChange={handleChange} placeholder='0' min="0"/>
@@ -43,6 +46,8 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories}) => {
                 <label> 
                     <input type="submit"/>
                 </label>
+                <button type="button" onClick={onClose}>Annuler</button>
+
             </form>
         </div>
     );
