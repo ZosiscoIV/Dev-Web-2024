@@ -29,7 +29,7 @@ const RegisterForm = () => {
 
         // Validation
         if (formData.password !== formData.confirmPassword) {
-            setErrorMessage('Les mots de passe ne correspondent pas');
+            setErrorMessage('Les mots de passe ne correspondent pas.');
             return;
         }
 
@@ -65,7 +65,7 @@ const RegisterForm = () => {
     return (
         <div className="auth-container">
             <h1 className= "Header" >Créer un compte</h1>
-            <form onSubmit={handleSubmit} className="auth-form">
+            <form onSubmit={handleSubmit} className="auth-form"  data-testid="register-form" >
                 <div className="form-group">
                     <label htmlFor="firstName">Prénom</label>
                     <input
