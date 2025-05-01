@@ -115,10 +115,13 @@ router.get('/products', (req, res) => {
     if (categorie) {
         conditions.push(`c.categorie = '${categorie}'`);
     }
-    if (enStock === "true") { // Vérifie que enStock est bien une string "true"
+    if (enStock === "1") { // Vérifie que enStock est bien une string "true"
         conditions.push(`s.quantite > 0`);
     }
-    if (enStock === "false") {
+    if (enStock === "2") {
+        conditions.push(`s.quantite < 5`)
+    }
+    if (enStock === "3") {
         conditions.push(`s.quantite = 0`)
     }
 

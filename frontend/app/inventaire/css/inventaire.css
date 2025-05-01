@@ -140,3 +140,14 @@ button:hover {
     background-color: #007bff;
     color: white;
   }
+/*Alerte Faible stock*/
+.modal-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.modal-list li {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}

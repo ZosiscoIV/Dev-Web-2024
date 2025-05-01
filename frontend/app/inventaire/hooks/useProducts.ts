@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { getProducts } from '../services/productService';
 import { Product } from '../models/Product';
 
-export const useProducts = (categorie: string, stock: "tout" | "enStock" | "horsStock") => {
+export const useProducts = (categorie: string, stock: "tout" | "enStock" | 'faibleStock'| "horsStock") => {
   const [products, setProducts] = useState<Product[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
@@ -14,8 +14,9 @@ export const useProducts = (categorie: string, stock: "tout" | "enStock" | "hors
         if (categorie || stock !== 'tout') {
           query = '?';
           if (categorie && categorie !== 'tout') { query += `categorie=${encodeURIComponent(categorie)}&`;}
-          if (stock === 'enStock') {query += `enStock=true&`;}
-          else if (stock === 'horsStock') {query += `enStock=false&`;}
+          if (stock === 'enStock') {query += `enStock=1&`;}
+          if (stock === 'faibleStock') {query += `enStock=2&`;}
+          else if (stock === 'horsStock') {query += `enStock=3&`;}
         }
         if (query.endsWith('&')) {
           query = query.slice(0, -1);

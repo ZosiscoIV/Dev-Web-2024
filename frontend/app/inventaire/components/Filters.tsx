@@ -1,7 +1,7 @@
 import React from 'react';
 type FiltresProps = {
   categorie: string;
-  stock: "tout" | "enStock" | "horsStock";
+  stock: "tout" | "enStock" | 'faibleStock'| "horsStock";
   categories: { id: number; categorie: string }[];
   onCategorieChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onStockChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,6 +24,9 @@ const Filtre: React.FC<FiltresProps> = ({categorie, stock, categories,onCategori
       
       <input id="enStock" type="radio" value="enStock" checked={stock === 'enStock'} onChange={onStockChange}/>
       <label htmlFor="enStock">En stock</label>
+
+      <input id="faibleStock" type="radio" value="faibleStock" checked={stock === 'faibleStock'} onChange={onStockChange}/>
+      <label htmlFor="faibleStock">Faible stock</label>
 
       <input id="horsStock" type="radio" value="horsStock" checked={stock === 'horsStock'} onChange={onStockChange}/>
       <label htmlFor="horsStock">Hors stock</label>
