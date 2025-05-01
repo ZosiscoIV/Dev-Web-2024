@@ -1,6 +1,8 @@
+import React, { useState } from 'react';
 import { useProductForm } from '../hooks/useProductForm';
 import { Categorie } from '../models/Categorie';
 import { Product } from '../models/Product';
+import ConfirmModal from './PopUp'; 
 
 
 type FormProps = {
@@ -10,12 +12,33 @@ type FormProps = {
     onClose: () => void;
 };
 
+
 const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose}) => {
     const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
     
+    const [showModal, setShowModal] = useState(false);
+    const [isConfirmed, setIsConfirmed] = useState(false);
+
+    const handleOpenModal = (e: React.FormEvent) => {
+        e.preventDefault();
+        setShowModal(true);
+    };
+
+    const handleConfirm = () => {
+        setIsConfirmed(true);
+        handleSubmit();
+        setShowModal(false);
+    };
+
+    const handleCancel = () => {
+        setIsConfirmed(false);
+        setShowModal(false);
+    };
+
+
     return (
         <div className="popup-inner">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleOpenModal}>
                 <label>Nom :
                     <input type="text" name="nom" value={nom} onChange={handleChange} required disabled={produitExistant?true:false}/>
                 </label>
@@ -47,8 +70,17 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExi
                     <input type="submit"/>
                 </label>
                 <button type="button" onClick={onClose}>Annuler</button>
-
             </form>
+            {showModal && (
+                <ConfirmModal
+                    open={showModal}
+                    title={produitExistant? "Confirmer la modification": "Confirmer la création"}
+                    message={`Êtes-vous sûr de vouloir ${produitExistant ? "modifier" : "créer"} ce produit : ${nom} - quantite: ${quantite} - categorie : ${categorie} - unite : ${unite} - prix : ${prix} - mise en vente : ${dateDebutVente} ${dateFinVente ? `- fin de vente :${dateFinVente}` : ""} ${dateLivraison ? `- date de livraison :${dateLivraison}` : ""} - taxe: ${taxe}`}
+                    onClose={handleCancel}
+                    onConfirm={handleConfirm}
+                />
+            )}
+            
         </div>
     );
 };

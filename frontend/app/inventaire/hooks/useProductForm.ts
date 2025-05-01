@@ -84,8 +84,8 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             alert(msgErreur);
         }
     } 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
+        //e.preventDefault();
 
         // Prépare les données à envoyer au backend
         const data = {
