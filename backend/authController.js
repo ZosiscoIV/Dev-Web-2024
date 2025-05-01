@@ -13,6 +13,7 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
+
 });
 
 const db2 = mysql.createPool({
@@ -23,6 +24,16 @@ const db2 = mysql.createPool({
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
 });
+// token generation function
+function tokenGen(idd, nom, prenom, email){
+    const payload = { id: idd, nom, prenom, email };
+    const token = jwt.sign(
+        payload,
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+    return token;
+}
 
 // Crée une version Promise du pool
 const promisePool = db2.promise();
@@ -69,7 +80,7 @@ router.post('/register', async (req, res) => {
 
         // 3) Uniqueness checks
         const [emailRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbclients WHERE adresseMail = ?',
+            'SELECT id FROM Epicerie.tbclients WHERE adresseMail = ?',
             [email]
         );
         if (emailRows.length > 0) {
@@ -77,7 +88,7 @@ router.post('/register', async (req, res) => {
         }
 
         const [telRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbclients WHERE tel = ?',
+            'SELECT id FROM Epicerie.tbclients WHERE tel = ?',
             [tel]
         );
         if (telRows.length > 0) {
@@ -86,14 +97,16 @@ router.post('/register', async (req, res) => {
 
         // 4) Hash & insert
         const hash = await bcrypt.hash(password, 10);
-        await promisePool.query(
-            `INSERT INTO magasin.tbclients 
-       (nom, prenom, password, adresseMail, tel) 
-       VALUES (?, ?, ?, ?, ?)`,
+        const [result] = await promisePool.query(
+            `INSERT INTO Epicerie.tbclients 
+        (nom, prenom, password, adresseMail, tel) 
+        VALUES (?, ?, ?, ?, ?)`,
             [nom, prenom, hash, email, tel]
         );
 
-        return res.status(201).json({ message: 'Compte créé avec succès' });
+        const token = tokenGen(result.insertId,nom,prenom,email);
+
+        return res.status(201).json({ message: 'Compte créé avec succès', token });
     } catch (err) {
         console.error('Registration error:', err);
         return res.status(400).json({ error: 'Erreur de creation de compte' });
