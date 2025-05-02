@@ -28,7 +28,8 @@ test('affiche un produit en stock', () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5,
+        true   
     )
     const mockSetProducts = jest.fn();
     const mockSetCategories = jest.fn();
@@ -55,7 +56,8 @@ test('affiche un produit en stock limite', () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5, 
+        true    
     )
     const mockSetProducts = jest.fn();
     const mockSetCategories = jest.fn();
@@ -82,7 +84,8 @@ test('affiche un produit faible en stock', () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5,
+        true   
     )
     const mockSetProducts = jest.fn();
     const mockSetCategories = jest.fn();
@@ -108,7 +111,8 @@ test('affiche un produit hors stock', () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5,
+        true    
     )
     const mockSetProducts = jest.fn();
     const mockSetCategories = jest.fn();
@@ -135,7 +139,8 @@ test('affiche un produit en stock sans date de livraison', () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5,
+        true  
     )
     const mockSetProducts = jest.fn();
     const mockSetCategories = jest.fn();

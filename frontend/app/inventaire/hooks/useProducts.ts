@@ -28,6 +28,7 @@ export const useProducts = (categorie: string, stock: "tout" | "enStock" | 'faib
         }
         else{
           setProducts(listeProduit);
+          console.log(listeProduit)
           setErrorMessage('')
         }
       } catch (error) {

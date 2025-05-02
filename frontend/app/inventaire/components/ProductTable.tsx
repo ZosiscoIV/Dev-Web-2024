@@ -31,13 +31,31 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
     setTypeDate('finVente');
     setAffiFormDate(true);
   }
-  const handleDispo = (e: React.ChangeEvent<HTMLInputElement>, prod: Product)=>{
+  const handleDispo = async (e: React.ChangeEvent<HTMLInputElement>, prod: Product)=>{
     prod.dispo = e.target.checked;
-    setProducts([...products]);
+    const response = await fetch(`http://localhost:6942/api/products/${prod.id}/dispo`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+          body: JSON.stringify({ disponibilite: prod.dispo ? 1 : 0 })  
+        });
+        console.log(response);
+
+        if (response.ok) {
+          const updatedProducts = [...products].sort((a, b) => {
+            // Disponibilité décroissante : true (1) avant false (0)
+            if (a.dispo !== b.dispo) {
+              return b.dispo ? 1 : -1;
+            }
+            // Sinon tri alphabétique par nom de produit
+            return a.produit.localeCompare(b.produit);
+          });
+          setProducts([...updatedProducts]); 
+        } else {
+          console.error('Erreur lors de la mise à jour de la disponibilité');
+        }
   }
-  const updateProductStatus = async (prodId: number, dispo: boolean) => {
-    //await api.put(`/products/${prodId}`, { isDeleted });
-  };
   
   return (
     <>

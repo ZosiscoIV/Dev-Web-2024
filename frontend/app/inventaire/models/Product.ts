@@ -15,7 +15,7 @@ export class Product {
         public dateFinVente: string | null,
         public categorie: string,
         public taxe: number,
-        public dispo: boolean = true,
+        public dispo: boolean,
     ) {}
     getStatus(): string {
         try {

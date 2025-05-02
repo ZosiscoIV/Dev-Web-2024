@@ -43,7 +43,7 @@ const Page = () => {
         <Button setProducts={setProducts} setCategories={setCategories}/>
         <Filtre categorie={categorie} stock={stock} categories={categories} onCategorieChange={handleCategorieChange} onStockChange={handleStockChange}/>
         <div id="corps">
-          {errorMessage ?(<p style={{fontSize:"25px", textAlign:"center", fontWeight:"bold", padding:"20px"}}>{errorMessage}</p>): <ProductTable products={products} setProducts={setProducts} setCategories={setCategories}/>}
+          {errorMessage ?(<p style={{fontSize:"25px", textAlign:"center", fontWeight:"bold", padding:"20px"}}>{errorMessage}</p>): <ProductTable products={products} setProducts={setProducts} setCategories={setCategories} />}
         </div>
       </div>
   );

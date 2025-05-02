@@ -13,7 +13,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5    
+            5,
+            true   
         );
 
         expect(prod.getStatus()).toBe("❌ Hors Stock");
@@ -30,7 +31,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true
         );
 
         expect(prod.getStatus()).toBe("✅ En Stock");
@@ -47,7 +49,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
 
         expect(prod.getStatus()).toBe("✅ En Stock");
@@ -64,7 +67,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
 
         expect(prod.getStatus()).toBe("⚠️ Faible Stock");
@@ -81,7 +85,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
 
         expect(prod.getStatus()).toBe("La quantité doit être un entier");
@@ -98,7 +103,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
 
         expect(prod.getStatus()).toBe("La quantité doit être un entier");
@@ -115,7 +121,8 @@ describe("getStatus", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
 
         expect(prod.getStatus()).toBe("La quantité doit être un entier");
@@ -135,7 +142,8 @@ describe("getFormatDate", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
         expect(prod.getFormatDate(prod.dateLivraison)).toBe("25/03/2025")
     });
@@ -151,7 +159,8 @@ describe("getFormatDate", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
         expect(prod.getFormatDate(prod.dateLivraison)).toBe("")
     });
@@ -167,7 +176,8 @@ describe("getFormatDate", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
         expect(prod.getFormatDate(prod.dateLivraison)).toBe("La date de livraison doit être une date")
     })
@@ -182,7 +192,8 @@ describe("getFormatDate", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
         expect(prod.getFormatDate(prod.dateLivraison)).toBe("La date de livraison doit être une date")
     })
@@ -197,7 +208,8 @@ describe("getFormatDate", () => {
             '2025-03-01T00:00:00.000Z',   
             '2025-04-01T00:00:00.000Z',   
             "Fruits",                     
-            5  
+            5,
+            true  
         );
         expect(prod.getFormatDate(prod.dateLivraison)).toBe("La date de livraison doit être une date")
     })

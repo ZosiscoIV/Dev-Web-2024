@@ -98,7 +98,8 @@ router.get('/products', (req, res) => {
         p.dateDebutVente AS dateDebutVente,
         p.dateFinVente as dateFinVente,
         u.unite,
-        t.taxe
+        t.taxe,
+        s.disponibilite
     FROM
         magasin.tbProduits p
     JOIN
@@ -129,7 +130,8 @@ router.get('/products', (req, res) => {
     if (conditions.length > 0) {
         query += " WHERE " + conditions.join(" AND ");
     }
-    query += ` ORDER BY p.nom`;
+    query += ` ORDER BY disponibilite DESC, produit ASC
+`;
 
     db.query(query, (err, results) => {
         if (err) {
@@ -141,9 +143,12 @@ router.get('/products', (req, res) => {
             return res.status(404).send('Aucun produit trouvé');
         }
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
-
+        const produits = results.map(prod => ({
+            ...prod,
+            dispo: prod.disponibilite === 1
+        }));
         // On renvoie les résultats si tout va bien
-        res.json(results);
+        res.json(produits);
     });
 });
 
@@ -298,8 +303,8 @@ router.post('/products', validateProduct, async (req, res) => {
         const idProduit = verifProduit[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison)
-            SELECT idProduit, quantite, ? FROM (SELECT ?, ?, ?) AS tmp(idProduit, quantite, dateLivraison)
+            INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison,disponibilite)
+            SELECT idProduit, quantite, ?, 1 FROM (SELECT ?, ?, ?,1) AS tmp(idProduit, quantite, dateLivraison, disponibilite)
             WHERE NOT EXISTS (
                 SELECT idProduit FROM magasin.tbStock WHERE idProduit = ?
             );
@@ -479,7 +484,43 @@ router.put('/products/:id', validateProduct, async (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.delete('/products/:id', (req, res) => {
+router.put('/products/:id/dispo', async (req, res) => {
+    try {
+        console.log("Requête reçue pour mettre à jour un produit...",req.body);
+
+        const {disponibilite} = req.body
+        const id = req.params.id;
+        
+        if (typeof disponibilite !== 'number' || ![0, 1].includes(disponibilite)) {
+            return res.status(400).json({ error: 'Valeur de disponibilité invalide' });
+        }
+
+        const [row] = await promisePool.query( `
+            SELECT
+                disponibilite
+            FROM
+                magasin.tbStock
+            WHERE idProduit = ?
+        `, [id]);
+        
+        if (row.length === 0) {
+            return res.status(404).json({ error: 'Produit non trouvé' });
+        }
+        await promisePool.query(`
+            UPDATE magasin.tbStock
+            SET disponibilite = ?
+            WHERE idProduit = ?`,
+        [disponibilite,id]);
+        
+        res.status(200).json({ message: 'Disponibilité mise à jour avec succès' });
+
+    } catch (error) {
+        // Si erreur dans la requête SQL
+        console.error('Erreur lors de la récupération des catégories:', error);
+        console.error('Erreur lors de l\'insertion du produit:', error); // Affiche l'erreur exacte
+
+        return res.status(500).send('Erreur de base de données');
+    }  
 });
 
 // Route pour modifier le statut du produit

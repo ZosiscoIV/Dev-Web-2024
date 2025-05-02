@@ -9,7 +9,7 @@ const validationProduit = [
     body("dateLivraison").optional({ checkFalsy: true }).isISO8601().withMessage('La date de livraison est invalide'),
     body("dateDebutVente").notEmpty().isISO8601().withMessage('La date de début de vente est invalide'),
     body("dateFinVente").optional({ checkFalsy: true }).isISO8601().withMessage('La date de fin de vente est invalide'),
-    body("taxe").notEmpty().isInt({ min: 0 }).withMessage('La taxe doit être un entier positif')
+    body("taxe").notEmpty().isInt({ min: 0 }).withMessage('La taxe doit être un entier positif'),
 ];
 
 module.exports = validationProduit;
