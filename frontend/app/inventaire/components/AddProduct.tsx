@@ -3,7 +3,7 @@ import { useProductForm } from '../hooks/useProductForm';
 import { Categorie } from '../models/Categorie';
 import { Product } from '../models/Product';
 import ConfirmModal from './PopUp'; 
-
+import FormulaireBase from './FormBase';
 
 type FormProps = {
     setProducts: React.Dispatch<React.SetStateAction<Product[]>>; // Déclare la prop setProducts
@@ -16,72 +16,49 @@ type FormProps = {
 const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose}) => {
     const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
     
-    const [showModal, setShowModal] = useState(false);
-    const [isConfirmed, setIsConfirmed] = useState(false);
+    const message = `Êtes-vous sûr de vouloir ${produitExistant ? "modifier" : "créer"} ce produit : ${nom} - quantite: ${quantite} - categorie : ${categorie} - unite : ${unite} - prix : ${prix} - mise en vente : ${dateDebutVente} ${dateFinVente ? `- fin de vente :${dateFinVente}` : ""} ${dateLivraison ? `- date de livraison :${dateLivraison}` : ""} - taxe: ${taxe}`
 
-    const handleOpenModal = (e: React.FormEvent) => {
-        e.preventDefault();
-        setShowModal(true);
-    };
-
-    const handleConfirm = () => {
-        setIsConfirmed(true);
-        handleSubmit();
-        setShowModal(false);
-    };
-
-    const handleCancel = () => {
-        setIsConfirmed(false);
-        setShowModal(false);
-    };
-
-
+    const formField = (
+        <>
+            <label>Nom :
+                <input type="text" name="nom" value={nom} onChange={handleChange} required disabled={produitExistant?true:false}/>
+            </label>
+            <label>Quantité :
+                <input type="number" name="quantite" value={quantite === 0 ? "" : quantite} onChange={handleChange} placeholder='0' min="0"/>
+            </label>
+            <label>Categorie :
+                <input type="text" name="categorie" value={categorie} onChange={handleChange} required />
+            </label>
+            <label>Unité :
+                <input type="text" name="unite" value={unite} onChange={handleChange} required/>
+            </label>
+            <label>Prix (€) :
+                <input type="number" name="prix" value={prix === 0 ? "" : prix} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
+            </label>
+            <label>Date de mise en vente:
+                <input type="date" name="dateDebutVente" value={dateDebutVente} onChange={handleChange} required/>
+            </label>
+            <label>Date de fin de mise en vente :
+                <input type="date" name="dateFinVente" value={dateFinVente} onChange={handleChange}/>
+            </label>
+            <label>Date de livraison :
+                <input type="date" name="dateLivraison" value={dateLivraison} onChange={handleChange}/>
+            </label>
+            <label>Taxe (%) :
+                <input type="number" name="taxe" value={taxe === 0 ? "" : taxe} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
+            </label>
+        </>
+    )
     return (
-        <div className="popup-inner">
-            <form onSubmit={handleOpenModal}>
-                <label>Nom :
-                    <input type="text" name="nom" value={nom} onChange={handleChange} required disabled={produitExistant?true:false}/>
-                </label>
-                <label>Quantité :
-                    <input type="number" name="quantite" value={quantite === 0 ? "" : quantite} onChange={handleChange} placeholder='0' min="0"/>
-                </label>
-                <label>Categorie :
-                    <input type="text" name="categorie" value={categorie} onChange={handleChange} required />
-                </label>
-                <label>Unité :
-                    <input type="text" name="unite" value={unite} onChange={handleChange} required/>
-                </label>
-                <label>Prix (€) :
-                    <input type="number" name="prix" value={prix === 0 ? "" : prix} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
-                </label>
-                <label>Date de mise en vente:
-                    <input type="date" name="dateDebutVente" value={dateDebutVente} onChange={handleChange} required/>
-                </label>
-                <label>Date de fin de mise en vente :
-                    <input type="date" name="dateFinVente" value={dateFinVente} onChange={handleChange}/>
-                </label>
-                <label>Date de livraison :
-                    <input type="date" name="dateLivraison" value={dateLivraison} onChange={handleChange}/>
-                </label>
-                <label>Taxe (%) :
-                    <input type="number" name="taxe" value={taxe === 0 ? "" : taxe} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
-                </label>
-                <label> 
-                    <input type="submit"/>
-                </label>
-                <button type="button" onClick={onClose}>Annuler</button>
-            </form>
-            {showModal && (
-                <ConfirmModal
-                    open={showModal}
-                    title={produitExistant? "Confirmer la modification": "Confirmer la création"}
-                    message={`Êtes-vous sûr de vouloir ${produitExistant ? "modifier" : "créer"} ce produit : ${nom} - quantite: ${quantite} - categorie : ${categorie} - unite : ${unite} - prix : ${prix} - mise en vente : ${dateDebutVente} ${dateFinVente ? `- fin de vente :${dateFinVente}` : ""} ${dateLivraison ? `- date de livraison :${dateLivraison}` : ""} - taxe: ${taxe}`}
-                    onClose={handleCancel}
-                    onConfirm={handleConfirm}
-                />
-            )}
+        <FormulaireBase
+            title={produitExistant? "Confirmer la modification": "Confirmer la création"}
+            message={message}
+            handleSubmit={handleSubmit}
+            onClose={onClose}
+            formField={formField}
+        />
+               
             
-        </div>
     );
 };
 export default Formulaire;

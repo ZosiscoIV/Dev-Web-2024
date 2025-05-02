@@ -34,7 +34,7 @@ const Page = () => {
       console.log(msgListe);
   };
   const msgListe = stockFaible.map(p => 
-     ` ${p.produit} - ${p.quantite} ${p.unite} ${p.dateLivraison ? `- livraison le : ${p.getFormatDate()}` : "- livraison le : /"}`);
+     ` ${p.produit} - ${p.quantite} ${p.unite} ${p.dateLivraison ? `- livraison le : ${p.getFormatDate(p.dateLivraison)}` : "- livraison le : /"}`);
   
   return (
       <div>

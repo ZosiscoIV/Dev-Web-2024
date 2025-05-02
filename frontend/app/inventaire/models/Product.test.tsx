@@ -137,7 +137,7 @@ describe("getFormatDate", () => {
             "Fruits",                     
             5  
         );
-        expect(prod.getFormatDate()).toBe("25/03/2025")
+        expect(prod.getFormatDate(prod.dateLivraison)).toBe("25/03/2025")
     });
     it("transforme un string en format date dd/mm/yyyy", () =>{
         const prod = new Product (
@@ -153,7 +153,7 @@ describe("getFormatDate", () => {
             "Fruits",                     
             5  
         );
-        expect(prod.getFormatDate()).toBe("")
+        expect(prod.getFormatDate(prod.dateLivraison)).toBe("")
     });
     it("transforme un string en format date dd/mm/yyyy", () =>{
         const prod = new Product (
@@ -169,7 +169,7 @@ describe("getFormatDate", () => {
             "Fruits",                     
             5  
         );
-        expect(prod.getFormatDate()).toBe("La date de livraison doit être une date")
+        expect(prod.getFormatDate(prod.dateLivraison)).toBe("La date de livraison doit être une date")
     })
     it("transforme un string en format date dd/mm/yyyy", () =>{
         const prod = new Product (
@@ -184,7 +184,7 @@ describe("getFormatDate", () => {
             "Fruits",                     
             5  
         );
-        expect(prod.getFormatDate()).toBe("La date de livraison doit être une date")
+        expect(prod.getFormatDate(prod.dateLivraison)).toBe("La date de livraison doit être une date")
     })
     it("transforme un string en format date dd/mm/yyyy", () =>{
         const prod = new Product (
@@ -199,6 +199,6 @@ describe("getFormatDate", () => {
             "Fruits",                     
             5  
         );
-        expect(prod.getFormatDate()).toBe("La date de livraison doit être une date")
+        expect(prod.getFormatDate(prod.dateLivraison)).toBe("La date de livraison doit être une date")
     })
 });

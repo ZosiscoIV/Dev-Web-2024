@@ -30,12 +30,12 @@ export class Product {
         }
         
     }
-    getFormatDate(): string {
+    getFormatDate(date: string | null): string {
         try {
-            if (this.dateLivraison == null) return ""
+            if (date == null) return ""
             const typeDate = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
-            if (typeDate.test(this.dateLivraison)){
-                return format(new Date(this.dateLivraison), 'dd/MM/yyyy', { locale: fr })
+            if (typeDate.test(date)){
+                return format(new Date(date), 'dd/MM/yyyy', { locale: fr })
             }
             return "La date de livraison doit être une date"
 
