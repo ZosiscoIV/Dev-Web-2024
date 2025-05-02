@@ -31,11 +31,20 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
     setTypeDate('finVente');
     setAffiFormDate(true);
   }
+  const handleDispo = (e: React.ChangeEvent<HTMLInputElement>, prod: Product)=>{
+    prod.dispo = e.target.checked;
+    setProducts([...products]);
+  }
+  const updateProductStatus = async (prodId: number, dispo: boolean) => {
+    //await api.put(`/products/${prodId}`, { isDeleted });
+  };
+  
   return (
     <>
     <table>
       <thead>
         <tr>
+          <th>Disponible</th>
           <th>Nom</th>
           <th>Quantié</th>
           <th>Prix (€)</th>
@@ -45,12 +54,16 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
           <th>Date livraison</th>
           <th>Date fin de vente</th>
           <th>Modification</th>
-          <th>Suppression</th>
         </tr>
       </thead>
       <tbody>
         {products.map((prod) => (
-          <tr key={prod.id} className={(prod.getStatus())}>
+          <tr key={prod.id} className={prod.dispo ? '' : 'grise'}>
+            <td>
+            <div>
+              <input type="checkbox" checked = {prod.dispo} onChange={(e) => handleDispo(e, prod)}/>
+            </div>
+            </td>
             <td>{prod.produit}</td>
             <td>{prod.quantite} {prod.unite}</td>
             <td>{prod.prix.toFixed(2)}</td>
@@ -60,22 +73,21 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
             <td>
               {prod.dateLivraison !== null? prod.getFormatDate(prod.dateLivraison): (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <button onClick={() => handleAjoutDateLivraison(prod)}>Ajouter une date de livraison</button>
+                <button onClick={() => handleAjoutDateLivraison(prod)} disabled={!prod.dispo}>Ajouter une date de livraison</button>
                 </div>)}
             </td>
             <td>
               {prod.dateFinVente !== null? prod.getFormatDate(prod.dateFinVente): (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <button onClick={() => handleAjoutDateFinVente(prod)}>Ajouter une date de fin de vente</button>
+                <button onClick={() => handleAjoutDateFinVente(prod)} disabled={!prod.dispo}>Ajouter une date de fin de vente</button>
                 </div>)}
             </td>
             <td>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
 
-              <button onClick={() => handleModif(prod)}>Modifier un produit</button>
+              <button onClick={() => handleModif(prod)} disabled={!prod.dispo}>Modifier un produit</button>
               </div>
             </td>
-            <td></td>
           </tr>
         ))}
       </tbody>

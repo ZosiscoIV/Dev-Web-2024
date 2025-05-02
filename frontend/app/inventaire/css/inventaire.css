@@ -151,3 +151,12 @@ button:hover {
     margin-bottom: 0.5rem;
     font-size: 1rem;
 }
+
+/*Disponibilite*/
+.grise {
+    background-color: rgb(180, 177, 177);
+}
+button:disabled {
+    background-color: rgb(134, 127, 127);
+    color: black;
+}

@@ -15,12 +15,14 @@ export class Product {
         public dateFinVente: string | null,
         public categorie: string,
         public taxe: number,
+        public dispo: boolean = true,
     ) {}
     getStatus(): string {
         try {
             if (typeof this.quantite !== 'number' || this.quantite === Infinity || this.quantite === -Infinity || this.quantite < 0){
                 throw new TypeError('La quantité doit être un entier')
             }
+            if(!this.dispo) return "🚫 Non disponible"
             if (this.quantite === 0) return "❌ Hors Stock";
             if (this.quantite < 5) return "⚠️ Faible Stock";
             return "✅ En Stock";

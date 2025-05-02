@@ -150,5 +150,5 @@ test('affiche un produit en stock sans date de livraison', () => {
     expect(row).not.toBeNull();
 
     const cells = row!.querySelectorAll('td');
-    expect(cells[6].querySelector('button')).toHaveTextContent('Ajouter une date de livraison');
+    expect(cells[7].querySelector('button')).toHaveTextContent('Ajouter une date de livraison');
 });
