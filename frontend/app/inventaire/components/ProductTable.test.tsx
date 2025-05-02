@@ -36,7 +36,7 @@ test('affiche un produit en stock', () => {
     render( <ProductTable products={[prod]} setProducts={mockSetProducts} setCategories={mockSetCategories}/>)    
     
     expect(screen.getByText('Banane')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText('10 kg')).toBeInTheDocument();
     expect(screen.getByText('3.00')).toBeInTheDocument();
     expect(screen.getByText('✅ En Stock')).toBeInTheDocument();
     expect(screen.getByText('25/03/2025')).toBeInTheDocument();
@@ -64,7 +64,7 @@ test('affiche un produit en stock limite', () => {
     
     expect(screen.getByText('Banane')).toBeInTheDocument();
     expect(screen.getByText('3.00')).toBeInTheDocument();
-    expect(screen.getByText('5')).toBeInTheDocument();
+    expect(screen.getByText('5 kg')).toBeInTheDocument();
     expect(screen.getByText('✅ En Stock')).toBeInTheDocument();
     expect(screen.getByText('25/03/2025')).toBeInTheDocument();
 
@@ -91,7 +91,7 @@ test('affiche un produit faible en stock', () => {
     
     expect(screen.getByText('Banane')).toBeInTheDocument();
     expect(screen.getByText('3.00')).toBeInTheDocument();
-    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText('4 kg')).toBeInTheDocument();
     expect(screen.getByText('⚠️ Faible Stock')).toBeInTheDocument();
     expect(screen.getByText('25/03/2025')).toBeInTheDocument();
 
@@ -117,7 +117,7 @@ test('affiche un produit hors stock', () => {
     
     expect(screen.getByText('Banane')).toBeInTheDocument();
     expect(screen.getByText('3.00')).toBeInTheDocument();
-    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.getByText('0 kg')).toBeInTheDocument();
     expect(screen.getByText('❌ Hors Stock')).toBeInTheDocument();
     expect(screen.getByText('25/03/2025')).toBeInTheDocument();
 
@@ -144,11 +144,11 @@ test('affiche un produit en stock sans date de livraison', () => {
     
     expect(screen.getByText('Banane')).toBeInTheDocument();
     expect(screen.getByText('3.00')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText('10 kg')).toBeInTheDocument();
     expect(screen.getByText('✅ En Stock')).toBeInTheDocument();
     const row = screen.getByText('Banane').closest('tr');
     expect(row).not.toBeNull();
 
     const cells = row!.querySelectorAll('td');
-    expect(cells[4]).toBeEmptyDOMElement();
+    expect(cells[6].querySelector('button')).toHaveTextContent('Ajouter une date de livraison');
 });
