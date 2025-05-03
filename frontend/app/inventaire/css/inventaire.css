@@ -22,7 +22,7 @@ div#corps {
 /* tableau*/
 table {
     border-collapse: collapse;
-    width: 80%; 
+    width: 85%; 
     border: 3px solid black; 
     margin: auto;
 }
@@ -33,21 +33,25 @@ th {
 th, td {
     border: 1px solid black; 
     text-align: center;
+    padding: 10px;
 }
 
 /* Bouton nouveau Produit */
+.AjoutProduit {
+    margin-top: 15px;
+}
 button {
     float: right;
     padding: 10px 15px;
-    background-color: #4d5ede; /* Vert */
+    background-color: #4d5ede; 
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049; /* Changement de couleur au survol */
+    background-color: #22c55e; 
 }
 
 /*Formulaire*/
@@ -96,7 +100,7 @@ button:hover {
 }
 
 .popup-inner input[type="submit"]:hover {
-    background-color: #45a049;
+    background-color: #22c55e;
 }
 
 /*Pop up de confirmation*/
@@ -137,7 +141,7 @@ button:hover {
   }
   
   .btn.confirm {
-    background-color: #007bff;
+    background-color: #4d5ede;
     color: white;
   }
 /*Alerte Faible stock*/

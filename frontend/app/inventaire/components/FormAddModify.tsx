@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useProductForm } from '../hooks/useProductForm';
 import { Categorie } from '../models/Categorie';
 import { Product } from '../models/Product';
-import ConfirmModal from './PopUp'; 
 import FormulaireBase from './FormBase';
 
 type FormProps = {
@@ -11,7 +10,6 @@ type FormProps = {
     produitExistant?: Product;
     onClose: () => void;
 };
-
 
 const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose}) => {
     const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
@@ -56,9 +54,7 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExi
             handleSubmit={handleSubmit}
             onClose={onClose}
             formField={formField}
-        />
-               
-            
+        />    
     );
 };
 export default Formulaire;

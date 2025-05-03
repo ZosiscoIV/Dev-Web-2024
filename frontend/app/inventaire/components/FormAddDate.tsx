@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useProductForm } from '../hooks/useProductForm';
 import { Categorie } from '../models/Categorie';
 import { Product } from '../models/Product';
-import ConfirmModal from './PopUp'; 
 import FormulaireBase from './FormBase';
 
 type FormProps = {
@@ -12,7 +11,6 @@ type FormProps = {
     onClose: () => void;
     typeDate: string;
 };
-
 
 const FormulaireDate: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose, typeDate}) => {
     const {nom, dateFinVente, dateLivraison, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
@@ -31,8 +29,7 @@ const FormulaireDate: React.FC<FormProps> = ({setProducts, setCategories, produi
             <label>Date de fin de vente :
             <input type="date" name="dateFinVente" value={dateFinVente} onChange={handleChange} required/>
         </label>  
-        )
-
+    )
 
     return (
         <FormulaireBase

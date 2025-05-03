@@ -33,7 +33,8 @@ test('récupère et affiche le produit' , async () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5,
+        true   
     );
     (api.getProducts as jest.Mock).mockResolvedValueOnce([mockResponse]); 
     render (<TestComponent categorie="tout" stock="tout" />); 
@@ -68,7 +69,8 @@ test('récupère et affiche le produit de la catégorie fruit et en stock' , asy
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5
+        5,
+        true
     );
     (api.getProducts as jest.Mock).mockResolvedValueOnce([mockResponse]); 
     render (<TestComponent categorie="Fruit" stock="enStock" />); 
@@ -98,7 +100,8 @@ test('récupère et affiche les produits' , async () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5
+        5,
+        true
     ),
     new Product (
         2,
@@ -111,7 +114,8 @@ test('récupère et affiche les produits' , async () => {
         '2025-03-01T00:00:00.000Z',   
         '2025-04-01T00:00:00.000Z',   
         "Fruits",                     
-        5    
+        5,
+        true    
     )];
     (api.getProducts as jest.Mock).mockResolvedValueOnce(mockResponse); 
     render (<TestComponent categorie="tout" stock="tout" />); 

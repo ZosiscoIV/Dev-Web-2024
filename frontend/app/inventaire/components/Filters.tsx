@@ -1,4 +1,5 @@
 import React from 'react';
+
 type FiltresProps = {
   categorie: string;
   stock: "tout" | "enStock" | 'faibleStock'| "horsStock";
@@ -7,8 +8,7 @@ type FiltresProps = {
   onStockChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-
-const Filtre: React.FC<FiltresProps> = ({categorie, stock, categories,onCategorieChange, onStockChange }) => {
+const Filtre: React.FC<FiltresProps> = ({categorie, stock, categories, onCategorieChange, onStockChange }) => {
   return (
     <div id="filtre">
       <label htmlFor="categorie">Catégorie  </label>

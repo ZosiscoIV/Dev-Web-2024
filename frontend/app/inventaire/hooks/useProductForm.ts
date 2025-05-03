@@ -4,15 +4,19 @@ import { Product } from '../models/Product';
 import { Categorie } from '../models/Categorie';
 
 import { format } from 'date-fns';
+
 function formatDateForInput(date: string | null): string {
     if (!date) return '';
     try {
         return format(new Date(date), 'yyyy-MM-dd');
-    } catch (e) {
+    } 
+    catch (e) {
         return '';
     }
 }
+
 export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<Product[]>>, setCategories:React.Dispatch<React.SetStateAction<Categorie[]>>, produitExistant?: Product) => {
+    
     const [nom, setNom] = useState<string>('');
     const [quantite, setQuantite] = useState<number>(0);
     const [categorie, setCategorie] = useState<string>('');
@@ -28,8 +32,6 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         if (produitExistant){
             console.log("produitExistant dans useEffect:", produitExistant);
             console.log('Détails du produitExistant :', JSON.stringify(produitExistant, null, 2));
-
-
             setNom(produitExistant.produit);
             setQuantite(produitExistant.quantite);
             setCategorie(produitExistant.categorie);
@@ -85,9 +87,6 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         }
     } 
     const handleSubmit = async () => {
-        //e.preventDefault();
-
-        // Prépare les données à envoyer au backend
         const data = {
             nom,
             quantite,
@@ -122,7 +121,6 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         }
 
         else {
-            // Envoie la requête POST au backend
             try {
                 const response = await fetch('http://localhost:6942/api/products', {
                     method: 'POST',
@@ -149,7 +147,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             if (val === "") {
                 setQuantite(0);
             } else {
-                let valeur = val.replace(/^0+(?=\d)/, ""); // Supprime le 0 devant un chiffre
+                let valeur = val.replace(/^0+(?=\d)/, ""); 
                 setQuantite(parseInt(valeur, 10));
             }
         };
@@ -159,7 +157,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             if (val === "") {
                 setPrix(0);
             } else {
-                let valeur = val.replace(/^0+(?=\d)/, ""); // Supprime le 0 devant un chiffre
+                let valeur = val.replace(/^0+(?=\d)/, ""); 
                 setPrix(parseFloat(valeur));
             }
         }
@@ -170,7 +168,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             if (val === "") {
                 setTaxe(0);
             } else {
-                let valeur = val.replace(/^0+(?=\d)/, ""); // Supprime le 0 devant un chiffre
+                let valeur = val.replace(/^0+(?=\d)/, ""); 
                 setTaxe(parseInt(valeur, 10));
             }
         };

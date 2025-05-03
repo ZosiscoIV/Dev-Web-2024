@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Product } from "../models/Product";
 import { Categorie} from "../models/Categorie";
-import { useProductForm } from '../hooks/useProductForm';
-import Formulaire from './AddProduct';
-import FormulaireDate from './AddLivraison';
+import Formulaire from './FormAddModify';
+import FormulaireDate from './FormAddDate';
 
 type ProductTableProps = {
   products: Product[];
@@ -44,15 +43,14 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
 
         if (response.ok) {
           const updatedProducts = [...products].sort((a, b) => {
-            // Disponibilité décroissante : true (1) avant false (0)
             if (a.dispo !== b.dispo) {
               return b.dispo ? 1 : -1;
             }
-            // Sinon tri alphabétique par nom de produit
             return a.produit.localeCompare(b.produit);
           });
           setProducts([...updatedProducts]); 
-        } else {
+        } 
+        else {
           console.error('Erreur lors de la mise à jour de la disponibilité');
         }
   }

@@ -1,9 +1,5 @@
 import React, { JSX, useState } from 'react';
-import { useProductForm } from '../hooks/useProductForm';
-import { Categorie } from '../models/Categorie';
-import { Product } from '../models/Product';
 import ConfirmModal from './PopUp'; 
-
 
 type FormBaseProps = {
     title: string;
@@ -13,7 +9,6 @@ type FormBaseProps = {
     formField: JSX.Element;
 };
 
-
 const FormulaireBase: React.FC<FormBaseProps> = ({title, message, handleSubmit, onClose, formField}) => {
     
     const [showModal, setShowModal] = useState(false);
@@ -22,19 +17,15 @@ const FormulaireBase: React.FC<FormBaseProps> = ({title, message, handleSubmit, 
         e.preventDefault();
         setShowModal(true);
     };
-
     const handleConfirm = () => {
         handleSubmit();
         setShowModal(false);
-        
         onClose();
         
     };
-
     const handleCancel = () => {
         setShowModal(false);
     };
-
 
     return (
         <div className="popup-inner">
