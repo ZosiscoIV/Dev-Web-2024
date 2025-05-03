@@ -4,6 +4,7 @@ const productController = require('./productController');
 const authController = require('./authController'); // Nouvelle ligne
 const { swaggerUi, specs } = require("../swagger");
 const rateLimit = require('express-rate-limit'); // Nouvelle ligne
+const jwt = require('jsonwebtoken'); // ⬅️ REQUIRED
 
 const app = express();
 const PORT = 6942;
@@ -24,28 +25,34 @@ app.get('/api/hello', (req, res) => {
 
 // Nouveaux endpoints d'authentification
 app.use('/api/auth', authController); // Nouvelle ligne
+app.get('/api/validate-token', authenticateToken, (req, res) => {
+    res.json({ valid: true });
+});
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api', productController);
 
 // Middleware d'authentification (Nouveau)
-const authenticate = async (req, res, next) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+function authenticateToken(req, res, next) {
+    // 1) Grab the header
+    const authHeader = req.headers['authorization'];           // e.g. "Bearer abc.def.ghi"
+    const token      = authHeader && authHeader.split(' ')[1];
 
-        const [client] = await pool.query(
-            `SELECT id FROM magasin.tbclients 
-      WHERE id = ? AND is_deleted = FALSE`,
-            [decoded.clientId]
-        );
-
-        if (!client.length) throw new Error();
-        req.user = client[0];
-        next();
-    } catch (error) {
-        res.status(401).json({ error: 'Non autorisé' });
+    if (!token) {
+        return res.status(401).json({ error: 'Token manquant' });
     }
+
+    // 2) Verify signature + decode
+    jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
+        if (err) {
+            // err.name === 'TokenExpiredError' or 'JsonWebTokenError'
+            return res.status(403).json({ error: 'Token invalide ou expiré' });
+        }
+
+        // 3) Attach the decoded payload to req.user
+        req.user = payload;
+        next();
+    });
 };
 
 app.listen(PORT, () => {
