@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const mysql = require('mysql2');
 require('dotenv').config({ path: '../.env' });
 
@@ -27,12 +26,11 @@ const db2 = mysql.createPool({
 // token generation function
 function tokenGen(idd, nom, prenom, email){
     const payload = { id: idd, nom, prenom, email };
-    const token = jwt.sign(
+    return  jwt.sign(
         payload,
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN }
     );
-    return token;
 }
 
 // Crée une version Promise du pool
@@ -80,7 +78,7 @@ router.post('/register', async (req, res) => {
 
         // 3) Uniqueness checks
         const [emailRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbclients WHERE adresseMail = ?',
+            'SELECT id FROM Epicerie.tbclients WHERE adresseMail = ?',
             [email]
         );
         if (emailRows.length > 0) {
@@ -88,7 +86,7 @@ router.post('/register', async (req, res) => {
         }
 
         const [telRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbclients WHERE tel = ?',
+            'SELECT id FROM Epicerie.tbclients WHERE tel = ?',
             [tel]
         );
         if (telRows.length > 0) {
@@ -98,7 +96,7 @@ router.post('/register', async (req, res) => {
         // 4) Hash & insert
         const hash = await bcrypt.hash(password, 10);
         const [result] = await promisePool.query(
-            `INSERT INTO magasin.tbclients 
+            `INSERT INTO Epicerie.tbclients 
         (nom, prenom, password, adresseMail, tel) 
         VALUES (?, ?, ?, ?, ?)`,
             [nom, prenom, hash, email, tel]
@@ -110,6 +108,38 @@ router.post('/register', async (req, res) => {
     } catch (err) {
         console.error('Registration error:', err);
         return res.status(400).json({ error: 'Erreur de creation de compte' });
+    }
+});
+
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (typeof email !== 'string' || typeof password !== 'string') {
+        return res.status(400).json({ error: 'Email et mot de passe requis' });
+    }
+
+    try {
+        const [rows] = await promisePool.query(
+            'SELECT * FROM Epicerie.tbclients WHERE adresseMail = ?',
+            [email]
+        );
+
+        if (rows.length === 0) {
+            return res.status(401).json({ error: 'Identifiants incorrects' });
+        }
+
+        const user = rows[0];
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
+            return res.status(401).json({ error: 'Mot de passe incorrect' });
+        }
+
+        const token = tokenGen(user.id, user.nom, user.prenom, user.adresseMail);
+        return res.json({ token });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur serveur' });
     }
 });
 
