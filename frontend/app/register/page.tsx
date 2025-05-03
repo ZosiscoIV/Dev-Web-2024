@@ -29,7 +29,7 @@ const RegisterForm = () => {
 
         // Validation
         if (formData.password !== formData.confirmPassword) {
-            setErrorMessage('Les mots de passe ne correspondent pas.');
+            setErrorMessage('Les mots de passe ne correspondent pas');
             return;
         }
 
@@ -56,7 +56,7 @@ const RegisterForm = () => {
             // Ici, on récupère le token renvoyé par le serveur
             const data = await response.json();
             localStorage.setItem('token', data.token);
-            router.push('/login');
+            router.push('/');
         } catch (error: any) {
             setErrorMessage(error.message || 'Une erreur est survenue');
         }
@@ -65,7 +65,7 @@ const RegisterForm = () => {
     return (
         <div className="auth-container">
             <h1 className= "Header" >Créer un compte</h1>
-            <form onSubmit={handleSubmit} className="auth-form"  data-testid="register-form" >
+            <form onSubmit={handleSubmit} className="auth-form">
                 <div className="form-group">
                     <label htmlFor="firstName">Prénom</label>
                     <input
