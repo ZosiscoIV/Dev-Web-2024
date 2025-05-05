@@ -78,7 +78,7 @@ router.post('/register', async (req, res) => {
 
         // 3) Uniqueness checks
         const [emailRows] = await promisePool.query(
-            'SELECT id FROM magasin .tbclients WHERE adresseMail = ?',
+            'SELECT id FROM magasin.tbclients WHERE adresseMail = ?',
             [email]
         );
         if (emailRows.length > 0) {
