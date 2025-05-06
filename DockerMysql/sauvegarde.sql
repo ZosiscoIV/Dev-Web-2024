@@ -1,27 +1,27 @@
-USE Epicerie;
+USE magasin;
 
 UNLOCK TABLES;
 
-DROP TABLE IF EXISTS `tbfavoris`;
-DROP TABLE IF EXISTS `tbcommandes`;
+DROP TABLE IF EXISTS `tbFavoris`;
+DROP TABLE IF EXISTS `tbCommandes`;
 DROP TABLE IF EXISTS `tbStock`;
 DROP TABLE IF EXISTS `tbProduits`;
-DROP TABLE IF EXISTS `tbclients`;
-DROP TABLE IF EXISTS `tbtaxe`;
-DROP TABLE IF EXISTS `tbunite`;
-DROP TABLE IF EXISTS `tbcategorie`;
+DROP TABLE IF EXISTS `tbClients`;
+DROP TABLE IF EXISTS `tbTaxe`;
+DROP TABLE IF EXISTS `tbUnite`;
+DROP TABLE IF EXISTS `tbCategorie`;
 
-CREATE TABLE `tbcategorie` (
+CREATE TABLE `tbCategorie` (
   `id` int NOT NULL AUTO_INCREMENT,
   `categorie` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-LOCK TABLES `tbcategorie` WRITE;
-INSERT INTO `tbcategorie` VALUES (1,'Fruits'),(2,'Légumes'),(3,'Céréales'),(4,'Crêmerie'),(5,'Epicerie sucrée');
+LOCK TABLES `tbCategorie` WRITE;
+INSERT INTO `tbCategorie` VALUES (1,'Fruits'),(2,'Légumes'),(3,'Céréales'),(4,'Crêmerie'),(5,'Epicerie sucrée');
 UNLOCK TABLES;
 
-CREATE TABLE `tbclients` (
+CREATE TABLE `tbClients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `prenom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -36,22 +36,22 @@ CREATE TABLE `tbclients` (
   UNIQUE KEY `tel` (`tel`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `tbtaxe` (
+CREATE TABLE `tbTaxe` (
   `id` int NOT NULL AUTO_INCREMENT,
   `taxe` float NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-LOCK TABLES `tbtaxe` WRITE;
-INSERT INTO `tbtaxe` VALUES (1,21),(2,6);
+LOCK TABLES `tbTaxe` WRITE;
+INSERT INTO `tbTaxe` VALUES (1,21),(2,6);
 UNLOCK TABLES;
 
-CREATE TABLE `tbunite` (
+CREATE TABLE `tbUnite` (
   `id` int NOT NULL AUTO_INCREMENT,
   `unite` char(6) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-LOCK TABLES `tbunite` WRITE;
-INSERT INTO `tbunite` VALUES (1,'kg'),(2,'l'),(3,'pc');
+LOCK TABLES `tbUnite` WRITE;
+INSERT INTO `tbUnite` VALUES (1,'kg'),(2,'l'),(3,'pc');
 UNLOCK TABLES;
 
 
@@ -68,15 +68,15 @@ CREATE TABLE `tbProduits` (
   KEY `idUnite` (`idUnite`),
   KEY `idTaxe` (`idTaxe`),
   KEY `idCategorie` (`idCategorie`),
-  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
-  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
-  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
+  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbUnite` (`id`),
+  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbTaxe` (`id`),
+  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbCategorie` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 LOCK TABLES `tbProduits` WRITE;
 INSERT INTO `tbProduits` VALUES (1,'Banane',3,'2024-03-06',NULL,1,1,1),(2,'Fraise',5.99,'2024-03-06',NULL,3,1,1),(3,'Pâte',3.49,'2024-12-06',NULL,3,1,3),(4,'Brocoli',2.69,'2024-12-06',NULL,3,1,2),(5,'Farine',1.05,'2024-12-06',NULL,3,1,3),(6,'Beurre',3.25,'2024-03-06',NULL,3,1,4),(7,'Sucre',1.69,'2024-03-06',NULL,3,1,5);
 UNLOCK TABLES;
 
-CREATE TABLE `tbcommandes` (
+CREATE TABLE `tbCommandes` (
   `idCommande` int NOT NULL AUTO_INCREMENT,
   `idProduit` int NOT NULL,
   `idClient` int NOT NULL,
@@ -85,11 +85,11 @@ CREATE TABLE `tbcommandes` (
   PRIMARY KEY (`idCommande`),
   UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
-  CONSTRAINT `tbcommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
-  CONSTRAINT `tbcommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
+  CONSTRAINT `tbCommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+  CONSTRAINT `tbCommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbClients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `tbfavoris` (
+CREATE TABLE `tbFavoris` (
   `idFavori` int NOT NULL AUTO_INCREMENT,
   `idProduit` int NOT NULL,
   `idClient` int NOT NULL,
@@ -97,8 +97,8 @@ CREATE TABLE `tbfavoris` (
   PRIMARY KEY (`idFavori`),
   UNIQUE KEY `fk_favoris` (`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
-  CONSTRAINT `tbfavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
-  CONSTRAINT `tbfavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbclients` (`id`)
+  CONSTRAINT `tbFavoris_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+  CONSTRAINT `tbFavoris_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbClients` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

@@ -78,7 +78,7 @@ router.post('/register', async (req, res) => {
 
         // 3) Uniqueness checks
         const [emailRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbclients WHERE adresseMail = ?',
+            'SELECT id FROM magasin.tbClients WHERE adresseMail = ?',
             [email]
         );
         if (emailRows.length > 0) {
@@ -86,7 +86,7 @@ router.post('/register', async (req, res) => {
         }
 
         const [telRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbclients WHERE tel = ?',
+            'SELECT id FROM magasin.tbClients WHERE tel = ?',
             [tel]
         );
         if (telRows.length > 0) {
@@ -96,7 +96,7 @@ router.post('/register', async (req, res) => {
         // 4) Hash & insert
         const hash = await bcrypt.hash(password, 10);
         const [result] = await promisePool.query(
-            `INSERT INTO magasin.tbclients 
+            `INSERT INTO magasin.tbClients 
         (nom, prenom, password, adresseMail, tel) 
         VALUES (?, ?, ?, ?, ?)`,
             [nom, prenom, hash, email, tel]
@@ -120,7 +120,7 @@ router.post('/login', async (req, res) => {
 
     try {
         const [rows] = await promisePool.query(
-            'SELECT * FROM magasin.tbclients WHERE adresseMail = ?',
+            'SELECT * FROM magasin.tbClients WHERE adresseMail = ?',
             [email]
         );
 
