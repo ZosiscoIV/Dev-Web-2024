@@ -1,0 +1,78 @@
+.home-container {
+    text-align: center;
+    padding: 40px;
+    max-width: 1500px;
+    margin: auto;
+}
+
+.carousel-wrapper {
+    position: relative;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 20px 0;
+    overflow: hidden;
+}
+
+.products-carousel {
+    display: flex;
+    gap: 20px;
+    scroll-behavior: smooth;
+    padding: 10px;
+    overflow-x: auto;
+    scrollbar-width: none; /* Cache la scrollbar */
+    -ms-overflow-style: none;
+    scroll-snap-type: x mandatory;
+}
+
+.products-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.product-card {
+    flex: 0 0 250px; /* Ajustement de la largeur */
+    height: 320px; /* Réduction de la hauteur */
+    scroll-snap-align: center;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.product-card img {
+    width: 100%;
+    height: 180px; /* Taille de l’image ajustée */
+    object-fit: contain; /* Pour éviter l’étirement */
+    border-radius: 8px;
+}
+
+.scroll-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.scroll-button:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.scroll-button.left {
+    left: 0;
+}
+
+.scroll-button.right {
+    right: 0;
+}
