@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -19,11 +19,11 @@ const db2 = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
-  });
-  
-  // Crée une version Promise du pool
+});
+
+// Crée une version Promise du pool
 const promisePool = db2.promise();
-  
+
 console.log(process.env.DB_CHARSET);
 
 // Vérification de la connexion
@@ -76,7 +76,7 @@ db.connect(err => {
  *                     type: date
  *                     example: "2025-03-24T23:00:00.000Z"
  *       404:
- *         description: Aucun produit trouvé. 
+ *         description: Aucun produit trouvé.
  *       500:
  *         description: Erreur avec la base de données.
  */
@@ -231,7 +231,7 @@ router.post('/products',async (req, res) => {
     try {
         console.log("Requête reçue pour créer un produit...",req.body);
         const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
-        
+
         const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE  nom = ?", [nom]);
         if(verifProd.length > 0) {
             return res.status(400).send('Le produit existe déjà');
@@ -240,12 +240,12 @@ router.post('/products',async (req, res) => {
 
         const dateFinVenteFinal = (dateFinVente === "" ? null : dateFinVente)
         await promisePool.query(`
-            INSERT INTO magasin.tbunite (unite)
+            INSERT INTO magasin.tbUnite (unite)
             SELECT * FROM (SELECT ?) AS tmp(unite)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbunite WHERE unite = ?
+                SELECT id FROM magasin.tbUnite WHERE unite = ?
             ) LIMIT 1;`, [unite,unite]);
-        const [verifUnite] = await promisePool.query("SELECT id FROM magasin.tbunite WHERE  unite = ?", [unite]);
+        const [verifUnite] = await promisePool.query("SELECT id FROM magasin.tbUnite WHERE  unite = ?", [unite]);
         const idUnite = verifUnite[0].id;
 
         await promisePool.query(`
@@ -257,17 +257,17 @@ router.post('/products',async (req, res) => {
         `, [categorie, categorie]);
         const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbCategorie WHERE categorie = ?", [categorie]);
         const idCategorie = verifCategorie[0].id;
-        
+
         await promisePool.query(`
-            INSERT INTO magasin.tbtaxe (taxe)
+            INSERT INTO magasin.tbTaxe (taxe)
             SELECT * FROM (SELECT ?) AS tmp(taxe)
             WHERE NOT EXISTS (
-                SELECT id FROM magasin.tbtaxe WHERE taxe = ?
+                SELECT id FROM magasin.tbTaxe WHERE taxe = ?
             ) LIMIT 1;
         `, [taxe, taxe]);
-        const [verifTaxe] = await promisePool.query("SELECT id FROM magasin.tbtaxe WHERE taxe = ?", [taxe]);
+        const [verifTaxe] = await promisePool.query("SELECT id FROM magasin.tbTaxe WHERE taxe = ?", [taxe]);
         const idTaxe = verifTaxe[0].id;
-        
+
         await promisePool.query(`
             INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
             SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie
@@ -280,15 +280,15 @@ router.post('/products',async (req, res) => {
         const idProduit = verifProduit[0].id;
 
         await promisePool.query(`
-            INSERT INTO magasin.S (idProduit, quantite, dateLivraison)
+            INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison)
             SELECT idProduit, quantite, ? FROM (SELECT ?, ?, ?) AS tmp(idProduit, quantite, dateLivraison)
             WHERE NOT EXISTS (
-                SELECT idProduit FROM magasin.S WHERE idProduit = ?
+                SELECT idProduit FROM magasin.tbStock WHERE idProduit = ?
             );
         `, [dateLivraisonFinal, idProduit, quantite, dateLivraison, idProduit]);
-        
+
         res.status(201).send('Produit créé avec succès')
-        
+
     } catch (error) {
         // Si erreur dans la requête SQL
         console.error('Erreur lors de la récupération des catégories:', error);
@@ -463,7 +463,7 @@ router.put('/products/:id/dateLivraison', (req, res) => {
  * @swagger
  * /alerts/stockFaible:
  *   get:
- *     summary: Alerter si le stock est trop faible 
+ *     summary: Alerter si le stock est trop faible
  *     description: Retourne tous les produits qui ont un stock trop faible avec le nom, prix et quantité.
  *     responses:
  *       200:
@@ -497,7 +497,7 @@ router.put('/products/:id/dateLivraison', (req, res) => {
  *                     type: date
  *                     example: "2025-03-24T23:00:00.000Z"
  *       404:
- *         description: Aucun produit trouvé. 
+ *         description: Aucun produit trouvé.
  *       500:
  *         description: Erreur avec la base de données.
 
@@ -542,11 +542,11 @@ module.exports = router;
  *                   stock:
  *                     type: number
  *                     example: 6
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  *       404:
  *         description: Aucun articles trouvés dans le panier.
  *       500:
@@ -644,3 +644,110 @@ router.post('/addToCart', (req, res) => {
         res.status(201).json({ message: "Produit ajouté au panier avec succès", idCommande: results.insertId });
     });
 });
+
+/**
+ * @swagger
+ * /api/produit/{idProduit}/composition:
+ *   get:
+ *     summary: Obtenir la composition complète d’un produit
+ *     description: Retourne les allergènes, ingrédients et informations nutritionnelles d’un produit donné.
+ *     parameters:
+ *       - in: path
+ *         name: idProduit
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du produit
+ *     responses:
+ *       200:
+ *         description: Composition récupérée avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 allergenes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nom:
+ *                         type: string
+ *                 ingredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nom:
+ *                         type: string
+ *                       ordre:
+ *                         type: integer
+ *                 nutrition:
+ *                   type: object
+ *                   properties:
+ *                     calories:
+ *                       type: number
+ *                     proteines:
+ *                       type: number
+ *                     glucides:
+ *                       type: number
+ *                     lipides:
+ *                       type: number
+ *                     fibres:
+ *                       type: number
+ *                     sel:
+ *                       type: number
+ *       404:
+ *         description: Aucune composition trouvée pour ce produit.
+ *       500:
+ *         description: Erreur serveur.
+ */
+
+router.get('/produit/:idProduit/composition', async (req, res) => {
+    const { idProduit } = req.params;
+
+    try {
+        const allergenesQuery = `
+            SELECT a.id, a.nom
+            FROM magasin.tbProduitAllergene pa
+            JOIN magasin.tbAllergene a ON pa.idAllergene = a.id
+            WHERE pa.idProduit = ?
+        `;
+        const [allergenes] = await db.promise().query(allergenesQuery, [idProduit]);
+
+        const ingredientsQuery = `
+            SELECT i.id, i.nom, pi.ordre
+            FROM magasin.tbProduitIngredient pi
+            JOIN magasin.tbIngredient i ON pi.idIngredient = i.id
+            WHERE pi.idProduit = ?
+            ORDER BY pi.ordre ASC
+        `;
+        const [ingredients] = await db.promise().query(ingredientsQuery, [idProduit]);
+
+        const nutritionQuery = `
+            SELECT calories, proteines, glucides, lipides, fibres, sel
+            FROM magasin.tbNutrition
+            WHERE idProduit = ?
+        `;
+        const [nutritionRows] = await db.promise().query(nutritionQuery, [idProduit]);
+        const nutrition = nutritionRows[0] || null;
+
+        if (!allergenes.length && !ingredients.length && !nutrition) {
+            return res.status(404).send('Aucune composition trouvée pour ce produit');
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.json({ allergenes, ingredients, nutrition });
+    } catch (err) {
+        console.error('Erreur lors de la récupération de la composition du produit :', err);
+        res.status(500).send('Erreur de base de données');
+    }
+});
+
+
+
+module.exports = router;
