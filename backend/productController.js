@@ -644,3 +644,106 @@ router.post('/addToCart', (req, res) => {
         res.status(201).json({ message: "Produit ajouté au panier avec succès", idCommande: results.insertId });
     });
 });
+
+/**
+ * @swagger
+ * /api/produit/{idProduit}/composition:
+ *   get:
+ *     summary: Obtenir la composition complète d’un produit
+ *     description: Retourne les allergènes, ingrédients et informations nutritionnelles d’un produit donné.
+ *     parameters:
+ *       - in: path
+ *         name: idProduit
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID du produit
+ *     responses:
+ *       200:
+ *         description: Composition récupérée avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 allergenes:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nom:
+ *                         type: string
+ *                 ingredients:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       nom:
+ *                         type: string
+ *                       ordre:
+ *                         type: integer
+ *                 nutrition:
+ *                   type: object
+ *                   properties:
+ *                     calories:
+ *                       type: number
+ *                     proteines:
+ *                       type: number
+ *                     glucides:
+ *                       type: number
+ *                     lipides:
+ *                       type: number
+ *                     fibres:
+ *                       type: number
+ *                     sel:
+ *                       type: number
+ *       404:
+ *         description: Aucune composition trouvée pour ce produit.
+ *       500:
+ *         description: Erreur serveur.
+ */
+
+router.get('/produit/:idProduit/composition', async (req, res) => {
+    const { idProduit } = req.params;
+
+    try {
+        const allergenesQuery = `
+            SELECT a.id, a.nom
+            FROM magasin.tbProduitAllergene pa
+            JOIN magasin.tbAllergene a ON pa.idAllergene = a.id
+            WHERE pa.idProduit = ?
+        `;
+        const [allergenes] = await db.promise().query(allergenesQuery, [idProduit]);
+
+        const ingredientsQuery = `
+            SELECT i.id, i.nom, pi.ordre
+            FROM magasin.tbProduitIngredient pi
+            JOIN magasin.tbIngredient i ON pi.idIngredient = i.id
+            WHERE pi.idProduit = ?
+            ORDER BY pi.ordre ASC
+        `;
+        const [ingredients] = await db.promise().query(ingredientsQuery, [idProduit]);
+
+        const nutritionQuery = `
+            SELECT calories, proteines, glucides, lipides, fibres, sel
+            FROM magasin.tbNutrition
+            WHERE idProduit = ?
+        `;
+        const [nutritionRows] = await db.promise().query(nutritionQuery, [idProduit]);
+        const nutrition = nutritionRows[0] || null;
+
+        if (!allergenes.length && !ingredients.length && !nutrition) {
+            return res.status(404).send('Aucune composition trouvée pour ce produit');
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+        res.json({ allergenes, ingredients, nutrition });
+    } catch (err) {
+        console.error('Erreur lors de la récupération de la composition du produit :', err);
+        res.status(500).send('Erreur de base de données');
+    }
+});
