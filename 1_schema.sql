@@ -43,6 +43,7 @@ CREATE TABLE tbStock (
                          idProduit INT PRIMARY KEY,
                          quantite INT NOT NULL,
                          dateLivraison DATE NULL,
+                         disponibilite boolean NOT NULL,
                          FOREIGN KEY (idProduit) REFERENCES tbProduits(id)
 ) ENGINE=InnoDB;
 

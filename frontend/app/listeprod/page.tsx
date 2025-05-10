@@ -44,7 +44,8 @@ const Page = () => {
   const refreshAllProducts = () => {
     setReloadAllProducts(prev => prev + 1);
   };
-  const stockFaible = allProducts.filter(p => p.quantite < 5);
+  const stockFaible = products.filter(p => p.quantite < 5 && p.dispo === true);
+  console.log(stockFaible);
   const msgListe = stockFaible.map(p => 
      ` ${p.produit} - ${p.quantite} ${p.unite} ${p.dateLivraison ? `- livraison le : ${p.getFormatDate(p.dateLivraison)}` : "- livraison le : /"}`);
 

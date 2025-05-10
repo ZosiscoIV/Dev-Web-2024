@@ -26,7 +26,15 @@ export const useProducts = () => {
             try {
                 const response = await fetch("http://localhost:6942/api/products");
                 const data = await response.json();
-                setProducts(Array.isArray(data) ? data : []);
+
+                if (Array.isArray(data)) {
+                    const produitsDisponibles = data.filter((p: { dispo: boolean }) => p.dispo === true);
+                    console.log('Les produits disponibles sont ', produitsDisponibles)
+                    setProducts(produitsDisponibles);
+                } 
+                else {
+                    setProducts([]);
+                }
             } catch (error) {
                 console.error("Erreur lors de la récupération des produits:", error);
                 setProducts([]);
