@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { getCategorie } from '../services/productService';
 import { Categorie } from '../models/Categorie';

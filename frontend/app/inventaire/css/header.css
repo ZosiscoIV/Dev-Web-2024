@@ -1,0 +1,54 @@
+.Header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background-color: #f8f9fa;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.left,
+.right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.right {
+    justify-content: flex-end;
+}
+
+.title {
+    flex-grow: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+.vertical-bar {
+    width: 2px;               
+    background-color: #ccc;   
+    height: 50px;             
+    margin: 0 10px;           
+}
+img {
+    width: 60px;
+    height: auto;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.boutonLogin {
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.boutonLogin:hover {
+    background-color: #22c55e;
+    color: black;
+}

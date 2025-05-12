@@ -1,11 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getProducts, getCategorie} from '../services/productService'
 import { Product } from '../models/Product';
 import { Categorie } from '../models/Categorie';
 
+import { format } from 'date-fns';
 
-export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<Product[]>>, setCategories:React.Dispatch<React.SetStateAction<Categorie[]>>) => {
-    const [formVisible, setFormVisible] = useState<boolean>(false)
+function formatDateForInput(date: string | null): string {
+    if (!date) return '';
+    try {
+        return format(new Date(date), 'yyyy-MM-dd');
+    } 
+    catch (e) {
+        return '';
+    }
+}
+
+export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<Product[]>>, setCategories:React.Dispatch<React.SetStateAction<Categorie[]>>, produitExistant?: Product) => {
+    
     const [nom, setNom] = useState<string>('');
     const [quantite, setQuantite] = useState<number>(0);
     const [categorie, setCategorie] = useState<string>('');
@@ -16,9 +27,33 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
     const [dateLivraison, setDateLivraison] = useState<string>('');
     const [taxe, setTaxe] = useState<number>(0);
     
-    const afficherForm = () => {
-        setFormVisible(!formVisible);
-    }
+
+    useEffect( () => {
+        if (produitExistant){
+            console.log("produitExistant dans useEffect:", produitExistant);
+            console.log('Détails du produitExistant :', JSON.stringify(produitExistant, null, 2));
+            setNom(produitExistant.produit);
+            setQuantite(produitExistant.quantite);
+            setCategorie(produitExistant.categorie);
+            setUnite(produitExistant.unite);
+            setPrix(produitExistant.prix);
+            setDateDebutVente(formatDateForInput(produitExistant.dateDebutVente));
+            setDateFinVente(formatDateForInput(produitExistant.dateFinVente || ''));
+            setDateLivraison(formatDateForInput(produitExistant.dateLivraison || ''));
+            setTaxe(produitExistant.taxe);
+        }
+        else {
+            setNom('');
+            setQuantite(0);
+            setCategorie('');
+            setUnite('');
+            setPrix(0);
+            setDateDebutVente('');
+            setDateFinVente('');
+            setDateLivraison('');
+            setTaxe(0);
+        }
+    },[produitExistant?.id])
 
     const resetForm = () => {
         setNom('');
@@ -31,11 +66,27 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         setDateLivraison('');
         setTaxe(0);
     };
+    const handleResponse = async (response: Response, msgReussi : string, msgErreur: string) =>{
+        if (response.ok) {
+            resetForm()
+            try {
+                const prod = await getProducts();
+                const cat = await getCategorie();
+                setProducts(prod);
+                setCategories(cat);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+            } 
+            catch (error){
+                alert('Erreur lors de la mise à jour')
+            }
 
-        // Prépare les données à envoyer au backend
+            alert(msgReussi);
+        } 
+        else {
+            alert(msgErreur);
+        }
+    } 
+    const handleSubmit = async () => {
         const data = {
             nom,
             quantite,
@@ -46,38 +97,45 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             dateFinVente,
             dateLivraison,
             taxe,
+            ...(produitExistant?.id && { id: produitExistant.id })
+
         };
 
-        // Envoie la requête POST au backend
-        try {
-            const response = await fetch('http://localhost:6942/api/products', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-            console.log('Statut de la réponse:', response.status);  // Statut HTTP (200, 400, etc.)
-            console.log(response);
-            if (response.ok) {
-                resetForm()
-                try {
-                    const prod = await getProducts();
-                    const cat = await getCategorie();
-                    setProducts(prod);
-                    setCategories(cat);
-
-                } catch (error){
-                    alert('Erreur lors de la mise à jour')
-                }
-        
-                alert('Produit créé avec succès!');
-            } else {
-                alert('Erreur lors de la création du produit');
+        if (produitExistant){
+            try {
+                const response = await fetch(`http://localhost:6942/api/products/${produitExistant.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                console.log('Statut de la réponse:', response.status);  // Statut HTTP (200, 400, etc.)
+                console.log(response);
+                await handleResponse(response, 'Produit modifié avec succès !', 'Erreur lors de la modification du produit')
+            } 
+            catch (error) {
+                console.error('Erreur de réseau:', error);
+                alert('Une erreur est survenue lors de l\'envoi des données');
             }
-        } catch (error) {
-            console.error('Erreur de réseau:', error);
-            alert('Une erreur est survenue lors de l\'envoi des données');
+        }
+
+        else {
+            try {
+                const response = await fetch('http://localhost:6942/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                console.log('Statut de la réponse:', response.status);  
+                console.log(response);
+                await handleResponse(response, 'Produit créé avec succès !', 'Erreur lors de la création du produit');
+            } catch (error) {
+                console.error('Erreur de réseau:', error);
+                alert('Une erreur est survenue lors de l\'envoi des données');
+            }
         }
     };
 
@@ -89,7 +147,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             if (val === "") {
                 setQuantite(0);
             } else {
-                let valeur = val.replace(/^0+(?=\d)/, ""); // Supprime le 0 devant un chiffre
+                let valeur = val.replace(/^0+(?=\d)/, ""); 
                 setQuantite(parseInt(valeur, 10));
             }
         };
@@ -99,7 +157,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             if (val === "") {
                 setPrix(0);
             } else {
-                let valeur = val.replace(/^0+(?=\d)/, ""); // Supprime le 0 devant un chiffre
+                let valeur = val.replace(/^0+(?=\d)/, ""); 
                 setPrix(parseFloat(valeur));
             }
         }
@@ -110,10 +168,10 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             if (val === "") {
                 setTaxe(0);
             } else {
-                let valeur = val.replace(/^0+(?=\d)/, ""); // Supprime le 0 devant un chiffre
+                let valeur = val.replace(/^0+(?=\d)/, ""); 
                 setTaxe(parseInt(valeur, 10));
             }
         };
     };
-    return {formVisible, afficherForm, nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit};
+    return {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit};
 };

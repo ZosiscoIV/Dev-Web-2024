@@ -30,7 +30,14 @@ const SearchResults = () => {
 
                 console.log("Réponse API produits :", data); // --> Vérifiez ici
 
-                setProducts(Array.isArray(data) ? data : []);
+                if (Array.isArray(data)) {
+                    const produitsDisponibles = data.filter((p: { dispo: boolean }) => p.dispo === true);
+                    console.log('Les produits disponibles sont ', produitsDisponibles)
+                    setProducts(produitsDisponibles);
+                } 
+                else {
+                    setProducts([]);
+                }           
             } catch (error) {
                 console.error("Erreur:", error);
                 setProducts([]);
