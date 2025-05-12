@@ -747,3 +747,110 @@ router.get('/produit/:idProduit/composition', async (req, res) => {
         res.status(500).send('Erreur de base de données');
     }
 });
+
+/**
+ * @swagger
+ * /api/favoris/{clientId}:
+ *   get:
+ *     summary: Récupérer les produits favoris d’un client
+ *     parameters:
+ *       - in: path
+ *         name: clientId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Liste des produits favoris
+ */
+router.get("/:clientId", async (req, res) => {
+    const { clientId } = req.params;
+    try {
+        const [rows] = await promisePool.query(
+            `SELECT tbProduits.* FROM tbFavoris
+       JOIN tbProduits ON tbFavoris.idProduit = tbProduits.id
+       WHERE idClient = ?`,
+            [clientId]
+        );
+        res.json(rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
+/**
+ * @swagger
+ * /api/favoris:
+ *   post:
+ *     summary: Ajouter un produit aux favoris
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               idClient:
+ *                 type: integer
+ *               idProduit:
+ *                 type: integer
+ *     responses:
+ *       201:
+ *         description: Favori ajouté
+ */
+router.post("/", async (req, res) => {
+    const { idClient, idProduit } = req.body;
+    try {
+        await promisePool.query(
+            "INSERT INTO tbFavoris (idClient, idProduit, dateFavoris) VALUES (?, ?, CURDATE())",
+            [idClient, idProduit]
+        );
+        res.status(201).json({ message: "Favori ajouté" });
+    } catch (err) {
+        if (err.code === "ER_DUP_ENTRY") {
+            res.status(409).json({ error: "Déjà en favori" });
+        } else {
+            console.error(err);
+            res.status(500).json({ error: "Erreur serveur" });
+        }
+    }
+});
+
+/**
+ * @swagger
+ * /api/favoris/{clientId}/{produitId}:
+ *   delete:
+ *     summary: Supprimer un favori
+ *     parameters:
+ *       - in: path
+ *         name: clientId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: produitId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Favori retiré
+ */
+router.delete("/:clientId/:produitId", async (req, res) => {
+    const { clientId, produitId } = req.params;
+    try {
+        await promisePool.query(
+            "DELETE FROM tbFavoris WHERE idClient = ? AND idProduit = ?",
+            [clientId, produitId]
+        );
+        res.json({ message: "Favori retiré" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
+module.exports = router;
+
+

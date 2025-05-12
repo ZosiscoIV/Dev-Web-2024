@@ -5,9 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="093bd5f1-3b28-449c-ab5a-a1a3758a238c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/authController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/authController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/favorisController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/favorisController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/middleware/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/middleware/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/productController.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/productController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/main/components/CartPage.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/app/main/components/ProduitsSearch.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/backend/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/main/components/ProductDetailsPopup.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/main/components/ProductDetailsPopup.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/main/components/Produits.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/main/components/Produits.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/main/components/SearchResults.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/main/components/SearchResults.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/main/css/Produits.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/main/css/Produits.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/main/hooks/useProductDetails.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/main/hooks/useProductDetails.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/app/main/hooks/useProductSearch.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/app/main/hooks/useProductSearch.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,9 +29,10 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript File" />
-        <option value="CSS File" />
         <option value="tsconfig.json" />
+        <option value="CSS File" />
         <option value="TypeScript JSX File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -53,24 +65,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Dev",
-    "last_opened_file_path": "C:/Users/Théo/WebstormProjects/Dev-Web-2024/backend",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "ts.external.directory.path": "C:\\Users\\Théo\\WebstormProjects\\Dev-Web-2024\\frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Théo/WebstormProjects/Dev-Web-2024/backend&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\Théo\\WebstormProjects\\Dev-Web-2024\\frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Théo\WebstormProjects\Dev-Web-2024\backend" />
@@ -99,7 +111,10 @@
       <workItem from="1746535339176" duration="396000" />
       <workItem from="1746536202198" duration="3861000" />
       <workItem from="1746705790911" duration="439000" />
-      <workItem from="1746706250542" duration="9261000" />
+      <workItem from="1746706250542" duration="9640000" />
+      <workItem from="1746795815263" duration="2195000" />
+      <workItem from="1746803796991" duration="2125000" />
+      <workItem from="1746876885683" duration="243000" />
     </task>
     <servers />
   </component>
