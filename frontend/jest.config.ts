@@ -1,6 +1,12 @@
 // jest.config.ts
 import type { Config } from 'jest';
 
+module.exports = {
+  testEnvironment: 'jsdom',
+  testPathIgnorePatterns: ["/node_modules/", ".*\\.test\\.skip\\.jsx?$"],
+};
+
+
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
@@ -11,11 +17,18 @@ const config: Config = {
 
   },
   transform: {
+    '^.+\\.(ts|tsx)$': 'ts-jest',
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    //"^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { configFile: "./test/babel.config.js" }],
+
   },  
   testMatch: ['**/?(*.)+(test).[jt]s?(x)'], // pour matcher les .test.tsx
   collectCoverage: true,
   coverageDirectory: "coverage",
+  collectCoverageFrom: [
+    "app/register/page.tsx",
+    "app/register/authFormHandlers.ts",     // or wherever your helpers live
+  ],
   coverageThreshold: {
     global: {
       branches: 80,
