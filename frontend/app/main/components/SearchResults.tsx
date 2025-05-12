@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useProductSearch } from "../hooks/useProductSearch";
 import ProductDetailsPopup from "./ProductDetailsPopup";
+import "../css/Produits.css"
 
 const SearchResults = () => {
     const {
@@ -32,7 +33,7 @@ const SearchResults = () => {
                             onClick={() => openProductDetails(product)}
                         >
                             <Image
-                                src={`/assets/${product.image}`}
+                                src={`/assets/${product.produit}.jpg`}
                                 className="produitImg"
                                 alt={product.produit}
                                 width={200}

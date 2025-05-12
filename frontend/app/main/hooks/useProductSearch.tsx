@@ -119,10 +119,39 @@ export const useProductSearch = () => {
     };
 
     // Gérer les actions utilisateur
-    const addToFavorites = (productId: number, event?: React.MouseEvent) => {
+    const addToFavorites = async (productId: number, event?: React.MouseEvent) => {
         if (event) event.stopPropagation();
-        console.log("Ajouté aux favoris:", productId);
+
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+
+        if (!token) {
+            alert("Vous devez être connecté pour ajouter aux favoris.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:6942/api/favoris", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ idProduit: productId })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error?.error || "Erreur inconnue");
+            }
+
+            alert("Produit ajouté aux favoris ✅");
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de l'ajout aux favoris");
+        }
     };
+
+
 
     const addToCart = (productId: number, event?: React.MouseEvent) => {
         if (event) event.stopPropagation();

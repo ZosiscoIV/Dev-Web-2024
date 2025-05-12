@@ -20,7 +20,7 @@ function Header() {
         <header className="Header">
             <div className="BannerImg" onClick={() => router.push("/")}>
                 <Image
-                    src="/assets/logo.png"
+                    src={`/assets/logo.png`}
                     alt="logo"
                     className="cursor-pointer"
                     width={200}
