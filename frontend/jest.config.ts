@@ -25,6 +25,10 @@ const config: Config = {
   testMatch: ['**/?(*.)+(test).[jt]s?(x)'], // pour matcher les .test.tsx
   collectCoverage: true,
   coverageDirectory: "coverage",
+  collectCoverageFrom: [
+    "app/register/page.tsx",
+    "app/register/authFormHandlers.ts",     // or wherever your helpers live
+  ],
   coverageThreshold: {
     global: {
       branches: 80,

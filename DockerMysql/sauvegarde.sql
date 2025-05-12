@@ -50,8 +50,12 @@ CREATE TABLE `tbClients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `prenom` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `adresseMail` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tel` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_deleted` tinyint(1) DEFAULT '0',
+  `deletion_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token_expires` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `adresseMail` (`adresseMail`),
   UNIQUE KEY `tel` (`tel`)
@@ -146,9 +150,9 @@ CREATE TABLE `tbProduits` (
   KEY `idUnite` (`idUnite`),
   KEY `idTaxe` (`idTaxe`),
   KEY `idCategorie` (`idCategorie`),
-  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbUnite` (`id`),
-  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbTaxe` (`id`),
-  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbCategorie` (`id`)
+  CONSTRAINT `tbProduits_ibfk_1` FOREIGN KEY (`idUnite`) REFERENCES `tbunite` (`id`),
+  CONSTRAINT `tbProduits_ibfk_2` FOREIGN KEY (`idTaxe`) REFERENCES `tbtaxe` (`id`),
+  CONSTRAINT `tbProduits_ibfk_3` FOREIGN KEY (`idCategorie`) REFERENCES `tbcategorie` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
