@@ -173,6 +173,7 @@ CREATE TABLE `tbStock` (
   `idProduit` int NOT NULL,
   `quantite` int NOT NULL,
   `dateLivraison` date DEFAULT NULL,
+  `disponibilite` boolean NOT NULL,
   PRIMARY KEY (`idProduit`),
   CONSTRAINT `tbStock_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -184,7 +185,7 @@ CREATE TABLE `tbStock` (
 
 LOCK TABLES `tbStock` WRITE;
 /*!40000 ALTER TABLE `tbStock` DISABLE KEYS */;
-INSERT INTO `tbStock` VALUES (1,10,NULL),(2,100,NULL),(3,40,NULL),(4,4,NULL),(5,0,'2025-03-25'),(6,25,NULL),(7,6,NULL);
+INSERT INTO `tbStock` VALUES (1,10,NULL,true),(2,100,NULL, true),(3,40,NULL,true),(4,4,NULL, true),(5,0,'2025-03-25', false),(6,25,NULL, true),(7,6,NULL, true);
 /*!40000 ALTER TABLE `tbStock` ENABLE KEYS */;
 UNLOCK TABLES;
 

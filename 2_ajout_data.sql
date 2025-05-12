@@ -24,15 +24,15 @@ VALUES
     ('Beurre', 3.25, '2024-03-06', NULL, 3, 1, 4, '/assets/beurre.jpg'),
     ('Sucre', 1.69, '2024-03-06', NULL, 3, 1, 5, '/assets/sucre.jpg');
 
-INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison)
+INSERT INTO magasin.tbStock (idProduit, quantite, dateLivraison, disponibilite)
 VALUES
-    (1, 10, NULL),
-    (2, 100, NULL),
-    (3, 40, NULL),
-    (4, 4, NULL),
-    (5, 0, '2025-03-25'),
-    (6, 25, NULL),
-    (7, 6, NULL);
+    (1, 10, NULL, true),
+    (2, 100, NULL, true),
+    (3, 40, NULL, true),
+    (4, 4, NULL, true),
+    (5, 0, '2025-03-25', false),
+    (6, 25, NULL, true),
+    (7, 6, NULL, true);
 
 -- Insertion des allergènes courants
 INSERT INTO magasin.tbAllergene (nom)

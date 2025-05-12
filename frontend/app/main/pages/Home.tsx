@@ -25,8 +25,11 @@ function Home() {
     useEffect(() => {
         axios.get(`${API_URL}/api/products`)
             .then(response => {
-                setProducts(response.data);
-                console.log("Données brutes reçues:", response.data);
+                const result = response.data
+                const repFiltre = result.filter((p: { dispo: boolean }) => p.dispo === true);
+                setProducts(repFiltre);
+                console.log("Données brutes reçues:", response.data)
+                console.log("Données filtrée dispo", repFiltre);
 
             })
             .catch(error => {
