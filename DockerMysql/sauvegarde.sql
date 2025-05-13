@@ -146,6 +146,7 @@ CREATE TABLE `tbProduits` (
   `idUnite` int NOT NULL,
   `idTaxe` int NOT NULL,
   `idCategorie` int NOT NULL,
+  `imageURL` VARCHAR(500) NULL,
   PRIMARY KEY (`id`),
   KEY `idUnite` (`idUnite`),
   KEY `idTaxe` (`idTaxe`),
@@ -162,7 +163,14 @@ CREATE TABLE `tbProduits` (
 
 LOCK TABLES `tbProduits` WRITE;
 /*!40000 ALTER TABLE `tbProduits` DISABLE KEYS */;
-INSERT INTO `tbProduits` VALUES (1,'Banane',3,'2024-03-06',NULL,1,1,1),(2,'Fraise',5.99,'2024-03-06',NULL,3,1,1),(3,'Pâte',3.49,'2024-12-06',NULL,3,1,3),(4,'Brocoli',2.69,'2024-12-06',NULL,3,1,2),(5,'Farine',1.05,'2024-12-06',NULL,3,1,3),(6,'Beurre',3.25,'2024-03-06',NULL,3,1,4),(7,'Sucre',1.69,'2024-03-06',NULL,3,1,5);
+INSERT INTO `tbProduits` VALUES ('Banane', 3.00, '2024-03-06', NULL, 1, 1, 1, '/assets/banane.jpg'),
+                                ('Fraise',5.99 , '2024-03-06', NULL, 3, 1, 1, '/assets/fraise.jpg'),
+                                ('Pâte', 3.49, '2024-12-06', NULL, 3, 1, 3, '/assets/pate.jpg'),
+                                ('Brocoli', 2.69, '2024-12-06', NULL, 3, 1, 2, '/assets/brocoli.jpg'),
+                                ('Farine', 1.05, '2024-12-06', NULL, 3, 1, 3, '/assets/farine.jpg'),
+                                ('Beurre', 3.25, '2024-03-06', NULL, 3, 1, 4, '/assets/beurre.jpg'),
+                                ('Sucre', 1.69, '2024-03-06', NULL, 3, 1, 5, '/assets/sucre.jpg');
+
 /*!40000 ALTER TABLE `tbProduits` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -189,7 +197,13 @@ CREATE TABLE `tbStock` (
 
 LOCK TABLES `tbStock` WRITE;
 /*!40000 ALTER TABLE `tbStock` DISABLE KEYS */;
-INSERT INTO `tbStock` VALUES (1,10,NULL,true),(2,100,NULL, true),(3,40,NULL,true),(4,4,NULL, true),(5,0,'2025-03-25', false),(6,25,NULL, true),(7,6,NULL, true);
+INSERT INTO `tbStock` VALUES (1, 10, NULL, true),
+                             (2, 100, NULL, true),
+                             (3, 40, NULL, true),
+                             (4, 4, NULL, true),
+                             (5, 0, '2025-03-25', false),
+                             (6, 25, NULL, true),
+                             (7, 6, NULL, true);
 /*!40000 ALTER TABLE `tbStock` ENABLE KEYS */;
 UNLOCK TABLES;
 
