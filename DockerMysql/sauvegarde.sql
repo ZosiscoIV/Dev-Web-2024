@@ -240,6 +240,167 @@ LOCK TABLES `tbUnite` WRITE;
 INSERT INTO `tbUnite` VALUES (1,'kg'),(2,'l'),(3,'pc');
 /*!40000 ALTER TABLE `tbUnite` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `tbAllergene`
+--
+
+DROP TABLE IF EXISTS `tbAllergene`;
+CREATE TABLE `tbAllergene` (
+                               `id` int NOT NULL AUTO_INCREMENT,
+                               `nom` varchar(255) NOT NULL,
+                               PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbAllergene`
+--
+
+LOCK TABLES `tbAllergene` WRITE;
+/*!40000 ALTER TABLE `tbAllergene` DISABLE KEYS */;
+INSERT INTO `tbAllergene` (`nom`) VALUES
+                                      ('Gluten'),
+                                      ('Lactose'),
+                                      ('Fruits à coque'),
+                                      ('Arachide'),
+                                      ('Soja'),
+                                      ('Œuf'),
+                                      ('Poisson'),
+                                      ('Crustacés');
+/*!40000 ALTER TABLE `tbAllergene` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `tbProduitAllergene`
+--
+
+DROP TABLE IF EXISTS `tbProduitAllergene`;
+CREATE TABLE `tbProduitAllergene` (
+                                      `idProduit` int NOT NULL,
+                                      `idAllergene` int NOT NULL,
+                                      PRIMARY KEY (`idProduit`, `idAllergene`),
+                                      CONSTRAINT `fk_pa_produit` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+                                      CONSTRAINT `fk_pa_allergene` FOREIGN KEY (`idAllergene`) REFERENCES `tbAllergene` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbProduitAllergene`
+--
+
+LOCK TABLES `tbProduitAllergene` WRITE;
+/*!40000 ALTER TABLE `tbProduitAllergene` DISABLE KEYS */;
+INSERT INTO `tbProduitAllergene` (`idProduit`, `idAllergene`) VALUES
+                                                                  (3, 1), -- Pâte - Gluten
+                                                                  (5, 1), -- Farine - Gluten
+                                                                  (6, 2); -- Beurre - Lactose
+/*!40000 ALTER TABLE `tbProduitAllergene` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `tbNutrition`
+--
+
+DROP TABLE IF EXISTS `tbNutrition`;
+CREATE TABLE `tbNutrition` (
+                               `idProduit` int NOT NULL,
+                               `calories` decimal(6,2) DEFAULT NULL,
+                               `proteines` decimal(5,2) DEFAULT NULL,
+                               `glucides` decimal(5,2) DEFAULT NULL,
+                               `lipides` decimal(5,2) DEFAULT NULL,
+                               `fibres` decimal(5,2) DEFAULT NULL,
+                               `sel` decimal(5,2) DEFAULT NULL,
+                               PRIMARY KEY (`idProduit`),
+                               CONSTRAINT `fk_nutrition_produit` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbNutrition`
+--
+
+LOCK TABLES `tbNutrition` WRITE;
+/*!40000 ALTER TABLE `tbNutrition` DISABLE KEYS */;
+INSERT INTO `tbNutrition` (`idProduit`, `calories`, `proteines`, `glucides`, `lipides`, `fibres`, `sel`) VALUES
+                                                                                                             (1, 89.00, 1.10, 22.80, 0.30, 2.60, 0.00),
+                                                                                                             (2, 32.00, 0.70, 7.70, 0.30, 2.00, 0.00),
+                                                                                                             (3, 350.00, 12.50, 70.90, 1.50, 3.20, 0.01),
+                                                                                                             (4, 34.00, 2.80, 7.00, 0.40, 2.60, 0.03),
+                                                                                                             (5, 364.00, 10.00, 76.30, 1.00, 2.70, 0.01),
+                                                                                                             (6, 717.00, 0.90, 0.10, 81.00, 0.00, 0.04),
+                                                                                                             (7, 400.00, 0.00, 99.80, 0.00, 0.00, 0.00);
+/*!40000 ALTER TABLE `tbNutrition` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `tbIngredient`
+--
+
+DROP TABLE IF EXISTS `tbIngredient`;
+CREATE TABLE `tbIngredient` (
+                                `id` int NOT NULL AUTO_INCREMENT,
+                                `nom` varchar(255) NOT NULL,
+                                PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbIngredient`
+--
+
+LOCK TABLES `tbIngredient` WRITE;
+/*!40000 ALTER TABLE `tbIngredient` DISABLE KEYS */;
+INSERT INTO `tbIngredient` (`nom`) VALUES
+                                       ('Banane'),
+                                       ('Fraise'),
+                                       ('Blé dur'),
+                                       ('Eau'),
+                                       ('Brocoli'),
+                                       ('Farine de blé'),
+                                       ('Crème'),
+                                       ('Sel'),
+                                       ('Ferments lactiques'),
+                                       ('Sucre de canne');
+/*!40000 ALTER TABLE `tbIngredient` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+--
+-- Table structure for table `tbProduitIngredient`
+--
+
+DROP TABLE IF EXISTS `tbProduitIngredient`;
+CREATE TABLE `tbProduitIngredient` (
+                                       `idProduit` int NOT NULL,
+                                       `idIngredient` int NOT NULL,
+                                       `ordre` int NOT NULL,
+                                       PRIMARY KEY (`idProduit`, `idIngredient`),
+                                       CONSTRAINT `fk_pi_produit` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
+                                       CONSTRAINT `fk_pi_ingredient` FOREIGN KEY (`idIngredient`) REFERENCES `tbIngredient` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `tbProduitIngredient`
+--
+
+LOCK TABLES `tbProduitIngredient` WRITE;
+/*!40000 ALTER TABLE `tbProduitIngredient` DISABLE KEYS */;
+INSERT INTO `tbProduitIngredient` (`idProduit`, `idIngredient`, `ordre`) VALUES
+                                                                             (1, 1, 1),  -- Banane
+                                                                             (2, 2, 1),  -- Fraise
+                                                                             (3, 3, 1),  -- Pâte - Blé dur
+                                                                             (3, 4, 2),  -- Pâte - Eau
+                                                                             (4, 5, 1),  -- Brocoli
+                                                                             (5, 6, 1),  -- Farine - Farine de blé
+                                                                             (6, 7, 1),  -- Beurre - Crème
+                                                                             (6, 8, 2),  -- Beurre - Sel
+                                                                             (6, 9, 3),  -- Beurre - Ferments lactiques
+                                                                             (7, 10, 1); -- Sucre - Sucre de canne
+/*!40000 ALTER TABLE `tbProduitIngredient` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
