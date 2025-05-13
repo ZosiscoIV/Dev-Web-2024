@@ -163,13 +163,13 @@ CREATE TABLE `tbProduits` (
 
 LOCK TABLES `tbProduits` WRITE;
 /*!40000 ALTER TABLE `tbProduits` DISABLE KEYS */;
-INSERT INTO `tbProduits` VALUES ('Banane', 3.00, '2024-03-06', NULL, 1, 1, 1, '/assets/banane.jpg'),
-                                ('Fraise',5.99 , '2024-03-06', NULL, 3, 1, 1, '/assets/fraise.jpg'),
-                                ('Pâte', 3.49, '2024-12-06', NULL, 3, 1, 3, '/assets/pate.jpg'),
-                                ('Brocoli', 2.69, '2024-12-06', NULL, 3, 1, 2, '/assets/brocoli.jpg'),
-                                ('Farine', 1.05, '2024-12-06', NULL, 3, 1, 3, '/assets/farine.jpg'),
-                                ('Beurre', 3.25, '2024-03-06', NULL, 3, 1, 4, '/assets/beurre.jpg'),
-                                ('Sucre', 1.69, '2024-03-06', NULL, 3, 1, 5, '/assets/sucre.jpg');
+INSERT INTO `tbProduits` VALUES (1,'Banane', 3.00, '2024-03-06', NULL, 1, 1, 1, '/assets/banane.jpg'),
+                                (2,'Fraise',5.99 , '2024-03-06', NULL, 3, 1, 1, '/assets/fraise.jpg'),
+                                (3,'Pâte', 3.49, '2024-12-06', NULL, 3, 1, 3, '/assets/pate.jpg'),
+                                (4,'Brocoli', 2.69, '2024-12-06', NULL, 3, 1, 2, '/assets/brocoli.jpg'),
+                                (5,'Farine', 1.05, '2024-12-06', NULL, 3, 1, 3, '/assets/farine.jpg'),
+                                (6,'Beurre', 3.25, '2024-03-06', NULL, 3, 1, 4, '/assets/beurre.jpg'),
+                                (7,'Sucre', 1.69, '2024-03-06', NULL, 3, 1, 5, '/assets/sucre.jpg');
 
 /*!40000 ALTER TABLE `tbProduits` ENABLE KEYS */;
 UNLOCK TABLES;
