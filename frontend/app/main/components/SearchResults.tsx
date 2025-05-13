@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useProductSearch } from "../hooks/useProductSearch";
 import ProductDetailsPopup from "./ProductDetailsPopup";
-import "../css/Produits.css"
+import "../css/ProduitsSearch.css"
 
 const SearchResults = () => {
     const {
@@ -32,7 +32,7 @@ const SearchResults = () => {
                             className="produits p-4 border rounded shadow hover:shadow-lg transition cursor-pointer"
                             onClick={() => openProductDetails(product)}
                         >
-                            <Image
+                            <Imagegit
                                 src={`/assets/${product.produit}.jpg`}
                                 className="produitImg"
                                 alt={product.produit}
