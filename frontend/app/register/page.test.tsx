@@ -138,7 +138,7 @@ describe("Register Page (client-side validation only)", () => {
         });
         fireEvent.click(screen.getByRole("button", { name: /s'inscrire/i }));
 
-        const errorMessage = await screen.findByText('Les mots de passe ne correspondent pas.');
+        const errorMessage = await screen.findByText('Les mots de passe ne correspondent pas');
         expect(errorMessage).toBeInTheDocument();
     });
 

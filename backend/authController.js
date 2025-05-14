@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql2');
+const cookieParser = require('cookie-parser');
 require('dotenv').config({ path: '../.env' });
 
 const db = mysql.createConnection({
@@ -12,7 +13,6 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
-
 });
 
 const db2 = mysql.createPool({
@@ -23,91 +23,67 @@ const db2 = mysql.createPool({
     database: process.env.DB_NAME,
     charset: process.env.DB_CHARSET
 });
-// token generation function
-function tokenGen(idd, nom, prenom, email){
-    const payload = { id: idd, nom, prenom, email };
-    return  jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
-}
 
-// Crée une version Promise du pool
 const promisePool = db2.promise();
 
-// Vérification de la connexion
 db.connect(err => {
     if (err) {
         console.error("❌ Erreur de connexion à la base de données :", err);
-        process.exit(1); // Arrête l'application si la connexion échoue
+        process.exit(1);
     }
     console.log("✅ Connexion réussie à la base de données !");
 });
 
-const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-const isPasswordValid = (pw) => pw.length >= 8 && /[A-Z]/.test(pw) && /\d/.test(pw);
+const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+const isPasswordValid = pw => pw.length >= 8 && /[A-Z]/.test(pw) && /\d/.test(pw);
+
+function tokenGen(id, nom, prenom, email) {
+    const payload = { id, nom, prenom, email };
+    return jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN
+    });
+}
 
 router.post('/register', async (req, res) => {
     try {
         const { email, password, nom, prenom, tel } = req.body;
 
-        // 1) Basic type-checks
-        if (
-            typeof email !== 'string' ||
-            typeof password !== 'string' ||
-            typeof nom !== 'string' ||
-            typeof prenom !== 'string' ||
-            typeof tel !== 'string'
-        ) {
+        if ([email, password, nom, prenom, tel].some(v => typeof v !== 'string')) {
             return res.status(400).json({ error: 'Format de données invalide' });
         }
-
-        // 2) Field‐specific validation
         if (!isValidEmail(email)) {
             return res.status(400).json({ error: 'Email invalide' });
         }
         if (!isPasswordValid(password)) {
-            return res.status(400).json({
-                error: 'Le mot de passe doit faire ≥ 8 caractères, inclure une majuscule et un chiffre'
-            });
+            return res.status(400).json({ error: 'Mot de passe invalide' });
         }
         if (!/^\d{10}$/.test(tel)) {
-            return res.status(400).json({ error: 'Le téléphone doit avoir 10 chiffres' });
+            return res.status(400).json({ error: 'Téléphone invalide' });
         }
 
-        // 3) Uniqueness checks
-        const [emailRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbClients WHERE adresseMail = ?',
-            [email]
-        );
-        if (emailRows.length > 0) {
-            return res.status(400).json({ error: 'Email déjà utilisé' });
-        }
+        const [emailRows] = await promisePool.query('SELECT id FROM magasin.tbClients WHERE adresseMail = ?', [email]);
+        if (emailRows.length > 0) return res.status(400).json({ error: 'Email déjà utilisé' });
 
-        const [telRows] = await promisePool.query(
-            'SELECT id FROM magasin.tbClients WHERE tel = ?',
-            [tel]
-        );
-        if (telRows.length > 0) {
-            return res.status(400).json({ error: 'Numéro de téléphone déjà utilisé' });
-        }
+        const [telRows] = await promisePool.query('SELECT id FROM magasin.tbClients WHERE tel = ?', [tel]);
+        if (telRows.length > 0) return res.status(400).json({ error: 'Numéro de téléphone déjà utilisé' });
 
-        // 4) Hash & insert
         const hash = await bcrypt.hash(password, 10);
         const [result] = await promisePool.query(
-            `INSERT INTO magasin.tbClients 
-        (nom, prenom, password, adresseMail, tel) 
-        VALUES (?, ?, ?, ?, ?)`,
+            `INSERT INTO magasin.tbClients (nom, prenom, password, adresseMail, tel) VALUES (?, ?, ?, ?, ?)`,
             [nom, prenom, hash, email, tel]
         );
 
-        const token = tokenGen(result.insertId,nom,prenom,email);
-
-        return res.status(201).json({ message: 'Compte créé avec succès', token });
+        const token = tokenGen(result.insertId, nom, prenom, email);
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 24 * 60 * 60 * 1000
+        });
+        res.status(201).json({ message: 'Compte créé avec succès' });
     } catch (err) {
         console.error('Registration error:', err);
-        return res.status(400).json({ error: 'Erreur de creation de compte' });
+        res.status(400).json({ error: 'Erreur de creation de compte' });
     }
 });
 
@@ -119,28 +95,30 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const [rows] = await promisePool.query(
-            'SELECT * FROM magasin.tbClients WHERE adresseMail = ?',
-            [email]
-        );
-
-        if (rows.length === 0) {
-            return res.status(401).json({ error: 'Identifiants incorrects' });
-        }
+        const [rows] = await promisePool.query('SELECT * FROM magasin.tbClients WHERE adresseMail = ?', [email]);
+        if (rows.length === 0) return res.status(401).json({ error: 'Identifiants incorrects' });
 
         const user = rows[0];
         const match = await bcrypt.compare(password, user.password);
-        if (!match) {
-            return res.status(401).json({ error: 'Mot de passe incorrect' });
-        }
+        if (!match) return res.status(401).json({ error: 'Mot de passe incorrect' });
 
         const token = tokenGen(user.id, user.nom, user.prenom, user.adresseMail);
-        return res.json({ token });
-
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 24 * 60 * 60 * 1000
+        });
+        res.json({ message: 'Connexion réussie' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erreur serveur' });
     }
+});
+
+router.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.json({ message: 'Déconnexion réussie' });
 });
 
 module.exports = router;

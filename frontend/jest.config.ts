@@ -1,14 +1,14 @@
 // jest.config.ts
 import type { Config } from 'jest';
-
+/*
 module.exports = {
   testEnvironment: 'jsdom',
   testPathIgnorePatterns: ["/node_modules/", ".*\\.test\\.skip\\.jsx?$"],
 };
-
+*/
 
 const config: Config = {
-  preset: 'ts-jest',
+  //preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
@@ -17,7 +17,7 @@ const config: Config = {
 
   },
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    //'^.+\\.(ts|tsx)$': 'ts-jest',
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
     //"^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { configFile: "./test/babel.config.js" }],
 

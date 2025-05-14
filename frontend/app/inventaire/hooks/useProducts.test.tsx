@@ -3,7 +3,7 @@ import axios from 'axios' ;
 import { render , screen, waitFor } from '@testing-library/react' ;
 import {useProducts} from './useProducts';
 import { Product } from '../models/Product';
-import * as api from "../services/productService"; // ou similaire
+import * as api from "../services/productService"; 
 
 jest.mock( '../services/productService' ); 
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -28,7 +28,13 @@ test('récupère et affiche le produit' , async () => {
         10,
         3,
         '',
-        '2025-03-24T23:00:00.000Z'
+        '2025-03-24T23:00:00.000Z',
+        "kg",                         
+        '2025-03-01T00:00:00.000Z',   
+        '2025-04-01T00:00:00.000Z',   
+        "Fruits",                     
+        5,
+        true   
     );
     (api.getProducts as jest.Mock).mockResolvedValueOnce([mockResponse]); 
     render (<TestComponent categorie="tout" stock="tout" />); 
@@ -58,12 +64,18 @@ test('récupère et affiche le produit de la catégorie fruit et en stock' , asy
         10,
         3,
         '',
-        '2025-03-24T23:00:00.000Z'
+        '2025-03-24T23:00:00.000Z',
+        "kg",                         
+        '2025-03-01T00:00:00.000Z',   
+        '2025-04-01T00:00:00.000Z',   
+        "Fruits",                     
+        5,
+        true
     );
     (api.getProducts as jest.Mock).mockResolvedValueOnce([mockResponse]); 
     render (<TestComponent categorie="Fruit" stock="enStock" />); 
     const produitElement = await waitFor(() => screen.getByText ("Banane")); 
-    expect(api.getProducts as jest.Mock).toHaveBeenCalledWith("?categorie=Fruit&enStock=true")
+    expect(api.getProducts as jest.Mock).toHaveBeenCalledWith("?categorie=Fruit&enStock=1")
     expect( produitElement ).toBeInTheDocument(); 
 });
 
@@ -71,7 +83,7 @@ test('affiche un message d\'erreur quand il n\y a pas de produits pour la catég
     (api.getProducts as jest.Mock).mockResolvedValueOnce([]); 
     render (<TestComponent categorie="Fruit" stock="horsStock" />);
     const erreurMessage = await waitFor(() => screen.getByText("Aucun produit trouvé")); 
-    expect(api.getProducts as jest.Mock).toHaveBeenCalledWith("?categorie=Fruit&enStock=false")
+    expect(api.getProducts as jest.Mock).toHaveBeenCalledWith("?categorie=Fruit&enStock=3")
     expect( erreurMessage ).toBeInTheDocument(); 
 });
 
@@ -83,7 +95,13 @@ test('récupère et affiche les produits' , async () => {
         10,
         3,
         '',
-        '2025-03-24T23:00:00.000Z'
+        '2025-03-24T23:00:00.000Z',
+        "kg",                         
+        '2025-03-01T00:00:00.000Z',   
+        '2025-04-01T00:00:00.000Z',   
+        "Fruits",                     
+        5,
+        true
     ),
     new Product (
         2,
@@ -91,7 +109,13 @@ test('récupère et affiche les produits' , async () => {
         4,
         6,
         '',
-        ''
+        '',
+        "kg",                         
+        '2025-03-01T00:00:00.000Z',   
+        '2025-04-01T00:00:00.000Z',   
+        "Fruits",                     
+        5,
+        true    
     )];
     (api.getProducts as jest.Mock).mockResolvedValueOnce(mockResponse); 
     render (<TestComponent categorie="tout" stock="tout" />); 

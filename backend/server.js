@@ -3,14 +3,28 @@ const cors = require('cors');
 const productController = require('./productController');
 const authController = require('./authController'); // Nouvelle ligne
 const { swaggerUi, specs } = require("../swagger");
-const rateLimit = require('express-rate-limit'); // Nouvelle ligne
-const jwt = require('jsonwebtoken'); // ⬅️ REQUIRED
+const rateLimit = require('express-rate-limit');
+const jwt = require('jsonwebtoken');
+const favorisController = require('./favorisController');
+const cookieParser = require('cookie-parser');
+const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
 const PORT = 6942;
 
-// Middleware de sécurité ajouté
-app.use(cors());
+// Middleware de sécurité
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://votre-site.com',
+    'https://app.votre-site.com'
+];
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(rateLimit({ // Nouveau middleware
     windowMs: 15 * 60 * 1000,
@@ -18,42 +32,19 @@ app.use(rateLimit({ // Nouveau middleware
     message: 'Trop de requêtes depuis cette IP'
 }));
 
-// Routes existantes
-app.get('/api/hello', (req, res) => {
-    res.json({ message: 'Hello World' });
-});
 
-// Nouveaux endpoints d'authentification
-app.use('/api/auth', authController); // Nouvelle ligne
+// Routes
+app.use('/api/favoris', favorisController);
+app.use('/api/auth', authController); // Auth routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.get('/api/validate-token', authenticateToken, (req, res) => {
     res.json({ valid: true });
 });
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+// Test API
+app.get('/api/hello', (req, res) => {
+    res.json({ message: 'Hello World' });
+});
 app.use('/api', productController);
-
-// Middleware d'authentification (Nouveau)
-function authenticateToken(req, res, next) {
-    // 1) Grab the header
-    const authHeader = req.headers['authorization'];           // e.g. "Bearer abc.def.ghi"
-    const token      = authHeader && authHeader.split(' ')[1];
-
-    if (!token) {
-        return res.status(401).json({ error: 'Token manquant' });
-    }
-
-    // 2) Verify signature + decode
-    jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-        if (err) {
-            // err.name === 'TokenExpiredError' or 'JsonWebTokenError'
-            return res.status(403).json({ error: 'Token invalide ou expiré' });
-        }
-
-        // 3) Attach the decoded payload to req.user
-        req.user = payload;
-        next();
-    });
-};
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
