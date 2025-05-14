@@ -1,6 +1,5 @@
 'use client';
 
-
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -10,26 +9,14 @@ const Login = () => {
     const [error, setError] = useState('');
     const router = useRouter();
 
-    // Check token on page load
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetch('http://localhost:6942/api/validate-token', {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
+        fetch('http://localhost:6942/api/validate-token', {
+            credentials: 'include'
+        })
+            .then(res => {
+                if (res.ok) router.push('/');
             })
-                .then(res => {
-                    if (res.ok) {
-                        router.push('/');
-                    } else {
-                        localStorage.removeItem('token');
-                    }
-                })
-                .catch(() => {
-                    localStorage.removeItem('token');
-                });
-        }
+            .catch(() => {});
     }, [router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -38,20 +25,18 @@ const Login = () => {
         try {
             const res = await fetch('http://localhost:6942/api/auth/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({ email, password })
             });
 
-            const data = await res.json();
             if (res.ok) {
-                localStorage.setItem('token', data.token);
                 router.push('/');
             } else {
-                setError(data.error || 'login failed');
+                const data = await res.json();
+                setError(data.error || 'Échec de la connexion');
             }
-        } catch (err) {
+        } catch {
             setError('Erreur de connexion au serveur');
         }
     };
