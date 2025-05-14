@@ -15,6 +15,7 @@ export class Product {
         public dateFinVente: string | null,
         public categorie: string,
         public taxe: number,
+        public imageURL: string,
         public dispo: boolean,
     ) {}
     getStatus(): string {

@@ -12,7 +12,7 @@ type FormProps = {
 };
 
 const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose}) => {
-    const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
+    const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, imageURL, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
     
     const message = `Êtes-vous sûr de vouloir ${produitExistant ? "modifier" : "créer"} ce produit : ${nom} - quantite: ${quantite} - categorie : ${categorie} - unite : ${unite} - prix : ${prix} - mise en vente : ${dateDebutVente} ${dateFinVente ? `- fin de vente :${dateFinVente}` : ""} ${dateLivraison ? `- date de livraison :${dateLivraison}` : ""} - taxe: ${taxe}`
 
@@ -44,6 +44,9 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExi
             </label>
             <label>Taxe (%) :
                 <input type="number" name="taxe" value={taxe === 0 ? "" : taxe} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
+            </label>
+            <label>Image :
+                <input type="text" name="imageURL" value={imageURL} onChange={handleChange} required/>
             </label>
         </>
     )

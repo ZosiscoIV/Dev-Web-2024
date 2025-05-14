@@ -26,6 +26,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
     const [dateFinVente, setDateFinVente] = useState<string>('');
     const [dateLivraison, setDateLivraison] = useState<string>('');
     const [taxe, setTaxe] = useState<number>(0);
+    const [imageURL, setImageURL] = useState<string>('');
     
 
     useEffect( () => {
@@ -41,6 +42,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             setDateFinVente(formatDateForInput(produitExistant.dateFinVente || ''));
             setDateLivraison(formatDateForInput(produitExistant.dateLivraison || ''));
             setTaxe(produitExistant.taxe);
+            setImageURL(produitExistant.imageURL);
         }
         else {
             setNom('');
@@ -52,6 +54,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             setDateFinVente('');
             setDateLivraison('');
             setTaxe(0);
+            setImageURL('');
         }
     },[produitExistant?.id])
 
@@ -65,6 +68,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         setDateFinVente('');
         setDateLivraison('');
         setTaxe(0);
+        setImageURL('');
     };
     const handleResponse = async (response: Response, msgReussi : string, msgErreur: string) =>{
         if (response.ok) {
@@ -97,6 +101,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             dateFinVente,
             dateLivraison,
             taxe,
+            imageURL,
             ...(produitExistant?.id && { id: produitExistant.id })
 
         };
@@ -172,6 +177,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
                 setTaxe(parseInt(valeur, 10));
             }
         };
+        if (name === "imageURL") setImageURL("/assets/" + val + ".jpg")
     };
-    return {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit};
+    return {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, imageURL, handleChange,handleSubmit};
 };

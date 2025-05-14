@@ -99,7 +99,8 @@ router.get('/products', (req, res) => {
         p.dateFinVente as dateFinVente,
         u.unite,
         t.taxe,
-        s.disponibilite
+        s.disponibilite,
+        p.imageURL
     FROM
         magasin.tbProduits p
     JOIN
@@ -254,7 +255,7 @@ router.post('/products', validateProduct, async (req, res) => {
     try {
         console.log("Requête reçue pour créer un produit...",req.body);
 
-        const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
+        const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe, imageURL} = req.body
         
         const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE  nom = ?", [nom]);
         if(verifProd.length > 0) {
@@ -269,7 +270,9 @@ router.post('/products', validateProduct, async (req, res) => {
                 SELECT id FROM magasin.tbUnite WHERE unite = ?
             ) LIMIT 1;`, [unite,unite]);
         const [verifUnite] = await promisePool.query("SELECT id FROM magasin.tbUnite WHERE  unite = ?", [unite]);
-        const idUnite = verifUnite[0].id;
+        const idUnite = verifUnite[0]?.id;
+        if (!idUnite) throw new Error("Échec de la récupération de l'id de l'unité");
+
 
         await promisePool.query(`
             INSERT INTO magasin.tbCategorie (categorie)
@@ -279,8 +282,9 @@ router.post('/products', validateProduct, async (req, res) => {
             ) LIMIT 1;
         `, [categorie, categorie]);
         const [verifCategorie] = await promisePool.query("SELECT id FROM magasin.tbCategorie WHERE categorie = ?", [categorie]);
-        const idCategorie = verifCategorie[0].id;
-        
+        const idCategorie = verifCategorie[0]?.id;
+        if (!idCategorie) throw new Error("Échec de la récupération de l'id de la catégorie");
+
         await promisePool.query(`
             INSERT INTO magasin.tbTaxe (taxe)
             SELECT * FROM (SELECT ?) AS tmp(taxe)
@@ -289,16 +293,18 @@ router.post('/products', validateProduct, async (req, res) => {
             ) LIMIT 1;
         `, [taxe, taxe]);
         const [verifTaxe] = await promisePool.query("SELECT id FROM magasin.tbTaxe WHERE taxe = ?", [taxe]);
-        const idTaxe = verifTaxe[0].id;
-        
+        const idTaxe = verifTaxe[0]?.id;
+        if (!idTaxe) throw new Error("Échec de la récupération de l'id de la taxe");
+
+        console.log("Valeurs envoyées dans l'INSERT:", [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente,idUnite, idTaxe, idCategorie, imageURL, nom]);
         await promisePool.query(`
-            INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
-            SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie
-            FROM (SELECT ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+            INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, imageURL)
+            SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie, imageURL
+            FROM (SELECT ?, ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, imageURL)
             WHERE NOT EXISTS (
                 SELECT id FROM magasin.tbProduits WHERE nom = ?
             ) LIMIT 1;
-        `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, nom]);
+        `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, imageURL, nom]);
         const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE nom = ?", [nom]);
         const idProduit = verifProduit[0].id;
 
@@ -385,7 +391,7 @@ router.put('/products/:id', validateProduct, async (req, res) => {
     try {
         console.log("Requête reçue pour mettre à jour un produit...",req.body);
 
-        const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
+        const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe, imageURL} = req.body
         const id = req.params.id;
 
         const [row] = await promisePool.query( `
@@ -400,7 +406,8 @@ router.put('/products/:id', validateProduct, async (req, res) => {
                 p.dateDebutVente AS dateDebutVente,
                 p.dateFinVente as dateFinVente,
                 u.unite,
-                t.taxe
+                t.taxe,
+                p.imageURL
             FROM
                 magasin.tbProduits p
             JOIN
@@ -446,9 +453,9 @@ router.put('/products/:id', validateProduct, async (req, res) => {
         const dateFinSQL = dateFinVente === '' ? null : dateFinVente;
         await promisePool.query(`
             UPDATE magasin.tbProduits 
-            SET prix = ?, dateDebutVente = ?, dateFinVente = ?, idUnite = ?, idTaxe = ?, idCategorie = ?
+            SET prix = ?, dateDebutVente = ?, dateFinVente = ?, idUnite = ?, idTaxe = ?, idCategorie = ?, imageURL= ?
             WHERE id = ?
-        `, [prix, dateDebutSQL, dateFinSQL, idUnite, idTaxe, idCategorie, id]);
+        `, [prix, dateDebutSQL, dateFinSQL, idUnite, idTaxe, idCategorie,imageURL, id]);
 
         res.status(200).json({ message: 'Produit mis à jour avec succès' });
 
