@@ -47,7 +47,6 @@ app.get('/api/validate-token', authenticateToken, (req, res) => {
     res.json({ valid: true });
 });
 
-
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

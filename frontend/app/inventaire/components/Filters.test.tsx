@@ -1,7 +1,6 @@
 import React from 'react' ;
 import { render , screen, fireEvent} from '@testing-library/react' ;
 import Filtre from './Filters';
-import { Categorie } from '../models/Categorie';
 
 test('affiche les filtres', () => {
     

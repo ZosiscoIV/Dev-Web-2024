@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation"; // Correct hook import from next/navigation
 import Image from "next/image";
 import "../css/Header.css";
-import logo from "../assets/logo.png";
 
 function Header() {
     const router = useRouter(); // Now using the correct useRouter from next/navigation
@@ -19,12 +18,13 @@ function Header() {
 
     return (
         <header className="Header">
-            <div className="BannerImg">
+            <div className="BannerImg" onClick={() => router.push("/")}>
                 <Image
-                    src={logo}
+                    src={`/assets/logo.png`}
                     alt="logo"
-                    onClick={() => router.push("/")}
                     className="cursor-pointer"
+                    width={200}
+                    height={100}
                 />
             </div>
 
@@ -56,8 +56,8 @@ function Header() {
             </div>
 
             <div className="bouton">
-                <button className="boutonAide" onClick={() => router.push("/aide")}>
-                    Aide
+                <button className="boutonFavoris" onClick={() => router.push("/favoris")}>
+                    ❤️
                 </button>
                 <button className="boutonLogin" onClick={() => router.push("/login")}>
                     Login

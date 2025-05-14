@@ -3,8 +3,9 @@ import axios from "axios";
 import Produits from "../components/Produits"; // Importation du composant Produits
 import "../css/Home.css";
 
-
+// Interface Product mise à jour
 interface Product {
+    id: string; // Ajouter l'idProduit
     produit: string;
     categorie: string[];
     description: string;
@@ -15,7 +16,6 @@ interface Product {
     onImageError: () => void;
 }
 
-
 function Home() {
     const [products, setProducts] = useState<Product[]>([]);
     const [imageError, setImageError] = useState(false);
@@ -25,7 +25,12 @@ function Home() {
     useEffect(() => {
         axios.get(`${API_URL}/api/products`)
             .then(response => {
-                setProducts(response.data);
+                const result = response.data
+                const repFiltre = result.filter((p: { dispo: boolean }) => p.dispo === true);
+                setProducts(repFiltre);
+                console.log("Données brutes reçues:", response.data)
+                console.log("Données filtrée dispo", repFiltre);
+
             })
             .catch(error => {
                 console.error("Erreur lors de la récupération des produits :", error);
@@ -57,25 +62,29 @@ function Home() {
             <div className="carousel-wrapper">
                 <button className="scroll-button left" onClick={scrollLeft}>{"<"}</button>
                 <div className="products-carousel" ref={carouselRef}>
-                    {products.map((product) => {
-                        const imageSrc = imageError
-                            ? "path/to/default-image.jpg"  // Image par défaut
-                            : `../assets/${product.produit.toLowerCase()}.jpg`;
+                    {products.map((product, index) => {
+                        // Utiliser un fallback pour la clé si idProduit est undefined ou null
+                        const idKey = product.id|| `product-${index}`;
+
+                        // Gérer les erreurs d'image individuellement au lieu d'utiliser un état global
+                        const imageSrc = `../assets/${product.produit.toLowerCase()}.jpg`;
 
                         return (
                             <Produits
-                                key={product.produit}
+                                key={idKey}
+                                id={product.id}
                                 categorie={product.categorie}
-                                produit={product.produit}  // Utilisation des données du produit
+                                produit={product.produit}
                                 description={`Quantité: ${product.quantite} | Status: ${product.status}`}
                                 prix={product.prix}
                                 image={imageSrc}
                                 onImageError={handleImageError}
-                                quantite={product.quantite}     // Ajoute cette ligne pour passer 'quantite'
                                 status={product.status}
                             />
                         );
                     })}
+
+
                 </div>
                 <button className="scroll-button right" onClick={scrollRight}>{">"}</button>
             </div>

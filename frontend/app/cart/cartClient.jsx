@@ -19,7 +19,7 @@ export default function Cart() {
       prevCart.map((item) => {
         if (item.id === id) {
           if (value > item.stock) {
-            alert("La quantité saisie dépasse le stock disponible !");
+            alert("Pas assez de stock.");
             value = item.stock;
           }
           const newQuantity = Math.max(0, Math.min(item.stock, value));

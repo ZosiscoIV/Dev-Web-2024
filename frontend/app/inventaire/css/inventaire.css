@@ -22,7 +22,7 @@ div#corps {
 /* tableau*/
 table {
     border-collapse: collapse;
-    width: 80%; 
+    width: 85%; 
     border: 3px solid black; 
     margin: auto;
 }
@@ -33,21 +33,25 @@ th {
 th, td {
     border: 1px solid black; 
     text-align: center;
+    padding: 10px;
 }
 
 /* Bouton nouveau Produit */
+.AjoutProduit {
+    margin-top: 15px;
+}
 button {
     float: right;
     padding: 10px 15px;
-    background-color: #4d5ede; /* Vert */
+    background-color: #4d5ede; 
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #45a049; /* Changement de couleur au survol */
+    background-color: #22c55e; 
 }
 
 /*Formulaire*/
@@ -96,5 +100,67 @@ button:hover {
 }
 
 .popup-inner input[type="submit"]:hover {
-    background-color: #45a049;
+    background-color: #22c55e;
+}
+
+/*Pop up de confirmation*/
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+.modal {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    text-align: center;
+  }
+  
+  .modal-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn.cancel {
+    background-color: #ccc;
+  }
+  
+  .btn.confirm {
+    background-color: #4d5ede;
+    color: white;
+  }
+/*Alerte Faible stock*/
+.modal-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.modal-list li {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+/*Disponibilite*/
+.grise {
+    background-color: rgb(180, 177, 177);
+}
+button:disabled {
+    background-color: rgb(134, 127, 127);
+    color: black;
 }
