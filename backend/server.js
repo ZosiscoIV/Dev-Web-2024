@@ -37,15 +37,14 @@ app.use(rateLimit({ // Nouveau middleware
 app.use('/api/favoris', favorisController);
 app.use('/api/auth', authController); // Auth routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-app.use('/api', productController);
-
+app.get('/api/validate-token', authenticateToken, (req, res) => {
+    res.json({ valid: true });
+});
 // Test API
 app.get('/api/hello', (req, res) => {
     res.json({ message: 'Hello World' });
 });
-app.get('/api/validate-token', authenticateToken, (req, res) => {
-    res.json({ valid: true });
-});
+app.use('/api', productController);
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
