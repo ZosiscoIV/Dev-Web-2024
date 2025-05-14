@@ -6,13 +6,25 @@ const { swaggerUi, specs } = require("../swagger");
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const favorisController = require('./favorisController');
+const cookieParser = require('cookie-parser');
 const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
 const PORT = 6942;
 
 // Middleware de sécurité
-app.use(cors());
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://votre-site.com',
+    'https://app.votre-site.com'
+];
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(rateLimit({ // Nouveau middleware
     windowMs: 15 * 60 * 1000,
