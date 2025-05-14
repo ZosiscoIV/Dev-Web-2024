@@ -6,7 +6,6 @@ const { swaggerUi, specs } = require("../swagger");
 const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const favorisController = require('./favorisController');
-const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
 const PORT = 6942;
