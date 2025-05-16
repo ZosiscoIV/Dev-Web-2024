@@ -3,6 +3,8 @@ const router = express.Router();
 const mysql = require('mysql2');
 require('dotenv').config();
 
+const upload = require('./middleware/multerConfig');
+
 const { validationResult } = require('express-validator');
 const validateProduct = require('./productValidator');
 
@@ -246,16 +248,20 @@ router.get('/categorie', (req, res) => {
  *       500:
  *         description: Erreur serveur.
  */
-router.post('/products', validateProduct, async (req, res) => {
+router.post('/products',upload.single('image'), validateProduct, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
     try {
         console.log("Requête reçue pour créer un produit...",req.body);
+        console.log('Fichier reçu :', req.file);
+
 
         const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
         
+        const image = req.file ? `/assets/${req.file.filename}`: null;
+
         const [verifProd] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE  nom = ?", [nom]);
         if(verifProd.length > 0) {
             return res.status(400).send('Le produit existe déjà');
@@ -292,13 +298,13 @@ router.post('/products', validateProduct, async (req, res) => {
         const idTaxe = verifTaxe[0].id;
         
         await promisePool.query(`
-            INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
-            SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie
-            FROM (SELECT ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie)
+            INSERT INTO magasin.tbProduits (nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, imageURL)
+            SELECT nom, prix, dateDebutVente, ?, idUnite, idTaxe, idCategorie, imageURL
+            FROM (SELECT ?, ?, ?, ?, ?, ?, ?, ?) AS tmp(nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, imageURL)
             WHERE NOT EXISTS (
                 SELECT id FROM magasin.tbProduits WHERE nom = ?
             ) LIMIT 1;
-        `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie, nom]);
+        `, [dateFinVenteFinal, nom, prix, dateDebutVente, dateFinVente, idUnite, idTaxe, idCategorie,image, nom]);
         const [verifProduit] = await promisePool.query("SELECT id FROM magasin.tbProduits WHERE nom = ?", [nom]);
         const idProduit = verifProduit[0].id;
 

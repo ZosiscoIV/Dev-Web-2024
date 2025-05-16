@@ -12,7 +12,7 @@ type FormProps = {
 };
 
 const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExistant, onClose}) => {
-    const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
+    const {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe,image, setImage, handleChange,handleSubmit} = useProductForm(setProducts, setCategories, produitExistant);
     
     const message = `Êtes-vous sûr de vouloir ${produitExistant ? "modifier" : "créer"} ce produit : ${nom} - quantite: ${quantite} - categorie : ${categorie} - unite : ${unite} - prix : ${prix} - mise en vente : ${dateDebutVente} ${dateFinVente ? `- fin de vente :${dateFinVente}` : ""} ${dateLivraison ? `- date de livraison :${dateLivraison}` : ""} - taxe: ${taxe}`
 
@@ -45,6 +45,10 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExi
             <label>Taxe (%) :
                 <input type="number" name="taxe" value={taxe === 0 ? "" : taxe} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
             </label>
+            <label>Image du produit :
+                <input type="file" id="fileInput" name="image" onChange={(e) => setImage(e.target.files?.[0] || null)} accept="image/jpeg, image/jpg" required />
+            </label>
+
         </>
     )
     return (
