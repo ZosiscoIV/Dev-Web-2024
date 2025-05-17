@@ -8,7 +8,7 @@ import Filtre from '../inventaire/components/Filters';
 import ProductTable from '../inventaire/components/ProductTable';
 import Button from '../inventaire/components/BoutonAdd';
 import AlertModal from '../inventaire/components/AlerteStock';
-import Header from '../inventaire/components/header';
+import HeaderInventaire from '../inventaire/components/HeaderInventaire';
 
 import "../inventaire/css/inventaire.css";
 
@@ -52,7 +52,7 @@ const Page = () => {
 
   return (
       <div>
-        <Header alertStock={msgListe.length > 0} stockFaibleClick={handleStockFaible}/>
+        <HeaderInventaire alertStock={msgListe.length > 0} stockFaibleClick={handleStockFaible}/>
         <AlertModal open={showModal} message={msgListe} onConfirm={handleConfirm}/>
         <Button setProducts={setProducts} setCategories={setCategories}/>
         <Filtre categorie={categorie} stock={stock} categories={categories} onCategorieChange={handleCategorieChange} onStockChange={handleStockChange}/>

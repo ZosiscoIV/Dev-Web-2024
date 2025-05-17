@@ -40,7 +40,7 @@ th, td {
 .AjoutProduit {
     margin-top: 15px;
 }
-button {
+button#butyonInv {
     float: right;
     padding: 10px 15px;
     background-color: #4d5ede; 
@@ -50,7 +50,7 @@ button {
     cursor: pointer;
 }
 
-button:hover {
+button:hover#butyonInv {
     background-color: #22c55e; 
 }
 
@@ -160,7 +160,7 @@ button:hover {
 .grise {
     background-color: rgb(180, 177, 177);
 }
-button:disabled {
+button:disabled#butyonInv{
     background-color: rgb(134, 127, 127);
     color: black;
 }

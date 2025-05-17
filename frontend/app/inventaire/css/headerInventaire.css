@@ -32,7 +32,7 @@
     height: 50px;             
     margin: 0 10px;           
 }
-img {
+img#imageInv {
     width: 60px;
     height: auto;
     border-radius: 8px;

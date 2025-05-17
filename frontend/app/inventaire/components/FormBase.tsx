@@ -34,7 +34,7 @@ const FormulaireBase: React.FC<FormBaseProps> = ({title, message, handleSubmit, 
                 <label> 
                     <input type="submit"/>
                 </label>
-                <button type="button" onClick={onClose}>Annuler</button>
+                <button id="butyonInv" type="button" onClick={onClose}>Annuler</button>
             </form>
             {showModal && (
                 <ConfirmModal
