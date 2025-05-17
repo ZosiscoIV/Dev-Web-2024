@@ -16,6 +16,7 @@ export class Product {
         public categorie: string,
         public taxe: number,
         public dispo: boolean,
+        public imageURL?: string,
     ) {}
     getStatus(): string {
         try {

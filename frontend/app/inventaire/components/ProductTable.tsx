@@ -89,19 +89,19 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
             <td>
               {prod.dateLivraison !== null? prod.getFormatDate(prod.dateLivraison): (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <button onClick={() => handleAjoutDateLivraison(prod)} disabled={!prod.dispo}>Ajouter une date de livraison</button>
+                <button id="butyonInv" onClick={() => handleAjoutDateLivraison(prod)} disabled={!prod.dispo}>Ajouter une date de livraison</button>
                 </div>)}
             </td>
             <td>
               {prod.dateFinVente !== null? prod.getFormatDate(prod.dateFinVente): (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                <button onClick={() => handleAjoutDateFinVente(prod)} disabled={!prod.dispo}>Ajouter une date de fin de vente</button>
+                <button id="butyonInv" onClick={() => handleAjoutDateFinVente(prod)} disabled={!prod.dispo}>Ajouter une date de fin de vente</button>
                 </div>)}
             </td>
             <td>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
 
-              <button onClick={() => handleModif(prod)} disabled={!prod.dispo}>Modifier un produit</button>
+              <button id="butyonInv" onClick={() => handleModif(prod)} disabled={!prod.dispo}>Modifier un produit</button>
               </div>
             </td>
           </tr>
