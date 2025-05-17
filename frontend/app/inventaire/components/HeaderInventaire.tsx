@@ -7,12 +7,13 @@ import logoInventaire from "../assets/logoInventaire.png";
 import clocheNotification from "../assets/clocheNotification.png";
 import clocheSansNotification from "../assets/clocheSansNotification.png";
 
-import "../css/header.css";
+import "../css/headerInventaire.css";
+
 type headerPros = {
     alertStock?: boolean;
     stockFaibleClick?: () => void;
 }
-const Header: React.FC<headerPros> = ({alertStock = false, stockFaibleClick}) => {
+const HeaderInventaire: React.FC<headerPros> = ({alertStock = false, stockFaibleClick}) => {
     const router = useRouter();
     
     const alert = alertStock ? clocheNotification : clocheSansNotification
@@ -26,13 +27,15 @@ const Header: React.FC<headerPros> = ({alertStock = false, stockFaibleClick}) =>
                     alt="logo"
                     onClick={() => router.push("/")}
                     className="cursor-pointer"
+                    id="imageInv"
+
                 />
             </div>
 
             <h1 className="title">Inventaire</h1>
 
             <div className="right">
-                <button className="boutonLogin" onClick={() => router.push("/listeprod")}>
+                <button id="butyonInv" className="boutonLogin" onClick={() => router.push("/listeprod")}>
                     Login
                 </button>
                 <Image
@@ -40,6 +43,8 @@ const Header: React.FC<headerPros> = ({alertStock = false, stockFaibleClick}) =>
                     alt="logoInventaire"
                     onClick={() => router.push("/listeprod")}
                     className="cursor-pointer"
+                    id="imageInv"
+
                 />
                 <div className="vertical-bar"></div>
                 <Image
@@ -47,10 +52,11 @@ const Header: React.FC<headerPros> = ({alertStock = false, stockFaibleClick}) =>
                     alt={alertAlt}
                     onClick={() => {alertStock && stockFaibleClick ? stockFaibleClick() : router.push("/listeprod")}}
                     className="cursor-pointer"
+                    id="imageInv"
                 />
             </div>
         </header>
     );
 };
 
-export default Header;
+export default HeaderInventaire;

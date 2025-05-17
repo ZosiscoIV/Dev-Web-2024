@@ -26,7 +26,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
     const [dateFinVente, setDateFinVente] = useState<string>('');
     const [dateLivraison, setDateLivraison] = useState<string>('');
     const [taxe, setTaxe] = useState<number>(0);
-    
+    const [image, setImage] = useState<File | null>(null);
 
     useEffect( () => {
         if (produitExistant){
@@ -87,31 +87,29 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         }
     } 
     const handleSubmit = async () => {
-        const data = {
-            nom,
-            quantite,
-            categorie,
-            unite,
-            prix,
-            dateDebutVente,
-            dateFinVente,
-            dateLivraison,
-            taxe,
-            ...(produitExistant?.id && { id: produitExistant.id })
-
-        };
+        const formData = new FormData();
+        formData.append('nom', nom);
+        formData.append('quantite', quantite.toString());
+        formData.append('categorie', categorie);
+        formData.append('unite', unite);
+        formData.append('prix', prix.toString());
+        formData.append('dateDebutVente', dateDebutVente);
+        formData.append('dateFinVente', dateFinVente);
+        formData.append('dateLivraison', dateLivraison);
+        formData.append('taxe', taxe.toString());
+        if (image) formData.append('image', image);
+        if (produitExistant?.id) formData.append('id', produitExistant.id.toString());
 
         if (produitExistant){
             try {
                 const response = await fetch(`http://localhost:6942/api/products/${produitExistant.id}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    body: formData,
                 });
                 console.log('Statut de la réponse:', response.status);  // Statut HTTP (200, 400, etc.)
                 console.log(response);
+                console.log("imageURL:", produitExistant?.imageURL);
+
                 await handleResponse(response, 'Produit modifié avec succès !', 'Erreur lors de la modification du produit')
             } 
             catch (error) {
@@ -124,10 +122,7 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             try {
                 const response = await fetch('http://localhost:6942/api/products', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    body: formData,
                 });
                 console.log('Statut de la réponse:', response.status);  
                 console.log(response);
@@ -173,5 +168,5 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
             }
         };
     };
-    return {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe, handleChange,handleSubmit};
+    return {nom, quantite,categorie, unite, prix,dateDebutVente,dateFinVente, dateLivraison, taxe,image, setImage, handleChange,handleSubmit};
 };

@@ -32,7 +32,7 @@ const SearchResults = () => {
                             className="produits p-4 border rounded shadow hover:shadow-lg transition cursor-pointer"
                             onClick={() => openProductDetails(product)}
                         >
-                            <Imagegit
+                            <Image
                                 src={`/assets/${product.produit}.jpg`}
                                 className="produitImg"
                                 alt={product.produit}

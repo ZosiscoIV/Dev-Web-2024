@@ -14,7 +14,7 @@ const Button: React.FC<ButtonProps> = ({setProducts, setCategories }) => {
     
     return (
         <div className='AjoutProduit'>
-            <button onClick={() => setAffiForm(true)}>Ajouter un nouveau produit</button>
+            <button id="butyonInv" onClick={() => setAffiForm(true)}>Ajouter un nouveau produit</button>
             {affiForm && <Formulaire setProducts={setProducts} setCategories={setCategories} onClose={() => setAffiForm(false)}/>}
         </div>
     )

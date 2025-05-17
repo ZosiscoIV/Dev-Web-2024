@@ -13,6 +13,7 @@ interface Product {
     image: string;
     quantite: number;
     status: string;
+    imageURL: string;
     onImageError: () => void;
 }
 
@@ -67,7 +68,8 @@ function Home() {
                         const idKey = product.id|| `product-${index}`;
 
                         // Gérer les erreurs d'image individuellement au lieu d'utiliser un état global
-                        const imageSrc = `../assets/${product.produit.toLowerCase()}.jpg`;
+                        //const imageSrc = `../assets/${product.produit.toLowerCase()}.jpg`;
+                        const imageSrc = `..${product.imageURL}`;
 
                         return (
                             <Produits
