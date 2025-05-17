@@ -28,14 +28,19 @@ const FormulaireBase: React.FC<FormBaseProps> = ({title, message, handleSubmit, 
     };
 
     return (
+
         <div className="popup-inner">
-            <form onSubmit={handleOpenModal}>
+            <div className="popup-form-wrapper">
+
+            {showModal && <div className="form-overlay" />}
+            <form onSubmit={handleOpenModal} className="popup-form">
                 {formField}
                 <label> 
                     <input type="submit"/>
                 </label>
                 <button id="butyonInv" type="button" onClick={onClose}>Annuler</button>
             </form>
+            </div>
             {showModal && (
                 <ConfirmModal
                     open={showModal}

@@ -13,13 +13,11 @@ import HeaderInventaire from '../inventaire/components/HeaderInventaire';
 import "../inventaire/css/inventaire.css";
 
 const Page = () => {
-  const [reloadAllProducts, setReloadAllProducts] = useState(0);
 
   const [categorie, setCateg] = useState<string>('tout');
   const [stock, setStock] = useState<'tout'| 'enStock' | 'faibleStock' | 'horsStock'>('tout');
 
   const {products, errorMessage, setProducts} = useProducts(categorie, stock);
-  const { products: allProducts } = useProducts('tout', 'tout', reloadAllProducts);
   const {categories, setCategories} = useCategorie()
 
   const handleCategorieChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -41,9 +39,7 @@ const Page = () => {
       setCateg('tout')
       setStock('faibleStock'); 
   };
-  const refreshAllProducts = () => {
-    setReloadAllProducts(prev => prev + 1);
-  };
+
   const stockFaible = products.filter(p => p.quantite < 5 && p.dispo === true);
   console.log(stockFaible);
   const msgListe = stockFaible.map(p => 

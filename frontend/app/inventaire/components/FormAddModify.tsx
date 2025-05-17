@@ -47,7 +47,7 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExi
             </label>
             <label>Image du produit :
                 {produitExistant?.imageURL &&(
-                      <img src={`http://localhost:6942${produitExistant.imageURL}?t=${Date.now()}`} alt="Image actuelle" />
+                      <img src={`http://localhost:6942${produitExistant.imageURL}?t=${Date.now()}`} alt="Image actuelle" style={{width:'150px'}}/>
                 )}
                 <input type="file" id="fileInput" name="image" accept="image/jpeg, image/jpg" 
                     onChange={(e) => {
