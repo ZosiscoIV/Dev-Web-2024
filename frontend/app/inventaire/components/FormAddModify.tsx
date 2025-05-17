@@ -46,7 +46,18 @@ const Formulaire: React.FC<FormProps> = ({setProducts, setCategories, produitExi
                 <input type="number" name="taxe" value={taxe === 0 ? "" : taxe} onChange={handleChange} placeholder='0' min="0" step="0.01"/>
             </label>
             <label>Image du produit :
-                <input type="file" id="fileInput" name="image" onChange={(e) => setImage(e.target.files?.[0] || null)} accept="image/jpeg, image/jpg" required />
+                {produitExistant?.imageURL &&(
+                      <img src={`http://localhost:6942${produitExistant.imageURL}?t=${Date.now()}`} alt="Image actuelle" />
+                )}
+                <input type="file" id="fileInput" name="image" accept="image/jpeg, image/jpg" 
+                    onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file && file.type !== 'image/jpeg') {
+                            alert("Seuls les fichiers JPEG (.jpg) sont autorisés.");
+                            e.target.value = ""; 
+                            return;
+                        }
+                        setImage(file || null);}}  required={!produitExistant} />
             </label>
 
         </>

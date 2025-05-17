@@ -101,7 +101,8 @@ router.get('/products', (req, res) => {
         p.dateFinVente as dateFinVente,
         u.unite,
         t.taxe,
-        s.disponibilite
+        s.disponibilite,
+        p.imageURL
     FROM
         magasin.tbProduits p
     JOIN
@@ -383,7 +384,7 @@ router.post('/products',upload.single('image'), validateProduct, async (req, res
  *       500:
  *         description: Erreur serveur.
  */
-router.put('/products/:id', validateProduct, async (req, res) => {
+router.put('/products/:id',upload.single('image'), validateProduct, async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -393,6 +394,8 @@ router.put('/products/:id', validateProduct, async (req, res) => {
 
         const {nom, quantite,unite, prix, categorie,dateLivraison, dateDebutVente, dateFinVente, taxe} = req.body
         const id = req.params.id;
+
+        const image = req.file ? `/assets/${req.file.filename}` : null;
 
         const [row] = await promisePool.query( `
             SELECT
@@ -406,7 +409,8 @@ router.put('/products/:id', validateProduct, async (req, res) => {
                 p.dateDebutVente AS dateDebutVente,
                 p.dateFinVente as dateFinVente,
                 u.unite,
-                t.taxe
+                t.taxe,
+                p.imageURL
             FROM
                 magasin.tbProduits p
             JOIN
@@ -424,6 +428,7 @@ router.put('/products/:id', validateProduct, async (req, res) => {
             return res.status(404).json({ error: 'Produit non trouvé' });
         }
         const produit = row[0];
+        const newImageURL = image || produit.imageURL;
 
         async function findOrInsert(table, column, value) {
             const [row] = await promisePool.query(`SELECT id FROM magasin.${table} WHERE ${column} = ?`, [value]);
@@ -452,9 +457,9 @@ router.put('/products/:id', validateProduct, async (req, res) => {
         const dateFinSQL = dateFinVente === '' ? null : dateFinVente;
         await promisePool.query(`
             UPDATE magasin.tbProduits 
-            SET prix = ?, dateDebutVente = ?, dateFinVente = ?, idUnite = ?, idTaxe = ?, idCategorie = ?
+            SET prix = ?, dateDebutVente = ?, dateFinVente = ?, idUnite = ?, idTaxe = ?, idCategorie = ?, imageURL = ?
             WHERE id = ?
-        `, [prix, dateDebutSQL, dateFinSQL, idUnite, idTaxe, idCategorie, id]);
+        `, [prix, dateDebutSQL, dateFinSQL, idUnite, idTaxe, idCategorie, newImageURL, id]);
 
         res.status(200).json({ message: 'Produit mis à jour avec succès' });
 

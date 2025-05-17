@@ -38,6 +38,9 @@ app.use('/api/favoris', favorisController);
 app.use('/api/auth', authController); // Auth routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api', productController);
+const path = require('path');
+app.use('/assets', express.static(path.join(__dirname, '../frontend/public/assets')));
+
 
 // Test API
 app.get('/api/hello', (req, res) => {
@@ -47,7 +50,6 @@ app.get('/api/validate-token', authenticateToken, (req, res) => {
     res.json({ valid: true });
 });
 
-app.use('/public', express.static('public'))
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

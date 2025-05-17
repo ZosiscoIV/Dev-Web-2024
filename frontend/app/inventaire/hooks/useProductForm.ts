@@ -100,31 +100,16 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         if (image) formData.append('image', image);
         if (produitExistant?.id) formData.append('id', produitExistant.id.toString());
 
-        const data = {
-            nom,
-            quantite,
-            categorie,
-            unite,
-            prix,
-            dateDebutVente,
-            dateFinVente,
-            dateLivraison,
-            taxe,
-            ...(produitExistant?.id && { id: produitExistant.id })
-
-        };
-
         if (produitExistant){
             try {
                 const response = await fetch(`http://localhost:6942/api/products/${produitExistant.id}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    body: formData,
                 });
                 console.log('Statut de la réponse:', response.status);  // Statut HTTP (200, 400, etc.)
                 console.log(response);
+                console.log("imageURL:", produitExistant?.imageURL);
+
                 await handleResponse(response, 'Produit modifié avec succès !', 'Erreur lors de la modification du produit')
             } 
             catch (error) {
