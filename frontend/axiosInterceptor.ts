@@ -1,4 +1,3 @@
-// src/lib/axiosClient.ts
 import axios from 'axios';
 
 // Utility to read a cookie value by name
