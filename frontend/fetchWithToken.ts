@@ -1,28 +1,28 @@
 // app/fetchWithToken.ts
-import {head} from "axios";
+import axios from 'axios'
 
-export function getTokenFromCookie(name: string): string | null {
-    if (typeof document === 'undefined') return null;
+// 1) Create an instance
+const axiosClient = axios.create({
+    baseURL: 'http://localhost:6942/api',
+    headers: { 'Content-Type': 'application/json' },
+})
 
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
-    return null;
-}
+// 2) Request interceptor: add Bearer token
+axiosClient.interceptors.request.use(
+    config => {
+        // Read token from where you’re persisting it:
+        // • cookie, localStorage, or a React context, etc.
+        const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('token='))
+            ?.split('=')[1]
 
-export async function fetchWithToken(
-    input: RequestInfo,
-    init: RequestInit = {}
-): Promise<Response> {
-    const token = getTokenFromCookie('token'); // replace 'token' with your cookie name
-    const headers = new Headers(init.headers || {});
-    if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-    }
-    console.log('All headers:', [...headers.entries()])
-    return fetch(input, {
-        ...init,
-        headers,
-        credentials: 'include', // include cookies if needed by your API
-    });
-}
+        if (token && config.headers) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+        console.log(config.headers.Authorization)
+        return config
+    },
+    error => Promise.reject(error)
+)
+export default axiosClient
