@@ -5,12 +5,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation"; // Correct hook import from next/navigation
 import Image from "next/image";
+import { useAdmin } from "../hooks/useAdmin";
 import "../css/Header.css";
 
 function Header() {
     const router = useRouter(); // Now using the correct useRouter from next/navigation
     const [query, setQuery] = useState("");
     const [category, setCategory] = useState("");
+    const user = useAdmin();
 
     const handleSearch = () => {
         router.push(`/search?q=${query}&category=${category}`); // Use router.push() to navigate
@@ -56,6 +58,9 @@ function Header() {
             </div>
 
             <div className="bouton">
+                
+                {user?.is_admin && (<button className="boutonInventaire" onClick={() => router.push("/listeprod")}>Inventaire</button>)}               
+
                 <button className="boutonFavoris" onClick={() => router.push("/favoris")}>
                     ❤️
                 </button>
