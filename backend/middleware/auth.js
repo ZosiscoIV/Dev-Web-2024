@@ -1,7 +1,14 @@
 const jwt = require('jsonwebtoken');
 
 function authenticateToken(req, res, next) {
-    const token = req.cookies.token; // Lire le token depuis les cookies
+
+    // 1. Read the Authorization header
+    const authHeader = req.headers.authorization;
+    // 2. It should be in the form "Bearer <token>"
+    const token = authHeader && authHeader.split(' ')[0] === 'Bearer'
+        ? authHeader.split(' ')[1]
+        : null;
+
     if (!token) {
         return res.status(401).json({ error: 'Token manquant' });
     }
