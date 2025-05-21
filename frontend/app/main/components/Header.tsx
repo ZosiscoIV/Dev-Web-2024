@@ -13,7 +13,7 @@ interface Profile {
 
 export default function Header() {
     const router = useRouter()
-    const [user, setUser] = useState<UserPayload | null>(null)
+    const [user, setUser] = useState<Profile | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
