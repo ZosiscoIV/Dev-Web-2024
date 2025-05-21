@@ -5,6 +5,7 @@ import axios from 'axios'
 const axiosClient = axios.create({
     baseURL: 'http://localhost:6942/api',
     headers: { 'Content-Type': 'application/json' },
+    withCredentials: true,
 })
 
 // 2) Request interceptor: add Bearer token
