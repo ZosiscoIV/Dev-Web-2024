@@ -10,14 +10,11 @@ const Login = () => {
     const router = useRouter();
 
     useEffect(() => {
-        fetch('http://localhost:6942/api/validate-token', {
-            credentials: 'include'
-        })
-            .then(res => {
-                if (res.ok) router.push('/');
-            })
-            .catch(() => {});
+        axiosClient.get('/validate-token')
+            .then(() => { router.push('/') })
+            .catch(() => { /* not logged in, stay on login */ });
     }, [router]);
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
