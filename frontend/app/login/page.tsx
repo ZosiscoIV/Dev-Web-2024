@@ -26,11 +26,13 @@ const Login = () => {
                 credentials: 'include',
                 body: JSON.stringify({ email, password })
             });
+            
+            const data = await res.json();
 
             if (res.ok) {
+                localStorage.setItem("user", JSON.stringify(data.user))
                 router.push('/');
             } else {
-                const data = await res.json();
                 setError(data.error || 'Échec de la connexion');
             }
         } catch {

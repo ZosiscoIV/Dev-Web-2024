@@ -8,7 +8,6 @@ function authenticateToken(req, res, next) {
     const token = authHeader && authHeader.split(' ')[0] === 'Bearer'
         ? authHeader.split(' ')[1]
         : null;
-
     if (!token) {
         return res.status(401).json({ error: 'Token manquant' });
     }

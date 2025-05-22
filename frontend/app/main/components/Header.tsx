@@ -87,7 +87,6 @@ export default function Header() {
                         </button>
                     </>
                 )}
-
                 <button
                     className="boutonFavoris"
                     onClick={() => router.push('/favoris')}

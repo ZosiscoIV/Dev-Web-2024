@@ -18,8 +18,8 @@ const ConfirmModal: React.FC<ModalProps> = ({open, title,message, onClose, onCon
         <h2 style={{fontWeight:"bolder"}}>{title}</h2>
         <p>{message}</p>
         <div className="modal-actions">
-          <button onClick={onClose} className="btn cancel">Annuler</button>
-          <button onClick={() => { onConfirm(); onClose();}} className="btn confirm">Confirmer</button>
+          <button id="butyonInv" onClick={onClose} className="btn cancel">Annuler</button>
+          <button id="butyonInv" onClick={() => { onConfirm(); onClose();}} className="btn confirm">Confirmer</button>
         </div>
       </div>
     </div>

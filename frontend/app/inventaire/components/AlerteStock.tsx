@@ -25,7 +25,7 @@ const AlertModal: React.FC<ModalProps> = ({open, message, onConfirm}) => {
                 </> 
                 )}      
                 <div className="modal-actions">
-                    <button onClick={() => {onConfirm();}} className="btn confirm">OK</button>
+                    <button id="butyonInv" onClick={() => {onConfirm();}} className="btn confirm">OK</button>
                 </div>
             </div>
         </div>

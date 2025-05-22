@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql2');
 const cookieParser = require('cookie-parser');
+const { use } = require('react');
 require('dotenv').config({ path: '../.env' });
 
 const db = mysql.createConnection({
@@ -37,8 +38,8 @@ db.connect(err => {
 const isValidEmail = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 const isPasswordValid = pw => pw.length >= 8 && /[A-Z]/.test(pw) && /\d/.test(pw);
 
-function tokenGen(id, nom, prenom, email) {
-    const payload = { id, nom, prenom, email };
+function tokenGen(id, nom, prenom, email, is_admin) {
+    const payload = { id, nom, prenom, email, is_admin };
     return jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
@@ -102,14 +103,14 @@ router.post('/login', async (req, res) => {
         const match = await bcrypt.compare(password, user.password);
         if (!match) return res.status(401).json({ error: 'Mot de passe incorrect' });
 
-        const token = tokenGen(user.id, user.nom, user.prenom, user.adresseMail);
+        const token = tokenGen(user.id, user.nom, user.prenom, user.adresseMail, user.is_admin);
         res.cookie('token', token, {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
             maxAge: 24 * 60 * 60 * 1000
         });
-        res.json({ message: 'Connexion réussie' });
+        res.json({ message: 'Connexion réussie', user:{id:user.id, nom: user.nom, prenom: user.prenom, email: user.adresseMail, is_admin: user.is_admin ===1} });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Erreur serveur' });
