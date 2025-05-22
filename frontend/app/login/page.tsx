@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import axiosClient from '../fetchWithToken';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -10,12 +11,8 @@ const Login = () => {
     const router = useRouter();
 
     useEffect(() => {
-        fetch('http://localhost:6942/api/validate-token', {
-            credentials: 'include'
-        })
-            .then(res => {
-                if (res.ok) router.push('/');
-            })
+        axiosClient.get('/validate-token')
+            .then(() => { router.push('/') })
             .catch(() => {});
     }, [router]);
 
@@ -44,19 +41,36 @@ const Login = () => {
     };
 
     return (
-        <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
-            <h2>Connexion</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
+        <div className="max-w-sm mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+            <h2 className="text-2xl font-semibold mb-4 text-center">Connexion</h2>
+            {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
+            <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label>Email:</label><br />
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                 </div>
                 <div>
-                    <label>Mot de passe:</label><br />
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+                    <label className="block text-sm font-medium mb-1">Mot de passe</label>
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        required
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
                 </div>
-                <button type="submit">Se connecter</button>
+                <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+                >
+                    Se connecter
+                </button>
             </form>
         </div>
     );

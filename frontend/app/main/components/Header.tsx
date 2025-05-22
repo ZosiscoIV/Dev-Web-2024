@@ -1,26 +1,49 @@
-// app/main/components/Header.tsx
+'use client'
 
-"use client";
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import axiosClient from '../../fetchWithToken'
+import '../css/Header.css'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation"; // Correct hook import from next/navigation
-import Image from "next/image";
-import { useAdmin } from "../hooks/useAdmin";
-import "../css/Header.css";
+interface Profile {
+    nom: string;
+    prenom: string;
+}
 
-function Header() {
-    const router = useRouter(); // Now using the correct useRouter from next/navigation
-    const [query, setQuery] = useState("");
-    const [category, setCategory] = useState("");
-    const user = useAdmin();
+export default function Header() {
+    const router = useRouter()
+    const [user, setUser] = useState<Profile | null>(null)
+    const [loading, setLoading] = useState(true)
 
-    const handleSearch = () => {
-        router.push(`/search?q=${query}&category=${category}`); // Use router.push() to navigate
-    };
+    useEffect(() => {
+        axiosClient
+            .get<Profile>('/auth/profile')
+            .then(res => {
+                setUser(res.data);     // contains { nom, prenom }
+            })
+            .catch(() => {
+                setUser(null);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await axiosClient.post('/auth/logout'); // Utilisez axiosClient au lieu de fetch
+            setUser(null);
+            router.push('/');
+            window.location.reload(); // Forcer le rafraîchissement pour nettoyer l'état
+        } catch (error) {
+            console.error('Erreur de déconnexion:', error);
+        }
+    }
 
     return (
         <header className="Header">
-            <div className="BannerImg" onClick={() => router.push("/")}>
+            <div className="BannerImg" onClick={() => router.push('/')}>
                 <Image
                     src={`/assets/logo.png`}
                     alt="logo"
@@ -31,51 +54,52 @@ function Header() {
             </div>
 
             <div className="search">
-                <select
-                    className="dropdown"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                >
-                    <option value="">Toutes catégories</option>
-                    <option value="fruits">Fruits</option>
-                    <option value="legumes">Légumes</option>
-                    <option value="Cereal">Cereal</option>
-                    <option value="Epicerie sucree">Epicerie sucree</option>
-                </select>
-
-                <input
-                    type="text"
-                    placeholder="Rechercher..."
-                    className="recherche"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                />
-
-                <button className="boutonRecherche" onClick={handleSearch}>
-                    🔍
-                </button>
+                {/* ... your existing search UI ... */}
             </div>
 
-            <div className="bouton">
-                
-                {user?.is_admin && (<button className="boutonInventaire" onClick={() => router.push("/listeprod")}>Inventaire</button>)}               
-
-                <button className="boutonFavoris" onClick={() => router.push("/favoris")}>
+            <div className="bouton" >
+                {loading ? null : user ? (
+                    <>
+            <div       style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+            }}>
+              Welcome {user.prenom} {user.nom}
+            </div>
+                        <button className="boutonLogout" onClick={handleLogout}>
+                            Logout
+                        </button>
+                    </>
+                ) : (
+                    <>
+                        <button
+                            className="boutonLogin"
+                            onClick={() => router.push('/login')}
+                        >
+                            Login
+                        </button>
+                        <button
+                            className="boutonLogin"
+                            onClick={() => router.push('/register')}
+                        >
+                            Register
+                        </button>
+                    </>
+                )}
+                <button
+                    className="boutonFavoris"
+                    onClick={() => router.push('/favoris')}
+                >
                     ❤️
                 </button>
-                <button className="boutonLogin" onClick={() => router.push("/login")}>
-                    Login
-                </button>
-                <button className="boutonLogin" onClick={() => router.push("/register")}>
-                    Register
-                </button>
-                <button className="boutonPanier" onClick={() => router.push("/panier")}>
+                <button
+                    className="boutonPanier"
+                    onClick={() => router.push('/panier')}
+                >
                     🛒
                 </button>
             </div>
         </header>
-    );
+    )
 }
-
-export default Header;

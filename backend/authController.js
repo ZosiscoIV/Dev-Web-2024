@@ -76,7 +76,7 @@ router.post('/register', async (req, res) => {
 
         const token = tokenGen(result.insertId, nom, prenom, email);
         res.cookie('token', token, {
-            httpOnly: true,
+            httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
             maxAge: 24 * 60 * 60 * 1000
@@ -105,7 +105,7 @@ router.post('/login', async (req, res) => {
 
         const token = tokenGen(user.id, user.nom, user.prenom, user.adresseMail, user.is_admin);
         res.cookie('token', token, {
-            httpOnly: true,
+            httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
             maxAge: 24 * 60 * 60 * 1000

@@ -1,201 +1,272 @@
-import { updateFormData, submitRegistration, FormData } from "./authFormHandlers";
-const { expect, describe, it } = require('@jest/globals');
-import "@testing-library/jest-dom";
+import React from 'react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import RegisterForm, { passwordCheck, phoneCheck, submitRegistration } from './page';
+import '@testing-library/jest-dom';
+const { expect, describe, test } = require('@jest/globals');
+import { useRouter } from 'next/navigation';
 
-describe("updateFormData", () => {
-    const base: FormData = {
-        firstName: "",
-        lastName:  "",
-        email:     "",
-        phone:     "",
-        password:  "",
-        confirmPassword: "",
-    };
+describe('Utility function tests', () => {
+    describe('passwordCheck', () => {
+        test('returns error when passwords do not match', () => {
+            expect(passwordCheck('Password1', 'Password2')).toBe('Les mots de passe ne correspondent pas');
+        });
+        test('returns error when password is too short', () => {
+            expect(passwordCheck('Pass1', 'Pass1')).toBe('Le mot de passe doit contenir au moins 8 caractères');
+        });
+        test('returns error when missing uppercase', () => {
+            expect(passwordCheck('password1', 'password1')).toBe('Le mot de passe doit contenir au moins une majuscule');
+        });
+        test('returns error when missing number', () => {
+            expect(passwordCheck('Password', 'Password')).toBe('Le mot de passe doit contenir au moins un chiffre');
+        });
+        test('returns null when valid password', () => {
+            expect(passwordCheck('Password1', 'Password1')).toBeNull();
+        });
+    });
 
-    test("should update a single field and preserve others", () => {
-        const next = updateFormData(base, "email", "foo@bar.com");
-        expect(next).toEqual({
-            ...base,
-            email: "foo@bar.com",
+    describe('phoneCheck', () => {
+        test('returns error when not 10 digits', () => {
+            expect(phoneCheck('01234')).toBe('Le numéro de téléphone doit contenir exactement 10 chiffres');
         });
-        const next1 = updateFormData(base, "password", "foo@bar.com");
-        expect(next1).toEqual({
-            ...base,
-            password: "foo@bar.com",
+        test('returns null when valid digits with spaces', () => {
+            expect(phoneCheck('012 345 6789')).toBeNull();
         });
-    const next2 = updateFormData(base, "confirmPassword", "foo@bar.com");
-        expect(next2).toEqual({
-            ...base,
-            confirmPassword: "foo@bar.com",
+        test('returns null when valid digits with dashes', () => {
+            expect(phoneCheck('012-345-6789')).toBeNull();
         });
     });
 });
-
-describe("submitRegistration", () => {
-    const goodData: FormData = {
-        firstName: "Alice",
-        lastName:  "Dupont",
-        email:     "alice@example.com",
-        phone:     "0123456789",
-        password:  "Secret123",
-        confirmPassword: "Secret123",
+describe('submitRegistration', () => {
+    const mockFormData = {
+        lastName: 'Doe',
+        firstName: 'John',
+        email: 'john@example.com',
+        password: 'Password1',
+        phone: '0123456789',
     };
 
-    test("rejects when passwords don’t match", async () => {
-        const bad = { ...goodData, confirmPassword: "NoMatch" };
-        const result = await submitRegistration(bad, async () => {
-            throw new Error("should not call fetch");
-        });
-        expect(result).toEqual({ errorMsg: "Les mots de passe ne correspondent pas" });
-    });
-
-    test("returns errorMsg on 400 response with JSON error", async () => {
-        const fakeFetch = async () =>
-            Promise.resolve({
-                ok: false,
-                json: async () => ({ error: "Email déjà utilisé" }),
-            } as Response);
-
-        const result = await submitRegistration(goodData, fakeFetch);
-        expect(result).toEqual({ errorMsg: "Email déjà utilisé" });
-    });
-
-    test("returns generic errorMsg on non-JSON or missing error field", async () => {
-        const fakeFetch = async () =>
-            Promise.resolve({ ok: false, json: async () => ({}) } as Response);
-
-        const result = await submitRegistration(goodData, fakeFetch);
-        expect(result).toEqual({ errorMsg: "Erreur lors de l'inscription" });
-    });
-
-    test("returns redirectTo on 200 OK", async () => {
-        const fakeFetch = async () =>
-            Promise.resolve({ ok: true } as Response);
-
-        const result = await submitRegistration(goodData, fakeFetch);
-        expect(result).toEqual({ redirectTo: "/login" });
-    });
-});
-
-// 1) Mock the Next.js App Router hook so useRouter().push exists:
-jest.mock("next/navigation", () => ({
-    useRouter: () => ({
-        push: jest.fn(),
-    }),
-}));
-import React from "react";
-import { render, screen, fireEvent, waitFor  } from "@testing-library/react";
-
-
-// 2) Now import your page (which calls useRouter under the hood)
-import Page from "./page";
-
-describe("Register Page (client-side validation only)", () => {
     beforeEach(() => {
-        render(<Page />);
+        // @ts-ignore
+        global.fetch = jest.fn();
     });
 
-    test("renders the registration form with all fields", () => {
-        expect(screen.getByTestId("register-form")).toBeInTheDocument();
-        expect(screen.getByLabelText("Prénom")).toBeInTheDocument();
-        expect(screen.getByLabelText("Nom")).toBeInTheDocument();
-        expect(screen.getByLabelText("Email")).toBeInTheDocument();
-        expect(screen.getByLabelText("Téléphone")).toBeInTheDocument();
-        expect(screen.getByLabelText("Mot de passe")).toBeInTheDocument();
-        expect(screen.getByLabelText("Confirmer le mot de passe")).toBeInTheDocument();
-        expect(screen.getByRole("button", { name: /s'inscrire/i })).toBeInTheDocument();
+    afterEach(() => {
+        jest.resetAllMocks();
     });
 
-    test("updates input values when the user types", () => {
-        const first = screen.getByLabelText("Prénom") as HTMLInputElement;
-        const last = screen.getByLabelText("Nom") as HTMLInputElement;
+    test('should succeed when API responds with 200', async () => {
+        // @ts-ignore
+        fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({ success: true }),
+        });
 
-        fireEvent.change(first, { target: { value: "Jean" } });
-        fireEvent.change(last, { target: { value: "Dupont" } });
-
-        expect(first.value).toBe("Jean");
-        expect(last.value).toBe("Dupont");
+        const response = await submitRegistration(mockFormData);
+        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(response.ok).toBe(true);
     });
 
-    test("shows an error when passwords do not match", async () => {
-        fireEvent.change(screen.getByLabelText("Prénom"), {
-            target: { value: "Prenom" },
-        });
-        fireEvent.change(screen.getByLabelText("Nom"), {
-            target: { value: "Nom" },
-        });
-        fireEvent.change(screen.getByLabelText("Email"), {
-            target: { value: "j.noel@ephec.com" },
-        });
-        fireEvent.change(screen.getByLabelText("Téléphone"), {
-            target: { value: "0123456789" },
-        });
-        fireEvent.change(screen.getByLabelText("Mot de passe"), {
-            target: { value: "Password1" },
-        });
-        fireEvent.change(screen.getByLabelText("Confirmer le mot de passe"), {
-            target: { value: "Password2" },
-        });
-        fireEvent.click(screen.getByRole("button", { name: /s'inscrire/i }));
-
-        const errorMessage = await screen.findByText('Les mots de passe ne correspondent pas');
-        expect(errorMessage).toBeInTheDocument();
-    });
-
-    test('enforces password complexity rules', () => {
-        const passwordInput = screen.getByLabelText('Mot de passe');
-
-        expect(passwordInput).toHaveAttribute(
-            'pattern',
-            '(?=.*\\d)(?=.*[A-Z]).{8,}'
-        );
-        expect(passwordInput).toHaveAttribute(
-            'title',
-            '8 caractères minimum avec au moins 1 majuscule et 1 chiffre'
-        );
-    });
-
-    test("enforces the phone pattern attribute", () => {
-        const phone = screen.getByLabelText("Téléphone") as HTMLInputElement;
-        expect(phone.getAttribute("pattern")).toBe("[0-9]{10}");
-    });
-    test("displays server JSON error message on 400 response", async () => {
-        // Mock fetch to return 400 with JSON error
-        global.fetch = jest.fn().mockResolvedValue({
+    test('should throw error when API responds with error', async () => {
+        // @ts-ignore
+        fetch.mockResolvedValueOnce({
             ok: false,
-            json: async () => ({ error: "Email déjà pris" }),
+            json: async () => ({ error: 'Email déjà utilisé' }),
         });
-
-        // Fill valid matching passwords and other required fields
-        fireEvent.change(screen.getByLabelText("Prénom"), { target: { value: "Alice" } });
-        fireEvent.change(screen.getByLabelText("Nom"), { target: { value: "Dupont" } });
-        fireEvent.change(screen.getByLabelText("Email"), { target: { value: "alice@example.com" } });
-        fireEvent.change(screen.getByLabelText("Téléphone"), { target: { value: "0123456789" } });
-        fireEvent.change(screen.getByLabelText("Mot de passe"), { target: { value: "Secret123" } });
-        fireEvent.change(screen.getByLabelText("Confirmer le mot de passe"), { target: { value: "Secret123" } });
-        fireEvent.click(screen.getByRole("button", { name: /s'inscrire/i }));
-
-        const serverError = await screen.findByText("Email déjà pris");
-        expect(serverError).toBeInTheDocument();
+        await expect(submitRegistration(mockFormData)).rejects.toThrow('Email déjà utilisé');
     });
 
-    test("displays generic error message on 400 without error field", async () => {
-        global.fetch = jest.fn().mockResolvedValue({
+    test('throws the generic error message if response.json() has no .error field', async () => {
+        // @ts-ignore
+        fetch.mockResolvedValueOnce({
             ok: false,
             json: async () => ({}),
         });
 
-        // Fill form
-        fireEvent.change(screen.getByLabelText("Prénom"), { target: { value: "Bob" } });
-        fireEvent.change(screen.getByLabelText("Nom"), { target: { value: "Martin" } });
-        fireEvent.change(screen.getByLabelText("Email"), { target: { value: "bob@example.com" } });
-        fireEvent.change(screen.getByLabelText("Téléphone"), { target: { value: "0123456789" } });
-        fireEvent.change(screen.getByLabelText("Mot de passe"), { target: { value: "Secret123" } });
-        fireEvent.change(screen.getByLabelText("Confirmer le mot de passe"), { target: { value: "Secret123" } });
-        fireEvent.click(screen.getByRole("button", { name: /s'inscrire/i }));
+        await expect(submitRegistration(mockFormData)).rejects.toThrow(
+            "Erreur lors de l'inscription"
+        );
+    });
+    test('throws when fetch itself rejects (network error)', async () => {
+        // @ts-ignore
+        fetch.mockRejectedValueOnce(new Error('Network down'));
 
-        const genericError = await screen.findByText("Erreur lors de l'inscription");
-        expect(genericError).toBeInTheDocument();
+        await expect(submitRegistration(mockFormData)).rejects.toThrow('Network down');
+    });
+});
+
+//test render
+jest.mock('next/navigation', () => ({
+    useRouter: jest.fn(),
+}));
+
+describe('RegisterForm Integration Tests', () => {
+    const pushMock = jest.fn();
+
+    beforeEach(() => {
+        (useRouter as jest.Mock).mockReturnValue({ push: pushMock });
+        jest.clearAllMocks();
     });
 
+    it('shows error if passwords do not match', async () => {
+        render(<RegisterForm />);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Password1' } });
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password2' } }); // Mismatch here
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Les mots de passe ne correspondent pas/i)).toBeInTheDocument();
+        expect(pushMock).not.toHaveBeenCalled();
+    });
+
+    it('successful registration calls router.push', async () => {
+        render(<RegisterForm />);
+
+        // Mock fetch success for submitRegistration
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({}),
+        } as Response);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe$/i), { target: { value: 'Password1' } });
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        await waitFor(() => {
+            expect(pushMock).toHaveBeenCalledWith('/');
+        });
+    });
+
+    it('shows error if fetch fails', async () => {
+        render(<RegisterForm />);
+
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            ok: false,
+            json: async () => ({ error: 'Email déjà utilisé' }),
+        } as Response);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Password1' } });
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Email déjà utilisé/i)).toBeInTheDocument();
+        expect(pushMock).not.toHaveBeenCalled();
+    });
+
+    it('shows error for invalid password (missing uppercase)', async () => {
+        render(<RegisterForm />);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'password1' } }); // no uppercase
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'password1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Le mot de passe doit contenir au moins une majuscule/i)).toBeInTheDocument();
+        expect(pushMock).not.toHaveBeenCalled();
+    });
+
+    it('shows error for invalid password (too short)', async () => {
+        render(<RegisterForm />);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Pass1' } }); // too short
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Pass1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Le mot de passe doit contenir au moins 8 caractères/i)).toBeInTheDocument();
+        expect(pushMock).not.toHaveBeenCalled();
+    });
+
+    it('shows error for invalid password (missing number)', async () => {
+        render(<RegisterForm />);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Password' } }); // no number
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Le mot de passe doit contenir au moins un chiffre/i)).toBeInTheDocument();
+        expect(pushMock).not.toHaveBeenCalled();
+    });
+    it('shows error when phone number is too short', async () => {
+        render(<RegisterForm />);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '01234' } }); // too short phone
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Password1' } });
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Le numéro de téléphone doit contenir exactement 10 chiffres/i)).toBeInTheDocument();
+        expect(pushMock).not.toHaveBeenCalled();
+    });
+
+    it('accepts phone numbers with spaces and passes validation', async () => {
+        render(<RegisterForm />);
+
+        // Mock fetch success
+        global.fetch = jest.fn().mockResolvedValueOnce({
+            ok: true,
+            json: async () => ({}),
+        } as Response);
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '012 345 6789' } }); // valid phone with spaces
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Password1' } });
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        await waitFor(() => {
+            expect(pushMock).toHaveBeenCalledWith('/');
+        });
+    });
+    it('shows generic error message when caught error has no message', async () => {
+        render(<RegisterForm />);
+
+        // Mock submitRegistration to throw an error without message
+        global.fetch = jest.fn().mockRejectedValueOnce({}); // empty object, no message property
+
+        fireEvent.change(screen.getByLabelText(/prénom/i), { target: { value: 'Alice' } });
+        fireEvent.change(screen.getByLabelText(/^nom$/i), { target: { value: 'Smith' } });
+        fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'alice@example.com' } });
+        fireEvent.change(screen.getByLabelText(/téléphone/i), { target: { value: '0123456789' } });
+        fireEvent.change(screen.getByLabelText(/^mot de passe/i), { target: { value: 'Password1' } });
+        fireEvent.change(screen.getByLabelText(/confirmer le mot de passe/i), { target: { value: 'Password1' } });
+
+        fireEvent.click(screen.getByRole('button', { name: /s'inscrire/i }));
+
+        expect(await screen.findByText(/Une erreur est survenue/i)).toBeInTheDocument();
+    });
 });

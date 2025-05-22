@@ -1,3 +1,4 @@
+// backend/server.js
 const express = require('express');
 const cors = require('cors');
 const productController = require('./productController');
@@ -8,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const favorisController = require('./favorisController');
 const cookieParser = require('cookie-parser');
 const { authenticateToken } = require('./middleware/auth');
+const helmet = require('helmet');
 
 const app = express();
 const PORT = 6942;
@@ -19,6 +21,44 @@ const allowedOrigins = [
     'https://app.votre-site.com'
 ];
 
+app.use(rateLimit({ // Nouveau middleware
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: 'Trop de requêtes depuis cette IP'
+}));
+
+app.use(
+    helmet({
+        // Enable all default protections
+    })
+);
+
+// Then explicitly configure CSP:
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+                "'self'",
+                // If you must allow inline (e.g. for a nonce-based approach):
+                // "'unsafe-inline'",
+                // Or better still, generate nonces and use "'nonce-<random>'"
+            ],
+            styleSrc: ["'self'"],
+            imgSrc: ["'self'", "data:"],
+            fontSrc: ["'self'"],
+            connectSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            frameAncestors: ["'none'"],
+            baseUri: ["'none'"],
+            formAction: ["'self'"],
+            upgradeInsecureRequests: [], // enforce HTTPS
+            // reportUri: '/csp-violation-report-endpoint'  // optional
+        }
+    })
+);
+
+
 app.use(cors({
     origin: allowedOrigins,
     credentials: true
@@ -26,16 +66,12 @@ app.use(cors({
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(rateLimit({ // Nouveau middleware
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: 'Trop de requêtes depuis cette IP'
-}));
 
 
 // Routes
 app.use('/api/favoris', favorisController);
 app.use('/api/auth', authController); // Auth routes
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 const path = require('path');
 app.use('/assets', express.static(path.join(__dirname, '../frontend/public/assets')));
