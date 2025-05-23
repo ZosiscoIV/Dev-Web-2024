@@ -1,4 +1,6 @@
-import { InfosNutritionnelles, Produit } from "../hooks/useProductSearch";
+import { InfosNutritionnelles, Composition } from "../hooks/useInfoComp";
+import { Produit } from "../hooks/useFetch"
+import "../css/ProductDetailsPopup.css"
 
 interface ProductDetailsPopupProps {
     product: Produit;

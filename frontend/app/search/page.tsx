@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import SearchResults from '../main/components/SearchResults';
+import ProduitSearch from "@/app/main/components/ProduitSearch";
 import Header from "@/app/main/components/Header";
 
 
@@ -8,7 +8,7 @@ export default function SearchPage() {
         <div>
             <Header />
             <Suspense fallback={<div>Chargement des résultats...</div>}>
-                <SearchResults />
+                <ProduitSearch />
             </Suspense>
         </div>
     );

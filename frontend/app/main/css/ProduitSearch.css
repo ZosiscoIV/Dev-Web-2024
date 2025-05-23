@@ -1,0 +1,227 @@
+/* Produits.css */
+
+.produits-scroll {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 1rem;
+    gap: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.produit-container {
+    width: 250px;
+    height: 400px;
+}
+
+.produit-card {
+    display: flex;
+    flex-direction: column; /* Ajouté */
+    height: 100%;
+    text-decoration: none;
+    color: #333;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+    overflow: hidden;
+}
+
+
+.produit-card:hover {
+    transform: translateY(-5px);
+}
+
+.produit-header {
+    padding: 0.8rem;
+    background-color: #f5f5f5;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.produit-body {
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    flex: 1; /* Permet d'occuper l'espace restant */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+
+.produit-body p {
+    margin: 0.4rem 0;
+}
+
+.produit-img {
+    text-align: center;
+    padding: 0.5rem;
+}
+
+.produit-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    margin-top: auto; /* Important pour rester en bas */
+}
+
+
+.image-wrapper {
+    border-radius: 12px;
+    overflow: hidden;
+    max-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-wrapper img {
+    max-height: 180px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+
+
+/* Popup overlay */
+.nutritional-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Popup content */
+.nutritional-popup {
+    background: #fff;
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.nutritional-popup h2,
+.nutritional-popup h3 {
+    margin-top: 0;
+    color: #222;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.nutritional-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.nutritional-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 0.3rem 0;
+}
+
+.nutritional-item span {
+    color: #555;
+}
+
+.nutritional-item strong {
+    color: #111;
+}
+
+.nutritional-popup ul {
+    padding-left: 1.2rem;
+    margin-top: 0.5rem;
+}
+
+.nutritional-popup li {
+    margin-bottom: 0.3rem;
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.popup-buttons button {
+    font-size: 1.3rem;
+    background-color: #eaeaea;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.popup-buttons button:hover {
+    background-color: #dcdcdc;
+}
+
+/* Close button */
+.close-popup {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-popup:hover {
+    color: #333;
+}
+
+/* Loader style */
+.loader {
+    text-align: center;
+    font-size: 1rem;
+    padding: 1rem;
+}
+
+
+.produit-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    margin-top: auto;
+}
+
+.btn-favoris,
+.btn-panier {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-favoris:hover {
+    background-color: #ffe6e6;
+    border-color: #ff6666;
+}
+
+.btn-panier:hover {
+    background-color: #e6f7ff;
+    border-color: #3399ff;
+}

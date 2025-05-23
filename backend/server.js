@@ -16,7 +16,7 @@ const PORT = 6942;
 
 // Middleware de sécurité
 const allowedOrigins = [
-    'http://localhost:3000',
+    'http://localhost:3001',
     'https://votre-site.com',
     'https://app.votre-site.com'
 ];
