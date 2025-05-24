@@ -6,6 +6,7 @@ const mysql = require('mysql2');
 const cookieParser = require('cookie-parser');
 const { use } = require('react');
 require('dotenv').config({ path: '../.env' });
+const { authenticateToken } = require('./middleware/auth');
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -121,5 +122,27 @@ router.post('/logout', (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Déconnexion réussie' });
 });
+
+router.get(
+  '/profile',
+  authenticateToken,
+  async (req, res) => {
+    try {
+      // req.user.id was set by authenticateToken
+      const [rows] = await promisePool.query(
+        'SELECT nom, prenom FROM magasin.tbClients WHERE id = ?',
+        [req.user.id]
+      );
+      if (rows.length === 0) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      }
+      const { nom, prenom } = rows[0];
+      res.json({ nom, prenom });
+    } catch (err) {
+      console.error('Profile fetch error:', err);
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
+  }
+);
 
 module.exports = router;
