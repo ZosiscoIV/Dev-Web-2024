@@ -1,18 +1,39 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 
-const initialCart = [
-  { id: 1, name: "Pomme", price: 2.5, quantity: 1, stock: 10 },
-  { id: 2, name: "Poire", price: 3, quantity: 2, stock: 5 },
-  { id: 3, name: "Pâtes", price: 3.99, quantity: 4, stock: 6 },
-  { id: 4, name: "Orange", price: 2.7, quantity: 3, stock: 15 },
-  { id: 5, name: "Stylo", price: 3.3, quantity: 1, stock: 12 },
-];
-
 export default function Cart() {
-  const [cart, setCart] = useState(initialCart);
+  const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const response = await fetch("http://localhost:6942/api/products/cart");
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des produits");
+        }
+        const result = await response.json();
+        console.log("Données reçues de l'API:", result);
+
+        // Vérifiez si la réponse contient un tableau dans `data`
+        if (Array.isArray(result.data)) {
+          const formattedData = result.data.map((item) => ({
+            ...item,
+            quantity: 1, // Initialiser la quantité à 1
+          }));
+          setCart(formattedData);
+        } else {
+          console.error("La réponse de l'API n'est pas un tableau :", result);
+          setCart([]); // Définit un panier vide si la réponse est incorrecte
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchCart();
+  }, []);
 
   const handleQuantityChange = (id, value) => {
     setCart((prevCart) =>
@@ -76,49 +97,53 @@ export default function Cart() {
       </nav>
 
       <h1 className="text-2xl font-bold mb-6">Mon Panier</h1>
-      {cart.map((item) => (
-        <div
-          key={item.id}
-          className="flex justify-between items-center border-b py-4"
-        >
-          <div className="flex-1">
-            <p className="text-lg font-semibold">{item.name}</p>
-            <p className="text-sm text-gray-500">
-              {item.stock} en stock – {item.price}€ l'unité
-            </p>
-          </div>
+      {cart.length === 0 ? (
+        <p className="text-center text-gray-500">Votre panier est vide.</p>
+      ) : (
+        cart.map((item) => (
+          <div
+            key={item.id}
+            className="flex justify-between items-center border-b py-4"
+          >
+            <div className="flex-1">
+              <p className="text-lg font-semibold">{item.name}</p>
+              <p className="text-sm text-gray-500">
+                {item.stock} en stock – {item.price}€ l'unité
+              </p>
+            </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleAdjust(item.id, -1)}
-              className="px-2 py-1 bg-red-500 text-white rounded"
-            >
-              -
-            </button>
-            <input
-              type="number"
-              className="w-16 text-center border rounded text-black"
-              value={item.quantity}
-              min="0"
-              max={item.stock}
-              onBlur={(e) => handleAdjust(item.id, 0)}
-              onChange={(e) =>
-                handleQuantityChange(item.id, parseInt(e.target.value) || 0)
-              }
-            />
-            <button
-              onClick={() => handleAdjust(item.id, 1)}
-              className="px-2 py-1 bg-green-500 text-white rounded"
-            >
-              +
-            </button>
-          </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handleAdjust(item.id, -1)}
+                className="px-2 py-1 bg-red-500 text-white rounded"
+              >
+                -
+              </button>
+              <input
+                type="number"
+                className="w-16 text-center border rounded text-black"
+                value={item.quantity}
+                min="0"
+                max={item.stock}
+                onBlur={(e) => handleAdjust(item.id, 0)}
+                onChange={(e) =>
+                  handleQuantityChange(item.id, parseInt(e.target.value) || 0)
+                }
+              />
+              <button
+                onClick={() => handleAdjust(item.id, 1)}
+                className="px-2 py-1 bg-green-500 text-white rounded"
+              >
+                +
+              </button>
+            </div>
 
-          <div className="w-24 text-right text-gray-800">
-            {(item.price * item.quantity).toFixed(2)}€
+            <div className="w-24 text-right text-gray-800">
+              {(item.price * item.quantity).toFixed(2)}€
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
 
       <div className="text-right mt-6 text-xl font-semibold">
         Total : {total.toFixed(2)}€

@@ -101,6 +101,13 @@ CREATE TABLE `tbCommandes` (
 
 LOCK TABLES `tbCommandes` WRITE;
 /*!40000 ALTER TABLE `tbCommandes` DISABLE KEYS */;
+INSERT INTO `tbCommandes` VALUES (1, 1, 1, 2, '2024-03-06', false),
+                                (2, 2, 1, 3, '2024-03-06', false),
+                                (3, 3, 1, 1, '2024-12-06', false),
+                                (4, 4, 1, 5, '2024-12-06', false),
+                                (5, 5, 1, 10, '2024-12-06', false),
+                                (6, 6, 1, 2, '2024-03-06', false),
+                                (7, 7, 1, 3, '2024-03-06', false);
 /*!40000 ALTER TABLE `tbCommandes` ENABLE KEYS */;
 UNLOCK TABLES;
 

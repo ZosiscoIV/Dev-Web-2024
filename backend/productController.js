@@ -664,66 +664,77 @@ module.exports = router;
 
 /**
  * @swagger
- * /api/cart:
+ * /api/products/cart:
  *   get:
  *     summary: Obtenir la liste des articles du panier
- *     description: Retourne les informations des produits du panier (id, name, price, quantity, stock).
+ *     description: Retourne les informations des produits du panier (idCommande, nom, prix, quantity, stock).
  *     responses:
  *       200:
- *         description: Liste des articles récupérés avec succès.
+ *         description: Liste des articles récupérés avec succès ou aucun produit trouvé.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "Pomme"
- *                   price:
- *                     type: number
- *                     example: 3.2
- *                   quantity:
- *                     type: number
- *                     example: 4
- *                   stock:
- *                     type: number
- *                     example: 6
- * 
- * 
- * 
- * 
- * 
- *       404:
- *         description: Aucun articles trouvés dans le panier.
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Produits récupérés avec succès."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idCommande:
+ *                         type: integer
+ *                         example: 1
+ *                       nom:
+ *                         type: string
+ *                         example: "Pomme"
+ *                       prix:
+ *                         type: number
+ *                         example: 2.5
+ *                       quantite:
+ *                         type: integer
+ *                         example: 3
+ *                       stock:
+ *                         type: integer
+ *                         example: 10
  *       500:
  *         description: Erreur serveur.
  */
 
-router.get('/cart', (req, res) => {
-    const query = `SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite FROM magasin.tbCommandes as C JOIN magasin.tbProduits as P ON P.id = C.idProduit JOIN magasin.tbStock as S ON P.id = S.idProduit`;
+router.get('/products/cart', (req, res) => {
+    const query = `
+        SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite 
+        FROM magasin.tbCommandes as C 
+        JOIN magasin.tbProduits as P ON P.id = C.idProduit 
+        JOIN magasin.tbStock as S ON P.id = S.idProduit 
+        WHERE C.estDejaVendu = false 
+        ORDER BY C.idCommande DESC`;
+
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
             console.error('Erreur lors de la récupération des articles:', err);
-
             return res.status(500).send('Erreur de base de données');
         }
-        if (results.length === 0) {
-            // Si aucune ressource trouvée, on renvoie un 404
-            return res.status(404).send('Aucun articles trouvés dans le panier.');
-        }
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
+        if (results.length === 0) {
+            // Si aucun produit n'est trouvé, retourner un message avec un tableau vide
+            return res.status(200).json({
+                message: 'Aucun produit trouvé dans le panier.',
+                data: []
+            });
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
         // On renvoie les résultats si tout va bien
-        res.json(results);
+        res.json({
+            message: 'Produits récupérés avec succès.',
+            data: results
+        });
     });
 });
-
 
 /**
  * @swagger
