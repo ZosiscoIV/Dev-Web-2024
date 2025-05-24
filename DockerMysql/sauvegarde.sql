@@ -86,8 +86,9 @@ CREATE TABLE `tbCommandes` (
   `idClient` int NOT NULL,
   `quantite` int NOT NULL,
   `dateCommande` date NOT NULL,
+  `estDejaVendu` boolean NOT NULL,
   PRIMARY KEY (`idCommande`),
-  UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
+  UNIQUE KEY `fk_commande` (`idCommande`,`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
   CONSTRAINT `tbCommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
   CONSTRAINT `tbCommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbClients` (`id`)
