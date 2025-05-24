@@ -6,6 +6,7 @@ const mysql = require('mysql2');
 const cookieParser = require('cookie-parser');
 const { use } = require('react');
 require('dotenv').config({ path: '../.env' });
+const { authenticateToken } = require('./middleware/auth');
 
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
