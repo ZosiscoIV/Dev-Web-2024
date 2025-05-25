@@ -9,7 +9,7 @@ export default function Cart() {
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await fetch("http://localhost:6942/api/products/cart");
+        const response = await fetch("http://localhost:6942/api/cart");
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des produits");
         }
@@ -20,7 +20,7 @@ export default function Cart() {
         if (Array.isArray(result.data)) {
           const formattedData = result.data.map((item) => ({
             ...item,
-            quantity: 1, // Initialiser la quantité à 1
+            quantity: item.quantite, // Utiliser la quantité existante
           }));
           setCart(formattedData);
         } else {
@@ -35,64 +35,74 @@ export default function Cart() {
     fetchCart();
   }, []);
 
-  const handleQuantityChange = (id, value) => {
-    setCart((prevCart) =>
-      prevCart.map((item) => {
-        if (item.id === id) {
-          if (value > item.stock) {
-            alert("Pas assez de stock.");
-            value = item.stock;
-          }
-          const newQuantity = Math.max(0, Math.min(item.stock, value));
-          return { ...item, quantity: newQuantity };
-        }
-        return item;
-      })
-    );
+  const handleQuantityChange = async (idCommande, value) => {
+    if (value < 0) return;
+
+    try {
+      const response = await fetch(`http://localhost:6942/api/cart/${idCommande}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantite: value }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la mise à jour de la quantité.");
+      }
+
+      setCart((prevCart) =>
+        prevCart.map((item) =>
+          item.idCommande === idCommande ? { ...item, quantity: value } : item
+        )
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleAdjust = (id, delta) => {
-    const item = cart.find((item) => item.id === id);
+  const handleAdjust = async (idCommande, delta) => {
+    const item = cart.find((item) => item.idCommande === idCommande);
     const newQuantity = item.quantity + delta;
 
     if (newQuantity < 0) return;
-    if (newQuantity > item.stock) {
-      alert("Pas assez de stock.");
+
+    if (newQuantity === 0) {
+      if (confirm("Souhaitez-vous retirer ce produit du panier ?")) {
+        try {
+          const response = await fetch(`http://localhost:6942/api/cart/${idCommande}`, {
+            method: "DELETE",
+          });
+
+          if (!response.ok) {
+            throw new Error("Erreur lors de la suppression du produit.");
+          }
+
+          setCart((prevCart) => prevCart.filter((item) => item.idCommande !== idCommande));
+        } catch (error) {
+          console.error(error);
+        }
+      }
       return;
     }
 
-    if (newQuantity === 0) {
-      if (
-        confirm("Souhaitez-vous retirer ce produit du panier ? (OK = oui, Annuler = non)")
-      ) {
-        setCart((prevCart) => prevCart.filter((item) => item.id !== id));
-        return;
-      } else {
-        setCart((prevCart) =>
-          prevCart.map((item) =>
-            item.id === id ? { ...item, quantity: 1 } : item
-          )
-        );
-        return;
-      }
-    }
-
-    handleQuantityChange(id, newQuantity);
+    handleQuantityChange(idCommande, newQuantity);
   };
 
-  const total = cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <nav className="flex justify-between items-center mb-6 px-4 py-3 bg-gray-100 rounded-lg shadow">
         <h2 className="text-xl font-bold text-gray-800">Ma Boutique</h2>
         <div className="flex space-x-4">
-          <Link href="/" className="text-blue-600 hover:underline">Accueil</Link>
-          <Link href="/listeprod" className="text-blue-600 hover:underline">Gestion Stock</Link>
-          <Link href="/aide" className="text-blue-600 hover:underline">Aide</Link>
+          <Link href="/" className="text-blue-600 hover:underline">
+            Accueil
+          </Link>
+          <Link href="/listeprod" className="text-blue-600 hover:underline">
+            Gestion Stock
+          </Link>
+          <Link href="/aide" className="text-blue-600 hover:underline">
+            Aide
+          </Link>
         </div>
       </nav>
 
@@ -102,7 +112,7 @@ export default function Cart() {
       ) : (
         cart.map((item) => (
           <div
-            key={item.id}
+            key={item.idCommande}
             className="flex justify-between items-center border-b py-4"
           >
             <div className="flex-1">
@@ -114,7 +124,7 @@ export default function Cart() {
 
             <div className="flex items-center gap-2">
               <button
-                onClick={() => handleAdjust(item.id, -1)}
+                onClick={() => handleAdjust(item.idCommande, -1)}
                 className="px-2 py-1 bg-red-500 text-white rounded"
               >
                 -
@@ -125,13 +135,13 @@ export default function Cart() {
                 value={item.quantity}
                 min="0"
                 max={item.stock}
-                onBlur={(e) => handleAdjust(item.id, 0)}
+                onBlur={(e) => handleAdjust(item.idCommande, 0)}
                 onChange={(e) =>
-                  handleQuantityChange(item.id, parseInt(e.target.value) || 0)
+                  handleQuantityChange(item.idCommande, parseInt(e.target.value) || 0)
                 }
               />
               <button
-                onClick={() => handleAdjust(item.id, 1)}
+                onClick={() => handleAdjust(item.idCommande, 1)}
                 className="px-2 py-1 bg-green-500 text-white rounded"
               >
                 +
