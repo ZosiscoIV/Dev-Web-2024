@@ -16,19 +16,21 @@ export default function Cart() {
         const result = await response.json();
         console.log("Données reçues de l'API:", result);
 
-        // Vérifiez si la réponse contient un tableau dans `data`
         if (Array.isArray(result.data)) {
           const formattedData = result.data.map((item) => ({
             ...item,
-            quantity: item.quantite, // Utiliser la quantité existante
+            name: item.nom,
+            price: item.prix,
+            quantity: item.quantite,
+            stock: item.stock,
           }));
           setCart(formattedData);
         } else {
           console.error("La réponse de l'API n'est pas un tableau :", result);
-          setCart([]); // Définit un panier vide si la réponse est incorrecte
+          setCart([]);
         }
       } catch (error) {
-        console.error(error);
+        console.error("Erreur lors de la récupération du panier :", error);
       }
     };
 
@@ -55,13 +57,24 @@ export default function Cart() {
         )
       );
     } catch (error) {
-      console.error(error);
+      console.error("Erreur lors de la mise à jour de la quantité :", error);
     }
   };
 
   const handleAdjust = async (idCommande, delta) => {
     const item = cart.find((item) => item.idCommande === idCommande);
+
+    if (!item) {
+      console.error(`Aucun article trouvé avec idCommande=${idCommande}`);
+      return;
+    }
+
     const newQuantity = item.quantity + delta;
+
+    if (newQuantity > item.stock) {
+      alert(`La quantité demandée dépasse le stock disponible (${item.stock}).`);
+      return;
+    }
 
     if (newQuantity < 0) return;
 
@@ -78,7 +91,7 @@ export default function Cart() {
 
           setCart((prevCart) => prevCart.filter((item) => item.idCommande !== idCommande));
         } catch (error) {
-          console.error(error);
+          console.error("Erreur lors de la suppression du produit :", error);
         }
       }
       return;
@@ -131,14 +144,53 @@ export default function Cart() {
               </button>
               <input
                 type="number"
-                className="w-16 text-center border rounded text-black"
+                className="w-16 text-center border rounded text-black no-arrows"
                 value={item.quantity}
                 min="0"
                 max={item.stock}
-                onBlur={(e) => handleAdjust(item.idCommande, 0)}
-                onChange={(e) =>
-                  handleQuantityChange(item.idCommande, parseInt(e.target.value) || 0)
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  if (value === "") {
+                    setCart((prevCart) =>
+                      prevCart.map((cartItem) =>
+                        cartItem.idCommande === item.idCommande
+                          ? { ...cartItem, quantity: "" }
+                          : cartItem
+                      )
+                    );
+                    return;
+                  }
+
+                  const parsedValue = parseInt(value, 10);
+
+                  if (parsedValue > item.stock) {
+                    handleQuantityChange(item.idCommande, item.stock);
+                    return;
+                  }
+
+                  if (parsedValue === 0) {
+                    if (confirm("Souhaitez-vous retirer ce produit du panier ?")) {
+                      handleAdjust(item.idCommande, -item.quantity);
+                    } else {
+                      handleQuantityChange(item.idCommande, 1);
+                    }
+                    return;
+                  }
+
+                  if (parsedValue >= 0) {
+                    handleQuantityChange(item.idCommande, parsedValue);
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === "") {
+                    if (confirm("Souhaitez-vous retirer ce produit du panier ?")) {
+                      handleAdjust(item.idCommande, -item.quantity);
+                    } else {
+                      handleQuantityChange(item.idCommande, 1);
+                    }
+                  }
+                }}
               />
               <button
                 onClick={() => handleAdjust(item.idCommande, 1)}

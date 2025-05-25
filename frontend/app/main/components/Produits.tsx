@@ -1,8 +1,9 @@
 "use client";
 import "../css/Produits.css";
-import Image from 'next/image';
+import Image from "next/image";
 import { useProductDetails, ProductDetailsProps } from "../hooks/useProductDetails";
 import ProductDetailsPopup from "./ProductDetailsPopup";
+import useAddProductToCart from "../hooks/useAddProductToCart"; // Import the custom hook
 
 const ProduitsSearch = (props: ProductDetailsProps) => {
     const {
@@ -10,14 +11,21 @@ const ProduitsSearch = (props: ProductDetailsProps) => {
         infosNutritionnelles,
         allergenes,
         ingredients,
-        isLoading,
+        isLoading: isDetailsLoading,
         handleProductClick,
         closePopup,
         addToFavorites,
-        addToCart
     } = useProductDetails(props);
 
     const { produit, categorie, prix, image, status } = props;
+
+    // Use the custom hook for adding products to the cart
+    const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
+
+    const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        await addToCart(parseInt(props.id), 1); // Add 1 unit of the product to the cart
+    };
 
     return (
         <div className="produits-scroll">
@@ -52,9 +60,10 @@ const ProduitsSearch = (props: ProductDetailsProps) => {
                             </button>
                             <button
                                 className="btn-panier"
-                                onClick={(e) => addToCart(e)}
+                                onClick={handleAddToCart}
+                                disabled={isCartLoading} // Disable the button while adding to cart
                             >
-                                🛒
+                                {isCartLoading ? "Ajout..." : "🛒"}
                             </button>
                         </div>
                     </div>
@@ -68,17 +77,19 @@ const ProduitsSearch = (props: ProductDetailsProps) => {
                         produit: produit,
                         categorie: Array.isArray(categorie) ? categorie[0] : categorie.toString(),
                         prix: prix,
-                        image: image
+                        image: image,
                     }}
                     nutrition={infosNutritionnelles}
                     allergenes={allergenes}
                     ingredients={ingredients}
-                    isLoading={isLoading}
+                    isLoading={isDetailsLoading}
                     onClose={closePopup}
                     onAddToFavorites={addToFavorites}
-                    onAddToCart={addToCart}
+                    onAddToCart={() => void 0} // No need to add to cart here, handled in the main component
                 />
             )}
+
+            {error && <p className="error-message">Erreur : {error}</p>}
         </div>
     );
 };

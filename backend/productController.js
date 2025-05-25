@@ -706,7 +706,7 @@ module.exports = router;
 
 router.get('/cart', (req, res) => {
     const query = `
-        SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite 
+        SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite AS stock
         FROM magasin.tbCommandes as C 
         JOIN magasin.tbProduits as P ON P.id = C.idProduit 
         JOIN magasin.tbStock as S ON P.id = S.idProduit 
