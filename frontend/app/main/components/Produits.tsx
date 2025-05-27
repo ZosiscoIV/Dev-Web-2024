@@ -1,5 +1,5 @@
 "use client";
-import "../css/Produits.css";
+import "../css/Produits.css"; // Assurez-vous que ce fichier contient les styles nécessaires
 import Image from "next/image";
 import { useProductDetails, ProductDetailsProps } from "../hooks/useProductDetails";
 import ProductDetailsPopup from "./ProductDetailsPopup";
@@ -24,6 +24,7 @@ const ProduitsSearch = (props: ProductDetailsProps) => {
 
     const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        e.stopPropagation(); // Empêche la propagation de l'événement pour éviter d'ouvrir la popup
         await addToCart(parseInt(props.id), 1); // Add 1 unit of the product to the cart
     };
 
@@ -54,16 +55,19 @@ const ProduitsSearch = (props: ProductDetailsProps) => {
                         <div className="produit-actions">
                             <button
                                 className="btn-favoris"
-                                onClick={(e) => addToFavorites(e)}
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Empêche l'ouverture de la popup
+                                    addToFavorites(e);
+                                }}
                             >
                                 ❤️
                             </button>
                             <button
-                                className="btn-panier"
+                                className={`btn-panier ${isCartLoading ? "rotating" : ""}`}
                                 onClick={handleAddToCart}
                                 disabled={isCartLoading} // Disable the button while adding to cart
                             >
-                                {isCartLoading ? "Ajout..." : "🛒"}
+                                🛒
                             </button>
                         </div>
                     </div>
@@ -89,7 +93,7 @@ const ProduitsSearch = (props: ProductDetailsProps) => {
                 />
             )}
 
-            {error && <p className="error-message">Erreur : {error}</p>}
+            {/* {error && <p className="error-message">Erreur : {error}</p>} */}
         </div>
     );
 };

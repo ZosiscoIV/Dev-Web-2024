@@ -78,7 +78,7 @@ const ProductDetailsPopup = ({
 
                         <div className="popup-buttons">
                             <button className="btn-favoris" onClick={onAddToFavorites}>❤️</button>
-                            <button className="btn-panier" onClick={onAddToCart}>🛒</button>
+                            {/* <button className="btn-panier" onClick={onAddToCart}>🛒</button> */}
                         </div>
                     </>
                 )}

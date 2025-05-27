@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axiosClient from "../../fetchWithToken"; // Import de l'instance Axios configurée
 
 const useAddProductToCart = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -9,29 +10,22 @@ const useAddProductToCart = () => {
         setError(null);
 
         try {
-            const response = await fetch("http://localhost:6942/api/addToCart", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`, // Retrieve the token from localStorage
-                },
-                body: JSON.stringify({
-                    idProduit, // ID of the product
-                    quantite, // Quantity to add
-                }),
+            const response = await axiosClient.post("/addToCart", {
+                idProduit, // ID du produit
+                quantite, // Quantité à ajouter
             });
 
-            if (!response.ok) {
-                throw new Error("Erreur lors de l'ajout au panier.");
-            }
-
-            const result = await response.json();
-            console.log("Produit ajouté au panier :", result);
-            alert("Produit ajouté au panier avec succès !");
+            // Affichez le message de l'API dans l'alerte
+            alert(response.data.message);
         } catch (err: any) {
             console.error(err);
-            setError(err.message || "Une erreur est survenue.");
-            alert("Erreur lors de l'ajout au panier.");
+
+            // Récupérez le message d'erreur de l'API ou utilisez un message par défaut
+            const errorMessage = err.response?.data?.message || "Une erreur est survenue.";
+            setError(errorMessage);
+
+            // Affichez le message d'erreur dans l'alerte
+            alert(errorMessage);
         } finally {
             setIsLoading(false);
         }
