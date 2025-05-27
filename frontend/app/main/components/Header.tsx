@@ -47,8 +47,11 @@ export default function Header() {
 
     const onSearch = () => {
         handleSearch(category);
-        router.push(`/search?q=${query}`);
+        router.push(`/search?q=${query}&category=${category}`);
+        console.log("Requête envoyée avec query:", query, "et category:", category);
+
     };
+
 
     return (
         <header className="Header">

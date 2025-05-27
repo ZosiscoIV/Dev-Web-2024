@@ -1,6 +1,8 @@
 import { InfosNutritionnelles, Composition } from "../hooks/useInfoComp";
 import { Produit } from "../hooks/useFetch"
+import useAddProductToCart from "../hooks/useAddProductToCart";
 import "../css/ProductDetailsPopup.css"
+
 
 interface ProductDetailsPopupProps {
     product: Produit;
@@ -23,6 +25,17 @@ const ProductDetailsPopup = ({
                                  onAddToFavorites,
                                  onAddToCart
                              }: ProductDetailsPopupProps) => {
+
+    // Use the custom hook for adding products to the cart
+    const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
+
+    const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation(); // Empêche la propagation de l'événement pour éviter d'ouvrir la popup
+        await addToCart(product.id, 1); // Add 1 unit of the product to the cart
+    };
+
+
     return (
         <div className="nutritional-popup-overlay">
             <div className="nutritional-popup">
@@ -80,7 +93,13 @@ const ProductDetailsPopup = ({
 
                         <div className="popup-buttons">
                             <button className="btn-favoris" onClick={onAddToFavorites}>❤️</button>
-                            <button className="btn-panier" onClick={onAddToCart}>🛒</button>
+                            <button
+                                className={`btn-panier ${isCartLoading ? "rotating" : ""}`}
+                                onClick={handleAddToCart}
+                                disabled={isCartLoading} // Disable the button while adding to cart
+                            >
+                                🛒
+                            </button>
                         </div>
                     </>
                 )}
