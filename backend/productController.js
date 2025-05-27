@@ -674,61 +674,173 @@ module.exports = router;
  * /api/cart:
  *   get:
  *     summary: Obtenir la liste des articles du panier
- *     description: Retourne les informations des produits du panier (id, name, price, quantity, stock).
+ *     description: Retourne les informations des produits du panier (idCommande, nom, prix, quantity, stock).
  *     responses:
  *       200:
- *         description: Liste des articles récupérés avec succès.
+ *         description: Liste des articles récupérés avec succès ou aucun produit trouvé.
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     example: 1
- *                   name:
- *                     type: string
- *                     example: "Pomme"
- *                   price:
- *                     type: number
- *                     example: 3.2
- *                   quantity:
- *                     type: number
- *                     example: 4
- *                   stock:
- *                     type: number
- *                     example: 6
- * 
- * 
- * 
- * 
- * 
- *       404:
- *         description: Aucun articles trouvés dans le panier.
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Produits récupérés avec succès."
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idCommande:
+ *                         type: integer
+ *                         example: 1
+ *                       nom:
+ *                         type: string
+ *                         example: "Pomme"
+ *                       prix:
+ *                         type: number
+ *                         example: 2.5
+ *                       quantite:
+ *                         type: integer
+ *                         example: 3
+ *                       stock:
+ *                         type: integer
+ *                         example: 10
  *       500:
  *         description: Erreur serveur.
  */
 
 router.get('/cart', (req, res) => {
-    const query = `SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite FROM magasin.tbCommandes as C JOIN magasin.tbProduits as P ON P.id = C.idProduit JOIN magasin.tbStock as S ON P.id = S.idProduit`;
+    const query = `
+        SELECT C.idCommande, P.nom, P.prix, C.quantite, S.quantite AS stock
+        FROM magasin.tbCommandes as C 
+        JOIN magasin.tbProduits as P ON P.id = C.idProduit 
+        JOIN magasin.tbStock as S ON P.id = S.idProduit 
+        WHERE C.estDejaVendu = false 
+        ORDER BY C.idCommande DESC`;
+
     db.query(query, (err, results) => {
         if (err) {
             // Si erreur dans la requête SQL
             console.error('Erreur lors de la récupération des articles:', err);
-
             return res.status(500).send('Erreur de base de données');
         }
-        if (results.length === 0) {
-            // Si aucune ressource trouvée, on renvoie un 404
-            return res.status(404).send('Aucun articles trouvés dans le panier.');
-        }
-        res.setHeader('Content-Type', 'application/json; charset=utf-8');
 
+        if (results.length === 0) {
+            // Si aucun produit n'est trouvé, retourner un message avec un tableau vide
+            return res.status(200).json({
+                message: 'Aucun produit trouvé dans le panier.',
+                data: []
+            });
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
         // On renvoie les résultats si tout va bien
-        res.json(results);
+        res.json({
+            message: 'Produits récupérés avec succès.',
+            data: results
+        });
     });
+});
+
+/**
+ * @swagger
+ * /api/cart/{idCommande}:
+ *   put:
+ *     summary: Mettre à jour la quantité d'un produit dans le panier
+ *     description: Met à jour la quantité d'un produit dans la table tbCommandes.
+ *     parameters:
+ *       - in: path
+ *         name: idCommande
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la commande à mettre à jour
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantite:
+ *                 type: integer
+ *                 example: 3
+ *     responses:
+ *       200:
+ *         description: Quantité mise à jour avec succès.
+ *       400:
+ *         description: Données invalides.
+ *       404:
+ *         description: Commande non trouvée.
+ *       500:
+ *         description: Erreur serveur.
+ */
+router.put('/cart/:idCommande', async (req, res) => {
+    const { idCommande } = req.params;
+    const { quantite } = req.body;
+
+    if (!quantite || quantite < 0) {
+        return res.status(400).json({ message: 'Quantité invalide.' });
+    }
+
+    try {
+        const [result] = await promisePool.query(
+            'UPDATE magasin.tbCommandes SET quantite = ? WHERE idCommande = ?',
+            [quantite, idCommande]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Commande non trouvée.' });
+        }
+
+        res.status(200).json({ message: 'Quantité mise à jour avec succès.' });
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour de la quantité:', error);
+        res.status(500).json({ message: 'Erreur serveur.' });
+    }
+});
+
+
+/**
+ * @swagger
+ * /api/cart/{idCommande}:
+ *   delete:
+ *     summary: Supprimer un produit du panier
+ *     description: Supprime une commande de la table tbCommandes.
+ *     parameters:
+ *       - in: path
+ *         name: idCommande
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la commande à supprimer
+ *     responses:
+ *       200:
+ *         description: Produit supprimé avec succès.
+ *       404:
+ *         description: Commande non trouvée.
+ *       500:
+ *         description: Erreur serveur.
+ */
+router.delete('/cart/:idCommande', async (req, res) => {
+    const { idCommande } = req.params;
+
+    try {
+        const [result] = await promisePool.query(
+            'DELETE FROM magasin.tbCommandes WHERE idCommande = ?',
+            [idCommande]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Commande non trouvée.' });
+        }
+
+        res.status(200).json({ message: 'Produit supprimé avec succès.' });
+    } catch (error) {
+        console.error('Erreur lors de la suppression du produit:', error);
+        res.status(500).json({ message: 'Erreur serveur.' });
+    }
 });
 
 

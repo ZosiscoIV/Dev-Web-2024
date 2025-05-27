@@ -52,6 +52,7 @@ export default function Cart() {
       }
 
       setCart((prevCart) =>
+
           prevCart.map((item) =>
               item.idCommande === idCommande ? { ...item, quantity: value } : item
           )

@@ -100,6 +100,7 @@ const ProductDetailsPopup = ({
                             >
                                 🛒
                             </button>
+
                         </div>
                     </>
                 )}
