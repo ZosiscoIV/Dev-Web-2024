@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
 require('dotenv').config();
+const { authenticateToken } = require('./middleware/auth');
 
 const upload = require('./middleware/multerConfig');
 
@@ -735,8 +736,13 @@ router.get('/cart', (req, res) => {
  * @swagger
  * /api/addToCart:
  *   post:
- *     summary: Ajouter un article au panier
- *     description: Ajoute un produit dans le panier en insérant une ligne dans la table tbCommandes.
+ *     summary: Ajouter un produit au panier
+ *     description: >
+ *       Ajoute un produit dans la table `tbCommandes` pour un client donné.
+ *       Si le produit existe déjà dans le panier, la quantité est incrémentée.
+ *       Si la quantité totale dépasse le stock disponible, l'ajout est bloqué.
+ *     security:
+ *       - bearerAuth: [] # Nécessite un token Bearer pour l'authentification
  *     requestBody:
  *       required: true
  *       content:
@@ -745,19 +751,27 @@ router.get('/cart', (req, res) => {
  *             type: object
  *             required:
  *               - idProduit
- *               - idClient
  *               - quantite
  *             properties:
  *               idProduit:
  *                 type: integer
- *                 example: 2
- *               idClient:
- *                 type: integer
  *                 example: 1
+ *                 description: ID du produit à ajouter
  *               quantite:
  *                 type: integer
- *                 example: 3
+ *                 example: 2
+ *                 description: Quantité à ajouter
  *     responses:
+ *       200:
+ *         description: Quantité mise à jour avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Quantité mise à jour avec succès."
  *       201:
  *         description: Produit ajouté au panier avec succès.
  *         content:
@@ -767,40 +781,124 @@ router.get('/cart', (req, res) => {
  *               properties:
  *                 message:
  *                   type: string
- *                   example: Produit ajouté au panier avec succès
+ *                   example: "Produit ajouté au panier avec succès."
  *                 idCommande:
  *                   type: integer
- *                   example: 12
+ *                   example: 42
+ *                   description: ID de la commande créée
  *       400:
- *         description: Données manquantes ou invalides.
+ *         description: Stock insuffisant ou données invalides.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Stock insuffisant. Stock disponible : 5."
+ *       404:
+ *         description: Produit non trouvé.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Produit non trouvé."
+ *       401:
+ *         description: Non autorisé.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Non autorisé."
  *       500:
  *         description: Erreur serveur.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Erreur serveur."
  */
 
+router.post('/addToCart', authenticateToken, async (req, res) => {
+    const { idProduit, quantite } = req.body;
+    const idClient = req.user.id; // Récupérer l'ID du client depuis le token Bearer
 
-router.post('/addToCart', (req, res) => {
-    const { idProduit, idClient, quantite } = req.body;
-
-    if (!idProduit || !idClient || !quantite) {
-        return res.status(400).send("Données manquantes");
+    if (!idProduit || !quantite || quantite <= 0) {
+        return res.status(400).json({ message: 'Données invalides.' });
     }
 
-    const dateCommande = new Date();
+    try {
+        // Vérifiez si le produit est déjà dans le panier
+        const [existingCart] = await promisePool.query(
+            `SELECT idCommande, quantite FROM magasin.tbCommandes 
+             WHERE idProduit = ? AND idClient = ? AND estDejaVendu = false`,
+            [idProduit, idClient]
+        );
 
-    const query = `
-        INSERT INTO magasin.tbCommandes (idProduit, idClient, quantite, dateCommande)
-        VALUES (?, ?, ?, ?)
-    `;
+        // Vérifiez le stock disponible
+        const [stockResult] = await promisePool.query(
+            `SELECT quantite AS stock FROM magasin.tbStock WHERE idProduit = ?`,
+            [idProduit]
+        );
 
-    db.query(query, [idProduit, idClient, quantite, dateCommande], (err, results) => {
-        if (err) {
-            console.error("Erreur lors de l'ajout au panier:", err);
-            return res.status(500).send("Erreur de base de données");
+        if (stockResult.length === 0) {
+            return res.status(404).json({ message: 'Produit non trouvé.' });
         }
 
-        res.status(201).json({ message: "Produit ajouté au panier avec succès", idCommande: results.insertId });
-    });
+        const stockDisponible = stockResult[0].stock;
+
+        if (existingCart.length > 0) {
+            // Si le produit existe, calculez la nouvelle quantité totale
+            const nouvelleQuantite = existingCart[0].quantite + quantite;
+
+            if (nouvelleQuantite > stockDisponible) {
+                return res.status(400).json({
+                    message: `Stock insuffisant. Stock disponible : ${stockDisponible}.`
+                });
+            }
+
+            // Mettez à jour la quantité
+            await promisePool.query(
+                `UPDATE magasin.tbCommandes 
+                 SET quantite = ? 
+                 WHERE idCommande = ?`,
+                [nouvelleQuantite, existingCart[0].idCommande]
+            );
+
+            return res.status(200).json({ message: 'Quantité mise à jour avec succès.' });
+        }
+
+        // Si le produit n'existe pas, vérifiez si la quantité demandée dépasse le stock
+        if (quantite > stockDisponible) {
+            return res.status(400).json({
+                message: `Stock insuffisant. Stock disponible : ${stockDisponible}.`
+            });
+        }
+
+        // Ajoutez une nouvelle ligne
+        const dateCommande = new Date();
+        const query = `
+            INSERT INTO magasin.tbCommandes (idProduit, idClient, quantite, dateCommande, estDejaVendu)
+            VALUES (?, ?, ?, ?, false)
+        `;
+        const [result] = await promisePool.query(query, [idProduit, idClient, quantite, dateCommande]);
+
+        res.status(201).json({ message: 'Produit ajouté au panier avec succès.', idCommande: result.insertId });
+    } catch (error) {
+        console.error('Erreur lors de l\'ajout au panier :', error);
+        res.status(500).json({ message: 'Erreur serveur.' });
+    }
 });
+
 
 /**
  * @swagger
