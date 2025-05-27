@@ -1,0 +1,144 @@
+/* Overlay sombre semi-transparent */
+.nutritional-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+/* Popup blanche avec ombre et bord arrondi */
+.nutritional-popup {
+    background: #fff;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    padding: 2rem 2.5rem 2.5rem;
+    position: relative;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Bouton fermer en haut à droite */
+.close-popup {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #777;
+    transition: color 0.2s ease-in-out;
+}
+
+.close-popup:hover {
+    color: #000;
+}
+
+/* Titre principal */
+.nutritional-popup h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+
+/* Contenu nutritionnel : items alignés verticalement */
+.nutritional-content {
+    margin-bottom: 1.5rem;
+}
+
+.nutritional-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    font-size: 1.05rem;
+    border-bottom: 1px solid #eee;
+}
+
+.nutritional-item span {
+    font-weight: 600;
+    color: #555;
+}
+
+.nutritional-item strong {
+    color: #1a73e8;
+}
+
+/* Sections Allergènes & Ingrédients */
+.nutritional-popup h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.6rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #444;
+}
+
+.nutritional-popup ul {
+    list-style-type: disc;
+    margin-left: 1.3rem;
+    margin-bottom: 1rem;
+    color: #555;
+}
+
+.nutritional-popup ul li {
+    margin-bottom: 0.3rem;
+}
+
+/* Boutons favoris et panier, en bas */
+.popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.popup-buttons button {
+    cursor: pointer;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1.3rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(26, 115, 232, 0.25);
+}
+
+
+.btn-favoris:hover {
+    background-color: #ff4757;
+}
+
+
+
+.btn-panier:hover {
+    background-color: #155ab6;
+}
+
+/* Texte chargement centré */
+.nutritional-popup p {
+    font-style: italic;
+    text-align: center;
+    margin: 2rem 0;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .nutritional-popup {
+        padding: 1.5rem 1.5rem 2rem;
+        max-width: 95vw;
+    }
+}
