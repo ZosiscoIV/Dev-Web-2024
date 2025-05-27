@@ -88,32 +88,33 @@ db.connect(err => {
  */
 
 router.get('/products', (req, res) => {
-    const { categorie, enStock} = req.query
+    const { categorie, enStock, limit, offset, page } = req.query;
+
     let query = `
-    SELECT
-        p.id AS id,
-        p.nom AS produit,
-        p.prix AS prix,
-        s.quantite AS quantite,
-        IF(s.quantite > 0, 'En stock', 'Hors stock') AS status,
-        c.categorie AS categorie,
-        s.dateLivraison AS dateLivraison,
-        p.dateDebutVente AS dateDebutVente,
-        p.dateFinVente as dateFinVente,
-        u.unite,
-        t.taxe,
-        s.disponibilite,
-        p.imageURL
-    FROM
-        magasin.tbProduits p
-    JOIN
-        magasin.tbStock s ON p.id = s.idProduit
-    JOIN
-        magasin.tbCategorie c ON p.idCategorie = c.id
-    JOIN
-        magasin.tbUnite u on p.idUnite = u.id
-    JOIN
-        magasin.tbTaxe t on p.idTaxe = t.id
+        SELECT
+            p.id AS id,
+            p.nom AS produit,
+            p.prix AS prix,
+            s.quantite AS quantite,
+            IF(s.quantite > 0, 'En stock', 'Hors stock') AS status,
+            c.categorie AS categorie,
+            s.dateLivraison AS dateLivraison,
+            p.dateDebutVente AS dateDebutVente,
+            p.dateFinVente as dateFinVente,
+            u.unite,
+            t.taxe,
+            s.disponibilite,
+            p.imageURL
+        FROM
+            magasin.tbProduits p
+                JOIN
+            magasin.tbStock s ON p.id = s.idProduit
+                JOIN
+            magasin.tbCategorie c ON p.idCategorie = c.id
+                JOIN
+            magasin.tbUnite u on p.idUnite = u.id
+                JOIN
+            magasin.tbTaxe t on p.idTaxe = t.id
     `;
     let conditions = []; // On stocke ici les filtres dynamiquement
 
@@ -136,22 +137,27 @@ router.get('/products', (req, res) => {
     }
     query += ` ORDER BY disponibilite DESC, produit ASC
 `;
+    // Pagination
+    const limitValue = parseInt(limit) || 10;
+    const offsetValue = page ? (parseInt(page) - 1) * limitValue : parseInt(offset) || 0;
+
+    query += ` LIMIT ${limitValue} OFFSET ${offsetValue}`;
 
     db.query(query, (err, results) => {
         if (err) {
-            // Si erreur dans la requête SQL
             return res.status(500).send('Erreur de base de données');
         }
         if (results.length === 0) {
-            // Si aucune ressource trouvée, on renvoie un 404
-            return res.status(404).send('Aucun produit trouvé');
+            return res.status(404).json([]);
         }
+
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
         const produits = results.map(prod => ({
             ...prod,
             dispo: prod.disponibilite === 1
         }));
-        // On renvoie les résultats si tout va bien
+
         res.json(produits);
     });
 });
@@ -844,8 +850,8 @@ router.delete('/cart/:idCommande', async (req, res) => {
  *   post:
  *     summary: Ajouter un produit au panier
  *     description: >
- *       Ajoute un produit dans la table `tbCommandes` pour un client donné. 
- *       Si le produit existe déjà dans le panier, la quantité est incrémentée. 
+ *       Ajoute un produit dans la table `tbCommandes` pour un client donné.
+ *       Si le produit existe déjà dans le panier, la quantité est incrémentée.
  *       Si la quantité totale dépasse le stock disponible, l'ajout est bloqué.
  *     security:
  *       - bearerAuth: [] # Nécessite un token Bearer pour l'authentification
@@ -1005,6 +1011,7 @@ router.post('/addToCart', authenticateToken, async (req, res) => {
     }
 });
 
+
 /**
  * @swagger
  * /api/produit/{idProduit}/composition:
@@ -1107,6 +1114,64 @@ router.get('/produit/:idProduit/composition', async (req, res) => {
         res.status(500).send('Erreur de base de données');
     }
 });
+
+
+router.get('/search', async (req, res) => {
+    const query = req.query.query;
+    const category = req.query.category;
+
+    if (!query && !category) {
+        return res.status(400).json({ error: "Paramètre 'query' ou 'category' requis" });
+    }
+
+    try {
+        let sql = `
+            SELECT
+                p.id,
+                p.nom AS produit,
+                p.prix,
+                p.imageURL,
+                c.id AS categoryId,
+                c.categorie AS category
+            FROM magasin.tbProduits p
+                     JOIN magasin.tbCategorie c ON p.idCategorie = c.id
+            WHERE 1=1`;
+
+        const params = [];
+
+        // Si on a une query, on cherche dans les noms de produits ET dans les noms de catégories
+        if (query) {
+            sql += ` AND (LOWER(p.nom) LIKE LOWER(?) OR LOWER(c.categorie) LIKE LOWER(?))`;
+            params.push(`%${query}%`, `%${query}%`);
+        }
+
+        // Si on a une catégorie spécifique en plus
+        if (category) {
+            sql += ` AND LOWER(c.categorie) = LOWER(?)`;
+            params.push(category.toLowerCase());
+        }
+
+        sql += ` ORDER BY 
+            CASE 
+                WHEN LOWER(c.categorie) LIKE LOWER(?) THEN 1 
+                ELSE 2 
+            END,
+            p.nom
+            LIMIT 50`;
+
+        // Ajouter le paramètre pour l'ORDER BY
+        params.push(query ? `%${query}%` : '%');
+
+        const [results] = await db.promise().query(sql, params);
+
+        res.json(results);
+    } catch (err) {
+        console.error("Erreur dans /api/search :", err);
+        res.status(500).json({ error: "Erreur serveur" });
+    }
+});
+
+
 
 /**
  * @swagger

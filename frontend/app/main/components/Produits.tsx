@@ -1,101 +1,70 @@
-"use client";
-import "../css/Produits.css"; // Assurez-vous que ce fichier contient les styles nécessaires
-import Image from "next/image";
-import { useProductDetails, ProductDetailsProps } from "../hooks/useProductDetails";
+"use client"
+
+import { useEffect } from "react";
+import ProduitCard from "./ProduitCard";
+import { usePaginatedFetch } from "../hooks/usePaginatedFetch";
+import { useInfoComp } from "../hooks/useInfoComp";
 import ProductDetailsPopup from "./ProductDetailsPopup";
-import useAddProductToCart from "../hooks/useAddProductToCart"; // Import the custom hook
 
-const ProduitsSearch = (props: ProductDetailsProps) => {
+import "../css/Produits.css";
+
+function Produit() {
+    //Récupère les produits paginés et fonctions depuis usePaginatedFetch
+    const { products, loading, error, hasMore, fetchNext } = usePaginatedFetch(5);
+
+    //Passe les produits paginés au hook useInfoComp, bien laissé comme ca sinon c'est la cata
     const {
-        showNutritionalInfo,
-        infosNutritionnelles,
-        allergenes,
-        ingredients,
-        isLoading: isDetailsLoading,
-        handleProductClick,
-        closePopup,
-        addToFavorites,
-    } = useProductDetails(props);
+        products: productsInfo,
+        openProductDetails,
+        selectedProduct,
+        composition,
+        closeProductDetails,
+        isLoading,
+    } = useInfoComp(products);
 
-    const { produit, categorie, prix, image, status } = props;
+    //Au chargement du composant, on récupère la première page de produit
+    useEffect(() => {
+        fetchNext();
+    }, []);
 
-    // Use the custom hook for adding products to the cart
-    const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
-
-    const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation(); // Empêche la propagation de l'événement pour éviter d'ouvrir la popup
-        await addToCart(parseInt(props.id), 1); // Add 1 unit of the product to the cart
-    };
+    if (loading) return <p>Chargement...</p>;
+    if (error) return <p>Erreur : {error}</p>;
+    if (!products || products.length === 0) return <p>Aucun produit disponible.</p>;
 
     return (
-        <div className="produits-scroll">
-            <div className="produit-container">
-                <a className="produit-card" href="#" onClick={handleProductClick}>
-                    <div className="produit-header">
-                        <h3>{produit}</h3>
-                    </div>
-                    <div className="produit-body">
-                        <p className="produit-category">Catégorie : <span>{categorie}</span></p>
-                        <p className="produit-price">Prix : <strong>{prix.toFixed(2)} €</strong></p>
-                        <p className="produit-status">Status : <span>{status}</span></p>
-                    </div>
-                    <div className="produit-img">
-                        <div className="image-wrapper">
-                            <Image
-                                src={`/assets/${image}`}
-                                alt={produit}
-                                width={200}
-                                height={200}
-                                style={{ objectFit: "cover" }}
-                                className="produitImage"
-                                onError={props.onImageError}
-                            />
-                        </div>
-                        <div className="produit-actions">
-                            <button
-                                className="btn-favoris"
-                                onClick={(e) => {
-                                    e.stopPropagation(); // Empêche l'ouverture de la popup
-                                    addToFavorites(e);
-                                }}
-                            >
-                                ❤️
-                            </button>
-                            <button
-                                className={`btn-panier ${isCartLoading ? "rotating" : ""}`}
-                                onClick={handleAddToCart}
-                                disabled={isCartLoading} // Disable the button while adding to cart
-                            >
-                                🛒
-                            </button>
-                        </div>
-                    </div>
-                </a>
+        <div className="produit-container">
+            <div className="produit-grid">
+                {/* affiche la liste des produits paginés */}
+                {products.map((p) => (
+                    <ProduitCard key={p.id} product={p} onDetailsClick={() => openProductDetails(p)} />
+                ))}
             </div>
 
-            {showNutritionalInfo && (
-                <ProductDetailsPopup
-                    product={{
-                        id: parseInt(props.id),
-                        produit: produit,
-                        categorie: Array.isArray(categorie) ? categorie[0] : categorie.toString(),
-                        prix: prix,
-                        image: image,
-                    }}
-                    nutrition={infosNutritionnelles}
-                    allergenes={allergenes}
-                    ingredients={ingredients}
-                    isLoading={isDetailsLoading}
-                    onClose={closePopup}
-                    onAddToFavorites={addToFavorites}
-                    onAddToCart={() => void 0} // No need to add to cart here, handled in the main component
-                />
+            {isLoading && <p>Chargement des détails...</p>}
+
+            {hasMore && !loading && (
+                <div className="load-more-wrapper">
+                    <button className="load-more-button" onClick={fetchNext}>
+                        Charger plus
+                    </button>
+                </div>
             )}
 
-            {/* {error && <p className="error-message">Erreur : {error}</p>} */}
+            {/* Popup pour afficher les détails si un produit est sélectionné */}
+            {selectedProduct && (
+                <ProductDetailsPopup
+                    product={selectedProduct}
+                    nutrition={composition.nutrition}
+                    allergenes={composition.allergenes}
+                    ingredients={composition.ingredients}
+                    isLoading={isLoading}
+                    onClose={closeProductDetails}
+                    onAddToFavorites={() => { /* fonction ajout favoris */ }}
+                    onAddToCart={() => { /* fonction ajout panier */ }}
+                />
+            )}
         </div>
     );
-};
+}
 
-export default ProduitsSearch;
+export default Produit;

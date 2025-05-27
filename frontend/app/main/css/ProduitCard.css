@@ -1,0 +1,159 @@
+/* Conteneur principal */
+.produit-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Grille responsive des cartes produits */
+.produit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+}
+
+/* Carte produit */
+.produit-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+}
+
+.produit-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+/* Wrapper image */
+.produit-image-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    border-bottom: 1px solid #eee;
+}
+
+/* Image produit */
+.produit-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.produit-card:hover .produit-image {
+    transform: scale(1.05);
+}
+
+/* Détails produit */
+.produit-details {
+    padding: 1rem 1.25rem 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Titre */
+.produit-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #222;
+}
+
+/* Catégorie, prix, statut */
+.produit-category,
+.produit-price,
+.produit-status {
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+    color: #555;
+}
+
+.produit-category span,
+.produit-status span {
+    font-weight: 600;
+    color: #333;
+}
+
+/* Actions boutons */
+.produit-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* Boutons favoris et panier */
+.btn-favoris,
+.btn-panier {
+    background-color: #eee;
+    border: none;
+    border-radius: 50%;
+    padding: 0.5rem 0.6rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.btn-favoris:hover {
+    background-color: #ff6b6b;
+    color: white;
+    transform: scale(1.2);
+}
+
+.btn-panier:hover {
+    background-color: #1abc9c;
+    color: white;
+    transform: scale(1.2);
+}
+
+/* Texte chargement & erreur */
+.produit-loading,
+.produit-error {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: #666;
+}
+
+/* Bouton "Charger plus" */
+.btn-load-more {
+    margin-top: 2rem;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    background-color: #1abc9c;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-load-more:hover {
+    background-color: #159a7c;
+}
+
+
+/* Animation de rotation */
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Classe pour l'icône en rotation */
+.rotating {
+    animation: rotate 1s linear infinite;
+    display: inline-block;
+}
