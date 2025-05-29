@@ -60,8 +60,15 @@ app.use(
 
 
 app.use(cors({
-    origin: allowedOrigins,
-    credentials: true
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // pour les requêtes sans origine (ex: Postman)
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
 
 app.use(cookieParser());
