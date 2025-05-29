@@ -1,8 +1,7 @@
 import { InfosNutritionnelles, Composition } from "../hooks/useInfoComp";
-import { Produit } from "../hooks/useFetch"
+import { Produit } from "../hooks/useFetch";
 import useAddProductToCart from "../hooks/useAddProductToCart";
-import "../css/ProductDetailsPopup.css"
-
+import "../css/ProductDetailsPopup.css";
 
 interface ProductDetailsPopupProps {
     product: Produit;
@@ -16,16 +15,15 @@ interface ProductDetailsPopupProps {
 }
 
 const ProductDetailsPopup = ({
-                                 product,
-                                 nutrition,
-                                 allergenes,
-                                 ingredients,
-                                 isLoading,
-                                 onClose,
-                                 onAddToFavorites,
-                                 onAddToCart
-                             }: ProductDetailsPopupProps) => {
-
+    product,
+    nutrition,
+    allergenes,
+    ingredients,
+    isLoading,
+    onClose,
+    onAddToFavorites,
+    onAddToCart,
+}: ProductDetailsPopupProps) => {
     // Use the custom hook for adding products to the cart
     const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
 
@@ -35,11 +33,12 @@ const ProductDetailsPopup = ({
         await addToCart(product.id, 1); // Add 1 unit of the product to the cart
     };
 
-
     return (
         <div className="nutritional-popup-overlay">
             <div className="nutritional-popup">
-                <button className="close-popup" onClick={onClose}>×</button>
+                <button className="close-popup" onClick={onClose}>
+                    ×
+                </button>
                 <h2>Informations Nutritionnelles - {product.produit}</h2>
 
                 {isLoading ? (
@@ -49,25 +48,31 @@ const ProductDetailsPopup = ({
                         {nutrition ? (
                             <div className="nutritional-content">
                                 <div className="nutritional-item">
-                                    <span>Calories:</span><strong>{nutrition.calories} kcal</strong>
+                                    <span>Calories:</span>
+                                    <strong>{nutrition.calories} kcal</strong>
                                 </div>
                                 <div className="nutritional-item">
-                                    <span>Protéines:</span><strong>{nutrition.proteines} g</strong>
+                                    <span>Protéines:</span>
+                                    <strong>{nutrition.proteines} g</strong>
                                 </div>
                                 <div className="nutritional-item">
-                                    <span>Glucides:</span><strong>{nutrition.glucides} g</strong>
+                                    <span>Glucides:</span>
+                                    <strong>{nutrition.glucides} g</strong>
                                 </div>
                                 <div className="nutritional-item">
-                                    <span>Lipides:</span><strong>{nutrition.lipides} g</strong>
+                                    <span>Lipides:</span>
+                                    <strong>{nutrition.lipides} g</strong>
                                 </div>
                                 {nutrition.fibres !== undefined && (
                                     <div className="nutritional-item">
-                                        <span>Fibres:</span><strong>{nutrition.fibres} g</strong>
+                                        <span>Fibres:</span>
+                                        <strong>{nutrition.fibres} g</strong>
                                     </div>
                                 )}
                                 {nutrition.sel !== undefined && (
                                     <div className="nutritional-item">
-                                        <span>Sel:</span><strong>{nutrition.sel} g</strong>
+                                        <span>Sel:</span>
+                                        <strong>{nutrition.sel} g</strong>
                                     </div>
                                 )}
                             </div>
@@ -77,30 +82,25 @@ const ProductDetailsPopup = ({
 
                         <h3>Allergènes</h3>
                         <ul>
-                            {allergenes.length > 0
-                                ? allergenes.map((a, i) => <li key={i}>{a}</li>)
-                                : <li>Aucun</li>
-                            }
+                            {allergenes.length > 0 ? allergenes.map((a, i) => <li key={i}>{a}</li>) : <li>Aucun</li>}
                         </ul>
 
                         <h3>Ingrédients</h3>
                         <ul>
-                            {ingredients.length > 0
-                                ? ingredients.map((i, j) => <li key={j}>{i}</li>)
-                                : <li>Aucun</li>
-                            }
+                            {ingredients.length > 0 ? ingredients.map((i, j) => <li key={j}>{i}</li>) : <li>Aucun</li>}
                         </ul>
 
                         <div className="popup-buttons">
-                            <button className="btn-favoris" onClick={onAddToFavorites}>❤️</button>
+                            <button className="btn-favoris" onClick={onAddToFavorites}>
+                                ❤️
+                            </button>
                             <button
                                 className={`btn-panier ${isCartLoading ? "rotating" : ""}`}
                                 onClick={handleAddToCart}
                                 disabled={isCartLoading} // Disable the button while adding to cart
                             >
-                                🛒
+                                {isCartLoading ? "⏳" : "🛒"}
                             </button>
-
                         </div>
                     </>
                 )}
