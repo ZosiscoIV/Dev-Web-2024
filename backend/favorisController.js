@@ -49,4 +49,27 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
+// Supprimer un produit des favoris
+router.delete('/:idProduit', authenticateToken, async (req, res) => {
+    const idClient = req.user.id;
+    const { idProduit } = req.params;
+
+    try {
+        const [result] = await db.query(
+            'DELETE FROM magasin.tbFavoris WHERE idClient = ? AND idProduit = ?',
+            [idClient, idProduit]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Produit non trouvé dans les favoris' });
+        }
+
+        res.status(200).json({ message: 'Produit supprimé des favoris' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+
 module.exports = router;
