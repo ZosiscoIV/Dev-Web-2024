@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Produit } from "../hooks/usePaginatedFetch";
 import useAddProductToCart from "../hooks/useAddProductToCart";
+import useFavoris from "../hooks/useFavoris";
 import "../css/ProduitCard.css";
 
 interface ProduitCardProps {
@@ -14,7 +15,7 @@ interface ProduitCardProps {
 const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetailsClick }) => {
     // Utilisation du hook pour ajouter un produit au panier
     const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
-
+    const { handleAddFavorite } = useFavoris();
     const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation(); // Empêche l'ouverture de la popup des détails
@@ -49,7 +50,8 @@ const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetails
                 </p>
                 <div className="produit-actions">
                     <button onClick={() => onDetailsClick?.(product)}>ℹ️ Détails</button>
-                    <button className="btn-favoris" onClick={() => {}}>❤️</button>
+                    <button className="btn-favoris" onClick={() => handleAddFavorite(product)}>❤️</button>
+
                     <button
                         className={`btn-panier ${isCartLoading ? "rotating" : ""}`}
                         onClick={handleAddToCart}
