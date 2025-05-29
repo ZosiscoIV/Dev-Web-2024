@@ -30,7 +30,6 @@ const Login = () => {
             const data = await res.json();
 
             if (res.ok) {
-                localStorage.setItem("user", JSON.stringify(data.user))
                 router.push('/');
             } else {
                 setError(data.error || 'Échec de la connexion');
