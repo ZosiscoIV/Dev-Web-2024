@@ -14,11 +14,11 @@ interface ProduitCardProps {
     showRemoveButton?: boolean;
 }
 
-
 const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetailsClick, onRemoveFavorite, showRemoveButton }) => {
     // Utilisation du hook pour ajouter un produit au panier
-    const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
-    const { handleAddFavorite } = useFavoris();
+    const { addToCart, isLoading: isCartLoading } = useAddProductToCart();
+    const { handleAddFavorite, handleRemoveFavorite, isFavorite } = useFavoris();
+
     const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation(); // Empêche l'ouverture de la popup des détails
@@ -29,12 +29,20 @@ const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetails
         }
     };
 
+    const toggleFavorite = () => {
+        if (isFavorite(product.id)) {
+            handleRemoveFavorite(product.id);
+        } else {
+            handleAddFavorite(product);
+        }
+    };
+
     return (
         <div className="produit-card">
             <div className="produit-image-wrapper">
                 <Image
                     src={product.imageURL}
-                    alt={product.produit}
+                    alt={product.produit || "Image du produit"} // Fournit une valeur par défaut si product.produit est vide
                     width={200}
                     height={200}
                     className="produit-image"
@@ -53,7 +61,16 @@ const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetails
                 </p>
                 <div className="produit-actions">
                     <button onClick={() => onDetailsClick?.(product)}>ℹ️ Détails</button>
-                    <button className="btn-favoris" onClick={() => handleAddFavorite(product)}>❤️</button>
+
+                    {/* Affiche le bouton cœur uniquement si showRemoveButton est false */}
+                    {!showRemoveButton && (
+                        <button
+                            className="btn-favoris"
+                            onClick={toggleFavorite}
+                        >
+                            {isFavorite(product.id) ? "❤️" : "🤍"}
+                        </button>
+                    )}
 
                     <button
                         className={`btn-panier ${isCartLoading ? "rotating" : ""}`}
@@ -63,12 +80,12 @@ const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetails
                         {isCartLoading ? "⏳" : "🛒"}
                     </button>
 
+                    {/* Affiche le bouton croix uniquement si showRemoveButton est true */}
                     {showRemoveButton && onRemoveFavorite && (
                         <button className="btn-supprimer" onClick={onRemoveFavorite}>
                             ❌
                         </button>
                     )}
-
                 </div>
             </div>
         </div>
