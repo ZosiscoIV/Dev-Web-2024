@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { getProducts, getCategorie} from '../services/productService'
 import { Product } from '../models/Product';
 import { Categorie } from '../models/Categorie';
+import axiosClient from '../../fetchWithToken'
 
 import { format } from 'date-fns';
+import { ro } from 'date-fns/locale';
 
 function formatDateForInput(date: string | null): string {
     if (!date) return '';
@@ -99,8 +101,14 @@ export const useProductForm = (setProducts: React.Dispatch<React.SetStateAction<
         formData.append('taxe', taxe.toString());
         if (image) formData.append('image', image);
         if (produitExistant?.id) formData.append('id', produitExistant.id.toString());
-
+        const roleRes = await axiosClient.get<boolean>('/auth/role');
+        if (roleRes.data === false){
+            alert("Vous n'avez pas les droits pour modifier ce produit.");
+            return;
+        }
+        console.log(roleRes.data)
         if (produitExistant){
+            
             try {
                 const response = await fetch(`http://localhost:6942/api/products/${produitExistant.id}`, {
                     method: 'PUT',

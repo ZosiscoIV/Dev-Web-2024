@@ -3,6 +3,7 @@ import { Product } from "../models/Product";
 import { Categorie} from "../models/Categorie";
 import Formulaire from './FormAddModify';
 import FormulaireDate from './FormAddDate';
+import axiosClient from '../../fetchWithToken'
 
 type ProductTableProps = {
   products: Product[];
@@ -32,6 +33,12 @@ const ProductTable: React.FC<ProductTableProps> = ({ products, setProducts, setC
   }
   const handleDispo = async (e: React.ChangeEvent<HTMLInputElement>, prod: Product)=>{
     prod.dispo = e.target.checked;
+    const roleRes = await axiosClient.get<boolean>('/auth/role');
+    if (roleRes.data === false){
+        alert("Vous n'avez pas les droits pour modifier ce produit.");
+        return;
+    }
+    console.log(roleRes.data)
     const response = await fetch(`http://localhost:6942/api/products/${prod.id}/dispo`, {
       method: 'PUT',
       headers: {
