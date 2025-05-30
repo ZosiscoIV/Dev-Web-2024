@@ -22,8 +22,8 @@ const allowedOrigins = [
 ];
 
 app.use(rateLimit({ // Nouveau middleware
-    windowMs: 15 * 60 * 1000,
-    max: 100,
+    windowMs: 5 * 60 * 1000,
+    max: 1000,
     message: 'Trop de requêtes depuis cette IP'
 }));
 
