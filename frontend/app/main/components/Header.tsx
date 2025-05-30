@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import axiosClient from '../../fetchWithToken'
@@ -17,22 +17,31 @@ export default function Header() {
     const [user, setUser] = useState<Profile | null>(null)
     const [loading, setLoading] = useState(true)
     const { query, setQuery, results, error, handleSearch } = useProductSearch();
-
+    
+    const [is_admin, setIs_admin] = useState(false);
+    
     const [category, setCategory] = useState("");
 
     useEffect(() => {
-        axiosClient
-            .get<Profile>('/auth/profile')
-            .then(res => {
-                setUser(res.data);     // contains { nom, prenom }
-            })
-            .catch(() => {
+        const fetchUserData = async () => {
+            try {
+                const profileRes = await axiosClient.get<Profile>('/auth/profile');
+                setUser(profileRes.data);
+                const roleRes = await axiosClient.get<boolean>('/auth/role');
+                setIs_admin(roleRes.data);
+            }
+            catch(error) {
                 setUser(null);
-            })
-            .finally(() => {
+                setIs_admin(false)
+            }
+            finally {
                 setLoading(false);
-            });
-    }, []);
+            };
+
+        }
+        fetchUserData();
+    }, [])
+
 
     const handleLogout = async () => {
         try {
@@ -47,8 +56,11 @@ export default function Header() {
 
     const onSearch = () => {
         handleSearch(category);
-        router.push(`/search?q=${query}`);
+        router.push(`/search?q=${query}&category=${category}`);
+        console.log("Requête envoyée avec query:", query, "et category:", category);
+
     };
+
 
     return (
         <header className="Header">
@@ -100,6 +112,8 @@ export default function Header() {
                         <button className="boutonLogout" onClick={handleLogout}>
                             Logout
                         </button>
+
+                        {is_admin && (<button className="boutonInventaire" onClick={() => router.push("/listeprod")}>Inventaire</button>)} 
                     </>
                 ) : (
                     <>

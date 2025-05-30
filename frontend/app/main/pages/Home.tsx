@@ -1,17 +1,18 @@
 "use client"
 
 import Produit from "../components/Produits";
+import "../css/Home.css"
 
 function Home() {
     return (
-        <div>
-            <span>
+        <main className="home-container">
+            <header>
                 <h1>Bienvenue sur Épicerie Didier 🏪</h1>
                 <p>Recherchez et achetez vos produits préférés !</p>
-            </span>
+            </header>
 
             <Produit />
-        </div>
+        </main>
     )
 }
 export default Home;

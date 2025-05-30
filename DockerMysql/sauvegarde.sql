@@ -86,8 +86,9 @@ CREATE TABLE `tbCommandes` (
   `idClient` int NOT NULL,
   `quantite` int NOT NULL,
   `dateCommande` date NOT NULL,
+  `estDejaVendu` boolean NOT NULL,
   PRIMARY KEY (`idCommande`),
-  UNIQUE KEY `fk_commande` (`idProduit`,`idClient`),
+  UNIQUE KEY `fk_commande` (`idCommande`,`idProduit`,`idClient`),
   KEY `idClient` (`idClient`),
   CONSTRAINT `tbCommandes_ibfk_1` FOREIGN KEY (`idProduit`) REFERENCES `tbProduits` (`id`),
   CONSTRAINT `tbCommandes_ibfk_2` FOREIGN KEY (`idClient`) REFERENCES `tbClients` (`id`)
@@ -100,6 +101,12 @@ CREATE TABLE `tbCommandes` (
 
 LOCK TABLES `tbCommandes` WRITE;
 /*!40000 ALTER TABLE `tbCommandes` DISABLE KEYS */;
+INSERT INTO `tbCommandes` VALUES (1, 1, 1, 2, '2024-03-06', false),
+                                (2, 2, 1, 3, '2024-03-06', false),
+                                (3, 3, 1, 1, '2024-12-06', false),
+                                (4, 4, 1, 5, '2024-12-06', false),
+                                (6, 6, 1, 2, '2024-03-06', false),
+                                (7, 7, 1, 3, '2024-03-06', false);
 /*!40000 ALTER TABLE `tbCommandes` ENABLE KEYS */;
 UNLOCK TABLES;
 

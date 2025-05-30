@@ -16,14 +16,14 @@ const PORT = 6942;
 
 // Middleware de sécurité
 const allowedOrigins = [
-    'http://localhost:3001',
+    'http://localhost:3000',
     'https://votre-site.com',
     'https://app.votre-site.com'
 ];
 
 app.use(rateLimit({ // Nouveau middleware
-    windowMs: 15 * 60 * 1000,
-    max: 100,
+    windowMs: 5 * 60 * 1000,
+    max: 1000,
     message: 'Trop de requêtes depuis cette IP'
 }));
 
@@ -60,8 +60,15 @@ app.use(
 
 
 app.use(cors({
-    origin: allowedOrigins,
-    credentials: true
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // pour les requêtes sans origine (ex: Postman)
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
 }));
 
 app.use(cookieParser());
