@@ -26,9 +26,19 @@ export const useProducts = (categorie: string, stock: "tout" | "enStock" | 'faib
           setErrorMessage('Aucun produit trouvé')
         }
         else{
-          setProducts(listeProduit);
+          let productsVisible = listeProduit
+          if (stock !== 'tout'){
+            productsVisible = listeProduit.filter((p: {dispo: boolean}) => p.dispo === true);
+          }
+          setProducts(productsVisible);
           console.log(listeProduit)
-          setErrorMessage('')
+          console.log('les vrais produits',productsVisible)
+          if (productsVisible.length === 0) {
+            setErrorMessage('Aucun produit trouvé')
+          }
+          else {
+            setErrorMessage('')
+          }
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des produits:', error);

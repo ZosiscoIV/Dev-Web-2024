@@ -145,4 +145,25 @@ router.get(
   }
 );
 
+router.get('/role', authenticateToken, async (req, res) => {
+    try{
+        const {id, is_admin } = req.user;
+        const [query] = await promisePool.query( `SELECT is_admin FROM magasin.tbClients WHERE id = ?`, [id]);
+
+        if (query.length === 0) {
+            return res.status(404).json({ error: "Utilisateur introuvable" });
+        }
+        const AdminDB = query[0].is_admin;
+
+        if (is_admin === 1 && AdminDB === 1) {
+            return res.json(true);
+        }
+        return res.json(false); 
+    }
+    catch (err){
+        console.error('Admin error', err);
+        res.status(500).json({error : 'Erreur serveur'})
+    }
+})
+
 module.exports = router;
