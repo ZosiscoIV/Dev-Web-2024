@@ -10,9 +10,12 @@ import "../css/ProduitCard.css";
 interface ProduitCardProps {
     product: Produit;
     onDetailsClick?: (product: Produit) => void;
+    onRemoveFavorite?: () => void;
+    showRemoveButton?: boolean;
 }
 
-const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetailsClick }) => {
+
+const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetailsClick, onRemoveFavorite, showRemoveButton }) => {
     // Utilisation du hook pour ajouter un produit au panier
     const { addToCart, isLoading: isCartLoading, error } = useAddProductToCart();
     const { handleAddFavorite } = useFavoris();
@@ -59,6 +62,13 @@ const ProduitCard: React.FC<ProduitCardProps> = React.memo(({ product, onDetails
                     >
                         {isCartLoading ? "⏳" : "🛒"}
                     </button>
+
+                    {showRemoveButton && onRemoveFavorite && (
+                        <button className="btn-supprimer" onClick={onRemoveFavorite}>
+                            ❌
+                        </button>
+                    )}
+
                 </div>
             </div>
         </div>
