@@ -8,45 +8,45 @@
     align-items: center;
 }
 
-/* Grille responsive des cartes produits */
+/* Grille responsive */
 .produit-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.5rem;
+    gap: 2rem;
     width: 100%;
 }
 
 /* Carte produit */
 .produit-card {
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: default;
+    cursor: pointer;
 }
 
 .produit-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
 }
 
-/* Wrapper image */
+/* Image wrapper */
 .produit-image-wrapper {
     width: 100%;
     height: 200px;
     overflow: hidden;
-    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
 }
 
-/* Image produit */
+/* Image */
 .produit-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
 }
 
 .produit-card:hover .produit-image {
@@ -55,47 +55,48 @@
 
 /* Détails produit */
 .produit-details {
-    padding: 1rem 1.25rem 1.5rem;
-    flex-grow: 1;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
 }
 
 /* Titre */
 .produit-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
-    color: #222;
+    color: #1f2937; /* gray-800 */
 }
 
-/* Catégorie, prix, statut */
+/* Infos secondaires */
 .produit-category,
 .produit-price,
 .produit-status {
     font-size: 0.9rem;
-    margin: 0.3rem 0;
-    color: #555;
+    margin: 0.25rem 0;
+    color: #4b5563; /* gray-600 */
 }
 
 .produit-category span,
 .produit-status span {
     font-weight: 600;
-    color: #333;
+    color: #1f2937; /* gray-800 */
 }
 
-/* Actions boutons */
+/* Actions */
 .produit-actions {
     margin-top: auto;
     display: flex;
     gap: 0.75rem;
     justify-content: flex-end;
+    flex-wrap: wrap;
 }
 
-/* Boutons favoris et panier */
+/* Boutons d'action (favoris, panier) */
 .btn-favoris,
 .btn-panier {
-    background-color: #eee;
+    background-color: #f3f4f6; /* gray-100 */
     border: none;
     border-radius: 50%;
     padding: 0.5rem 0.6rem;
@@ -105,54 +106,64 @@
 }
 
 .btn-favoris:hover {
-    background-color: #ff6b6b;
+    background-color: #ef4444; /* red-500 */
     color: white;
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
 .btn-panier:hover {
-    background-color: #1abc9c;
+    background-color: #10b981; /* emerald-500 */
     color: white;
-    transform: scale(1.2);
+    transform: scale(1.15);
 }
 
-/* Texte chargement & erreur */
-.produit-loading,
-.produit-error {
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-    color: #666;
+/* Bouton supprimer */
+.btn-supprimer {
+    background-color: white;
+    color: white;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.875rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-/* Bouton "Charger plus" */
+.btn-supprimer:hover {
+    background-color: #dc2626; /* red-600 */
+}
+
+/* Bouton charger plus */
 .btn-load-more {
     margin-top: 2rem;
     padding: 0.75rem 2rem;
     font-size: 1rem;
-    background-color: #1abc9c;
+    background-color: #10b981; /* emerald-500 */
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 9999px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .btn-load-more:hover {
-    background-color: #159a7c;
+    background-color: #059669; /* emerald-600 */
 }
 
+/* États de chargement et erreur */
+.produit-loading,
+.produit-error {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+    color: #6b7280; /* gray-500 */
+}
 
-/* Animation de rotation */
+/* Animation de rotation pour icône */
 @keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* Classe pour l'icône en rotation */
 .rotating {
     animation: rotate 1s linear infinite;
     display: inline-block;
