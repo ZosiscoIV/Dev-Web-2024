@@ -90,7 +90,7 @@ const ProductDetailsPopup = ({
                             {ingredients.length > 0 ? ingredients.map((i, j) => <li key={j}>{i}</li>) : <li>Aucun</li>}
                         </ul>
 
-                        <div className="popup-buttons">
+                        {/* <div className="popup-buttons">
                             <button className="btn-favoris" onClick={onAddToFavorites}>
                                 ❤️
                             </button>
@@ -101,7 +101,7 @@ const ProductDetailsPopup = ({
                             >
                                 {isCartLoading ? "⏳" : "🛒"}
                             </button>
-                        </div>
+                        </div> */}
                     </>
                 )}
             </div>

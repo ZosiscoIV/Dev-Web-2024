@@ -161,23 +161,12 @@ export default function Cart() {
                     if (parsedValue === 0) {
                       if (confirm("Souhaitez-vous retirer ce produit du panier ?")) {
                         handleAdjust(item.idCommande, -item.quantity);
-                      } else {
-                        handleQuantityChange(item.idCommande, 1);
                       }
                       return;
                     }
 
                     if (parsedValue >= 0) {
                       handleQuantityChange(item.idCommande, parsedValue);
-                    }
-                  }}
-                  onBlur={(e) => {
-                    if (e.target.value === "") {
-                      if (confirm("Souhaitez-vous retirer ce produit du panier ?")) {
-                        handleAdjust(item.idCommande, -item.quantity);
-                      } else {
-                        handleQuantityChange(item.idCommande, 1);
-                      }
                     }
                   }}
                 />
